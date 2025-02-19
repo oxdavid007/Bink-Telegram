@@ -31,7 +31,7 @@ export class ReferralHandler implements Handler {
       let message = `<b>💌 Referral</b>\n\n`;
 
       message += `🔗 Reflink\n`;
-      message += `https://t.me/${this.bot.name}?start=${user.referral_code}\n\n`;
+      message += `<code>https://t.me/${this.bot.name}?start=${user.referral_code}</code>\n\n`;
 
       message += `📊 Stats\n`;
       message += `<b>🔹 Total Referee</b>: ${totalReferrals} user\n`;
@@ -41,7 +41,7 @@ export class ReferralHandler implements Handler {
       const menu: InlineKeyboardButton[][] = [
         [
           createMenuButton("← Back", COMMAND_KEYS.START),
-        //   createMenuButton("💳 Wallet", COMMAND_KEYS.WALLET),
+          //   createMenuButton("💳 Wallet", COMMAND_KEYS.WALLET),
         ],
       ];
 
