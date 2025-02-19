@@ -17,11 +17,14 @@ import { ChainId } from "@pancakeswap/sdk";
 import { UserService } from "./user.service";
 import { BirdeyeProvider } from "@binkai/birdeye-provider";
 import { TokenPlugin } from "@binkai/token-plugin";
+import { PostgresDatabaseAdapter } from "@binkai/postgres-adapter";
+
 @Injectable()
 export class AiService implements OnApplicationBootstrap {
   private openai: OpenAI;
   private networks: NetworksConfig["networks"];
   private birdeyeApi: BirdeyeProvider;
+  private postgresAdapter: PostgresDatabaseAdapter;
   mapAgent: Record<string, Agent> = {};
 
   @Inject("BSC_CONNECTION") private bscProvider: JsonRpcProvider;
@@ -64,6 +67,11 @@ export class AiService implements OnApplicationBootstrap {
     };
     this.birdeyeApi = new BirdeyeProvider({
       apiKey: this.configService.get<string>("birdeye.birdeyeApiKey"),
+    });
+    this.postgresAdapter = new PostgresDatabaseAdapter({
+      connectionString: this.configService.get<string>(
+        "postgres_ai.postgresUrl"
+      ),
     });
   }
 
@@ -114,14 +122,14 @@ export class AiService implements OnApplicationBootstrap {
           {
             model: "gpt-4o",
             temperature: 0,
-            systemPrompt:
-              "You are a BINK AI agent. You are able to perform swaps and get token information on multiple chains. If you do not have the token address, you can use the symbol to get the token information before performing a swap.",
+            systemPrompt: `You are a BINK AI assistant. You can help user to query blockchain data .You are able to perform swaps and get token information on multiple chains. If you do not have the token address, you can use the symbol to get the token information before performing a swap.`,
           },
           wallet,
           this.networks
         );
         await agent.registerPlugin(swapPlugin);
         await agent.registerPlugin(tokenPlugin);
+        await agent.registerDatabase(this.postgresAdapter);
         this.mapAgent[telegramId] = agent;
       }
 

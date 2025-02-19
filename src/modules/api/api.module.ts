@@ -11,7 +11,7 @@ import { configAuth } from "./configs/auth";
 import { configCache } from "./configs/cache";
 import { BusinessModule } from "@/business/business.module";
 import { openaiConfig } from "./configs/openai";
-import { birdeyeConfig } from "./configs/bink";
+import { birdeyeConfig, postgresConfig } from "./configs/bink";
 @Module({
   imports: [
     ThrottlerModule.forRoot({
@@ -39,7 +39,13 @@ import { birdeyeConfig } from "./configs/bink";
     ConfigModule.forRoot({
       isGlobal: true,
       expandVariables: true,
-      load: [configAuth, configCache, openaiConfig, birdeyeConfig],
+      load: [
+        configAuth,
+        configCache,
+        openaiConfig,
+        birdeyeConfig,
+        postgresConfig,
+      ],
     }),
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
