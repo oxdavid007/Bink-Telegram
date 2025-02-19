@@ -19,9 +19,9 @@ export class MainPage implements PhotoPage {
       `<b>What can Bink do?</b>\n\n` +
       `<b>📊 AI Insights:</b> Market trends & token analysis (X & Telegram)\n\n` +
       `<b>🛠 On-Chain Execution:</b> AI-powered trading & automation (Telegram Only)\n\n` +
-      `<b>💠 <a href="https://binkos.dev">BinkOS</a>:</b> The Ultimate DeFAI Framework for Developers\n\n` +
+      `<b>💠 <a href="https://github.com/Bink-AI/BinkOS">BinkOS</a>:</b> The Ultimate DeFAI Framework for Developers\n\n` +
       `<b>Automate. Trade smarter. Stay ahead.</b>\n\n` +
-      `<b><a href="https://twitter.com/BinkAI_">X</a> </b>| <b><a href="https://t.me/BinkAI_Community">Community</a></b> | <b><a href="https://bink.ai">Website</a></b>`;
+      `<b><a href="https://x.com/bink_ai">X</a></b> | <b><a href="https://t.me/BinkAIchat">Community</a></b> | <b><a href="https://bink.ai">Website</a></b>`;
 
     const buttons = [
       [
