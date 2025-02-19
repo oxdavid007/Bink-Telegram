@@ -40,17 +40,18 @@ export class UserInputHandler implements Handler {
         return;
       }
       const firstMessage = "Thinking...";
-      const messageId = await this.bot.sendMessage(data.chatId, firstMessage);
+      const messageId = await this.bot.sendMessage(data.chatId, firstMessage, {
+        parse_mode: "HTML",
+      });
       //implement
-      const message = await this.aiService.createChatCompletion(
-        [{ role: "user", content: data.text }],
-        {
-          model: "gpt-4o-mini",
-        }
+      const message = await this.aiService.handleSwap(
+        data.telegramId,
+        data.text
       );
-      await this.bot.editMessageText(message.content, {
+      await this.bot.editMessageText(message, {
         chat_id: data.chatId,
         message_id: messageId.message_id,
+        parse_mode: "HTML",
       });
     } catch (error) {
       console.error("Error in UserInputHandler:", error);
