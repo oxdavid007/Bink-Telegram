@@ -28,6 +28,7 @@ export class WalletHandler implements Handler {
       const user = await this.userService.getOrCreateUser({
         telegram_id: data.telegramId,
       });
+
       const [solBalance, ethBalance, bnbBalance] = await Promise.all([
         getSolBalance(
           this.solanaConnection,
@@ -68,7 +69,7 @@ export class WalletHandler implements Handler {
       message += `<code>${walletInfo[0].address}</code> (Tap to copy)\n\n`;
 
       message += `<b>🔗 Reflink</b>\n`;
-      message += `https://t.me/${this.bot.name}?start=${user.referral_code} (Tap to copy)`;
+      message += `<code>https://t.me/${this.bot.name}?start=${user.referral_code}</code> (Tap to copy)`;
 
       // Create keyboard layout
       const keyboard: InlineKeyboardButton[][] = [

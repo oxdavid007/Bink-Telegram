@@ -169,7 +169,11 @@ export class UserService implements OnApplicationBootstrap {
       await this.getEncryptedPrivateKeyByTelegramId(telegramId);
     if (!encryptedKeys) return null;
 
-    const mnemonic = encryptedKeys.encryptedPhrase;
+    //decode encrypted phrase
+    const mnemonic = decryptPrivateKey(
+      encryptedKeys.encryptedPhrase,
+      process.env.WALLET_ENCRYPTION_KEY || "123"
+    );
     return mnemonic;
   }
 
@@ -181,7 +185,11 @@ export class UserService implements OnApplicationBootstrap {
       await this.getEncryptedPrivateKeyByTelegramId(telegramId);
     if (!encryptedKeys) return null;
 
-    const mnemonic = encryptedKeys.encryptedPhrase;
+    //decode encrypted phrase
+    const mnemonic = decryptPrivateKey(
+      encryptedKeys.encryptedPhrase,
+      process.env.WALLET_ENCRYPTION_KEY || "123"
+    );
     const walletEvm = Wallet.fromPhrase(mnemonic);
 
     const seed = bip39.mnemonicToSeedSync(mnemonic);
