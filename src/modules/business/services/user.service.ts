@@ -164,6 +164,15 @@ export class UserService implements OnApplicationBootstrap {
     };
   }
 
+  async getMnemonicByTelegramId(telegramId: string): Promise<string | null> {
+    const encryptedKeys =
+      await this.getEncryptedPrivateKeyByTelegramId(telegramId);
+    if (!encryptedKeys) return null;
+
+    const mnemonic = encryptedKeys.encryptedPhrase;
+    return mnemonic;
+  }
+
   async getPrivateKeyByTelegramId(telegramId: string): Promise<{
     evmPrivateKey: string;
     solanaPrivateKey: string;
