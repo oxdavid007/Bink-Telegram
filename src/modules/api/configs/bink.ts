@@ -7,3 +7,8 @@ export const birdeyeConfig = registerAs("birdeye", () => ({
 export const postgresConfig = registerAs("postgres_ai", () => ({
   postgresUrl: process.env.POSTGRES_URL,
 }));
+
+export const binkConfig = registerAs("bink", () => ({
+  apiKey: process.env.BINK_API_KEY || "",
+  baseUrl: process.env.BINK_API_URL || "",
+}));
