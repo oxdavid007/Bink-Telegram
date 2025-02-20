@@ -18,6 +18,9 @@ import { UserService } from "./user.service";
 import { BirdeyeProvider } from "@binkai/birdeye-provider";
 import { TokenPlugin } from "@binkai/token-plugin";
 import { PostgresDatabaseAdapter } from "@binkai/postgres-adapter";
+import { KnowledgePlugin } from "@binkai/knowledge-plugin";
+import { BinkProvider } from "@binkai/bink-provider";
+import { FourMemeProvider } from "@binkai/four-meme-provider";
 
 @Injectable()
 export class AiService implements OnApplicationBootstrap {
@@ -25,8 +28,9 @@ export class AiService implements OnApplicationBootstrap {
   private networks: NetworksConfig["networks"];
   private birdeyeApi: BirdeyeProvider;
   private postgresAdapter: PostgresDatabaseAdapter;
-  mapAgent: Record<string, Agent> = {};
+  private binkProvider: BinkProvider;
 
+  mapAgent: Record<string, Agent> = {};
   @Inject("BSC_CONNECTION") private bscProvider: JsonRpcProvider;
   @Inject("ETHEREUM_CONNECTION") private ethProvider: JsonRpcProvider;
 
@@ -73,6 +77,11 @@ export class AiService implements OnApplicationBootstrap {
         "postgres_ai.postgresUrl"
       ),
     });
+
+    this.binkProvider = new BinkProvider({
+      apiKey: this.configService.get<string>("bink.apiKey"),
+      baseUrl: this.configService.get<string>("bink.baseUrl"),
+    });
   }
 
   async onApplicationBootstrap() {
@@ -100,21 +109,27 @@ export class AiService implements OnApplicationBootstrap {
           ChainId.BSC
         );
 
+        const fourMeme = new FourMemeProvider(this.bscProvider, 56);
+
         const swapPlugin = new SwapPlugin();
         const tokenPlugin = new TokenPlugin();
+        const knowledgePlugin = new KnowledgePlugin();
 
         // Initialize the swap plugin with supported chains and providers
         await Promise.all([
           swapPlugin.initialize({
             defaultSlippage: 0.5,
             defaultChain: "bnb",
-            providers: [pancakeswap],
+            providers: [pancakeswap, fourMeme],
             supportedChains: ["bnb", "ethereum"], // These will be intersected with agent's networks
           }),
           tokenPlugin.initialize({
             defaultChain: "bnb",
             providers: [this.birdeyeApi],
             supportedChains: ["solana", "bnb"],
+          }),
+          await knowledgePlugin.initialize({
+            providers: [this.binkProvider],
           }),
         ]);
 
@@ -130,6 +145,7 @@ export class AiService implements OnApplicationBootstrap {
         await agent.registerPlugin(swapPlugin);
         await agent.registerPlugin(tokenPlugin);
         await agent.registerDatabase(this.postgresAdapter);
+        await agent.registerPlugin(knowledgePlugin);
         this.mapAgent[telegramId] = agent;
       }
 
