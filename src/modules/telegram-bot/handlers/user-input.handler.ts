@@ -53,7 +53,7 @@ export class UserInputHandler implements Handler {
         message_id: messageId.message_id,
         parse_mode: "HTML",
       });
-      if (message.includes("bscscan")) {
+      if (message.includes("bscscan") && process.env.TELEGRAM_GROUP_ID) {
         const user = await this.userService.getOrCreateUser({
           telegram_id: data.telegramId,
         });

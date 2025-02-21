@@ -108,16 +108,18 @@ export class UserService implements OnApplicationBootstrap {
       }
     }
 
-    this.bot
-      .sendMessage(
-        process.env.TELEGRAM_GROUP_ID,
-        `🚀 New user registered: ${user.telegram_username}`,
-        {
-          message_thread_id: Number(process.env.TELEGRAM_THREAD_ID),
-        }
-      )
-      .then()
-      .catch();
+    if (process.env.TELEGRAM_GROUP_ID) {
+      this.bot
+        .sendMessage(
+          process.env.TELEGRAM_GROUP_ID,
+          `🚀 New user registered: ${user.telegram_username}`,
+          {
+            message_thread_id: Number(process.env.TELEGRAM_THREAD_ID),
+          }
+        )
+        .then()
+        .catch();
+    }
 
     return user;
   }
