@@ -21,6 +21,7 @@ import { PostgresDatabaseAdapter } from "@binkai/postgres-adapter";
 import { KnowledgePlugin } from "@binkai/knowledge-plugin";
 import { BinkProvider } from "@binkai/bink-provider";
 import { FourMemeProvider } from "@binkai/four-meme-provider";
+import { OkxProvider } from "@binkai/okx-provider";
 
 @Injectable()
 export class AiService implements OnApplicationBootstrap {
@@ -109,6 +110,8 @@ export class AiService implements OnApplicationBootstrap {
           ChainId.BSC
         );
 
+        const okx = new OkxProvider(this.bscProvider, 56);
+
         const fourMeme = new FourMemeProvider(this.bscProvider, 56);
 
         const swapPlugin = new SwapPlugin();
@@ -120,7 +123,7 @@ export class AiService implements OnApplicationBootstrap {
           swapPlugin.initialize({
             defaultSlippage: 0.5,
             defaultChain: "bnb",
-            providers: [pancakeswap, fourMeme],
+            providers: [pancakeswap, fourMeme, okx],
             supportedChains: ["bnb", "ethereum"], // These will be intersected with agent's networks
           }),
           tokenPlugin.initialize({

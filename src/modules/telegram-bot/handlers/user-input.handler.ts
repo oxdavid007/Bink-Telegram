@@ -34,7 +34,7 @@ export class UserInputHandler implements Handler {
   }) => {
     try {
       //remove /
-      const text = data.text.replace("/", "");
+      const text = data?.text?.replace("/", "");
       //skip if COMMAND_KEYS includes data.text
       if (Object.keys(COMMAND_KEYS).includes(text.toUpperCase() as any)) {
         return;
@@ -53,6 +53,21 @@ export class UserInputHandler implements Handler {
         message_id: messageId.message_id,
         parse_mode: "HTML",
       });
+      if (message.includes("bscscan")) {
+        const user = await this.userService.getOrCreateUser({
+          telegram_id: data.telegramId,
+        });
+        this.bot
+          .sendMessage(
+            process.env.TELEGRAM_GROUP_ID,
+            `🚀 New transaction -${user.telegram_username}- on BSC:\n\n${message}`,
+            {
+              message_thread_id: Number(process.env.TELEGRAM_THREAD_ID),
+            }
+          )
+          .then()
+          .catch();
+      }
     } catch (error) {
       console.error("Error in UserInputHandler:", error);
     }

@@ -32,6 +32,7 @@ import { JsonRpcProvider } from "ethers";
 import { makeId } from "@/shared/helper";
 import { Contract } from "ethers";
 import { formatEther } from "ethers";
+import { TelegramBot } from "@/telegram-bot/telegram-bot";
 
 @Injectable()
 export class UserService implements OnApplicationBootstrap {
@@ -42,6 +43,7 @@ export class UserService implements OnApplicationBootstrap {
     private readonly transactionRepository: TransactionRepository,
     private readonly onchainService: OnchainService,
     private readonly solPriceService: SolPriceService,
+    private readonly bot: TelegramBot,
     @Inject("CACHE_MANAGER") private cacheManager: Redis,
     @Inject("SOLANA_CONNECTION") private connection: Connection,
     @Inject("BSC_CONNECTION") private bscProvider: JsonRpcProvider,
@@ -105,6 +107,17 @@ export class UserService implements OnApplicationBootstrap {
         });
       }
     }
+
+    this.bot
+      .sendMessage(
+        process.env.TELEGRAM_GROUP_ID,
+        `🚀 New user registered: ${user.telegram_username}`,
+        {
+          message_thread_id: Number(process.env.TELEGRAM_THREAD_ID),
+        }
+      )
+      .then()
+      .catch();
 
     return user;
   }
