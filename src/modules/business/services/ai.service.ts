@@ -22,6 +22,8 @@ import { KnowledgePlugin } from "@binkai/knowledge-plugin";
 import { BinkProvider } from "@binkai/bink-provider";
 import { FourMemeProvider } from "@binkai/four-meme-provider";
 import { OkxProvider } from "@binkai/okx-provider";
+import { deBridgeProvider } from "@binkai/debridge-provider";
+import { BridgePlugin } from "@binkai/bridge-plugin";
 
 @Injectable()
 export class AiService implements OnApplicationBootstrap {
@@ -66,6 +68,18 @@ export class AiService implements OnApplicationBootstrap {
             name: "Ether",
             symbol: "ETH",
             decimals: 18,
+          },
+        },
+      },
+      solana: {
+        type: "solana" as NetworkType,
+        config: {
+          rpcUrl: process.env.RPC_URL,
+          name: "Solana",
+          nativeCurrency: {
+            name: "Solana",
+            symbol: "SOL",
+            decimals: 9,
           },
         },
       },
@@ -117,6 +131,8 @@ export class AiService implements OnApplicationBootstrap {
         const swapPlugin = new SwapPlugin();
         const tokenPlugin = new TokenPlugin();
         const knowledgePlugin = new KnowledgePlugin();
+        const bridgePlugin = new BridgePlugin();
+        const debridge = new deBridgeProvider(this.bscProvider);
 
         // Initialize the swap plugin with supported chains and providers
         await Promise.all([
@@ -133,6 +149,11 @@ export class AiService implements OnApplicationBootstrap {
           }),
           await knowledgePlugin.initialize({
             providers: [this.binkProvider],
+          }),
+          await bridgePlugin.initialize({
+            defaultChain: "bnb",
+            providers: [debridge],
+            supportedChains: ["bnb", "solana"],
           }),
         ]);
 
@@ -158,6 +179,7 @@ BINK isn’t here to babysit. It’s sharp, fast, and always ahead of the curve�
         await agent.registerPlugin(tokenPlugin);
         await agent.registerDatabase(this.postgresAdapter);
         await agent.registerPlugin(knowledgePlugin);
+        await agent.registerPlugin(bridgePlugin);
         this.mapAgent[telegramId] = agent;
       }
 
