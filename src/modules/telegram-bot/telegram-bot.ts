@@ -135,6 +135,12 @@ export class TelegramBot implements OnApplicationBootstrap {
     });
   }
 
+  setupClearCommand(callback: any) {
+    this.bot.onText(/\/clear/, (msg) => {
+      callback(parserMessageTelegram(msg));
+    });
+  }
+
   setupMenuCallback(callback: any) {
     this.bot.on("callback_query", (query) => {
       const { data: action } = query;
@@ -177,6 +183,7 @@ export class TelegramBot implements OnApplicationBootstrap {
     const sellHandler = this.handlers[COMMAND_KEYS.SELL];
     const helpHandler = this.handlers[COMMAND_KEYS.HELP];
     const referralHandler = this.handlers[COMMAND_KEYS.REFERRAL];
+    const clearHandler = this.handlers[COMMAND_KEYS.CLEAR];
     if (startHandler) {
       this.setupStartCommand(startHandler.handler);
     }
@@ -199,6 +206,10 @@ export class TelegramBot implements OnApplicationBootstrap {
 
     if (referralHandler) {
       this.setupReferralCommand(referralHandler.handler);
+    }
+
+    if (clearHandler) {
+      this.setupClearCommand(clearHandler.handler);
     }
 
     this.setupMenuCallback((cmd, data) => {

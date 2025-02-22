@@ -23,6 +23,7 @@ import { CustomPercentageHandler } from "./handlers/custom-percentage.handler";
 import { TestController } from "./controllers/test.controller";
 import { HelpHandler } from "./handlers/help.handler";
 import { ReferralHandler } from "./handlers/referral.handler";
+import { ClearHandler } from "./handlers/clear.handler";
 
 const handlers = [
   StartHandler,
@@ -88,6 +89,7 @@ const services = [HandlerService];
     SellTokenDetailHandler,
     ConfirmSellHandler,
     ExportKeysHandler,
+    ClearHandler,
   ],
   exports: [TelegramBot],
 })

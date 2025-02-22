@@ -20,4 +20,5 @@ export const COMMAND_KEYS = {
   TOKEN_INFO: "ti",
   HELP: "help",
   REFERRAL: "referral",
+  CLEAR: "clear",
 } as const;

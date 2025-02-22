@@ -19,27 +19,29 @@ import { WithdrawHandler } from "../handlers/withdraw.handler";
 import { CustomPercentageHandler } from "../handlers/custom-percentage.handler";
 import { HelpHandler } from "../handlers/help.handler";
 import { ReferralHandler } from "../handlers/referral.handler";
+import { ClearHandler } from "../handlers/clear.handler";
 
 @Injectable()
 export class HandlerService {
   constructor(
-    private openMiniAppHandler: OpenMiniAppHandler,
-    private startHandler: StartHandler,
-    private userInputHandler: UserInputHandler,
-    private buyHandler: BuyHandler,
-    private tokenInfoHandler: TokenInfoHandler,
-    private customAmountHandler: CustomAmountHandler,
-    private confirmBuyHandler: ConfirmBuyHandler,
-    private sellHandler: SellHandler,
-    private sellTokenDetailHandler: SellTokenDetailHandler,
-    private confirmSellHandler: ConfirmSellHandler,
-    private walletHandler: WalletHandler,
-    private exportKeysHandler: ExportKeysHandler,
-    private comingSoonHandler: ComingSoonHandler,
-    private withdrawHandler: WithdrawHandler,
+    private readonly startHandler: StartHandler,
+    private readonly openMiniAppHandler: OpenMiniAppHandler,
+    private readonly userInputHandler: UserInputHandler,
+    private readonly buyHandler: BuyHandler,
+    private readonly tokenInfoHandler: TokenInfoHandler,
+    private readonly customAmountHandler: CustomAmountHandler,
+    private readonly confirmBuyHandler: ConfirmBuyHandler,
+    private readonly sellHandler: SellHandler,
+    private readonly sellTokenDetailHandler: SellTokenDetailHandler,
+    private readonly confirmSellHandler: ConfirmSellHandler,
+    private readonly walletHandler: WalletHandler,
+    private readonly exportKeysHandler: ExportKeysHandler,
+    private readonly comingSoonHandler: ComingSoonHandler,
+    private readonly withdrawHandler: WithdrawHandler,
     private readonly customPercentageHandler: CustomPercentageHandler,
-    private helpHandler: HelpHandler,
-    private referralHandler: ReferralHandler
+    private readonly helpHandler: HelpHandler,
+    private readonly referralHandler: ReferralHandler,
+    private readonly clearHandler: ClearHandler,
   ) {}
 
   getHandlers(): Record<string, Handler> {
@@ -61,6 +63,7 @@ export class HandlerService {
       [COMMAND_KEYS.CUSTOM_PERCENTAGE]: this.customPercentageHandler,
       [COMMAND_KEYS.HELP]: this.helpHandler,
       [COMMAND_KEYS.REFERRAL]: this.referralHandler,
+      [COMMAND_KEYS.CLEAR]: this.clearHandler,
     };
   }
 
@@ -92,6 +95,13 @@ export class HandlerService {
           telegramId,
           firstName,
           text,
+        });
+        break;
+      case COMMAND_KEYS.CLEAR:
+        await this.clearHandler.handler({
+          chatId,
+          telegramId,
+          firstName,
         });
         break;
       default:
