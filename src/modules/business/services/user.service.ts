@@ -33,7 +33,7 @@ import { makeId } from "@/shared/helper";
 import { Contract } from "ethers";
 import { formatEther } from "ethers";
 import { TelegramBot } from "@/telegram-bot/telegram-bot";
-
+import { v4 as uuidv4 } from "uuid";
 @Injectable()
 export class UserService implements OnApplicationBootstrap {
   constructor(
@@ -94,6 +94,7 @@ export class UserService implements OnApplicationBootstrap {
       wallet_evm_address: walletEvmAddress,
       encrypted_phrase: encryptedPhrase,
       referral_code: referralCode,
+      current_thread_id: uuidv4(),
     });
 
     if (createUserDto.referral_code) {
@@ -118,7 +119,7 @@ export class UserService implements OnApplicationBootstrap {
           }
         )
         .then()
-        .catch();
+        .catch(()=>{});
     }
 
     return user;
@@ -155,6 +156,11 @@ export class UserService implements OnApplicationBootstrap {
       });
 
       if (existingUser) {
+        //add current_thread_id if not exists
+        if (!existingUser.current_thread_id) {
+          existingUser.current_thread_id = uuidv4();
+          await this.userRepository.save(existingUser);
+        }
         return existingUser;
       }
     }
@@ -489,6 +495,17 @@ export class UserService implements OnApplicationBootstrap {
     } catch (error) {
       console.error("Error getting ERC20 token balance:", error);
       return 0;
+    }
+  }
+
+  async updateCurrentThreadId(telegramId: string): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { telegram_id: telegramId },
+    });
+
+    if (user) {
+      user.current_thread_id = uuidv4();
+      await this.userRepository.save(user);
     }
   }
 }

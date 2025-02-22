@@ -29,6 +29,9 @@ export class UserEntity extends BaseEntity {
   @Column({ unique: true })
   referral_code: string;
 
+  @Column({ nullable: true })
+  current_thread_id: string;
+
   @OneToMany(() => UserReferralEntity, (entity) => entity.referrer_user)
   user_referrals: UserReferralEntity[];
 
