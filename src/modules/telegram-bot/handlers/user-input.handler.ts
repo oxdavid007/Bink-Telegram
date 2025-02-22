@@ -65,8 +65,8 @@ export class UserInputHandler implements Handler {
               message_thread_id: Number(process.env.TELEGRAM_THREAD_ID),
             }
           )
-          .then()
-          .catch();
+          .then(() => {})
+          .catch(() => {});
       }
     } catch (error) {
       console.error("Error in UserInputHandler:", error);

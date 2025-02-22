@@ -10,6 +10,7 @@ import {
   settings,
   NetworkType,
   NetworksConfig,
+  UUID,
 } from "@binkai/core";
 import { SwapPlugin } from "@binkai/swap-plugin";
 import { PancakeSwapProvider } from "@binkai/pancakeswap-provider";
@@ -106,6 +107,13 @@ export class AiService implements OnApplicationBootstrap {
   async handleSwap(telegramId: string, input: string) {
     try {
       const keys = await this.userService.getMnemonicByTelegramId(telegramId);
+      if (!keys) {
+        return "Please /start first";
+      }
+      const user = await this.userService.getOrCreateUser({
+        telegram_id: telegramId,
+      });
+
       const network = new Network({ networks: this.networks });
       const wallet = new Wallet(
         {
@@ -175,6 +183,7 @@ BINK isn’t here to babysit. It’s sharp, fast, and always ahead of the curve�
           wallet,
           this.networks
         );
+        await agent.initialize();
         await agent.registerPlugin(swapPlugin);
         await agent.registerPlugin(tokenPlugin);
         await agent.registerDatabase(this.postgresAdapter);
@@ -187,6 +196,7 @@ BINK isn’t here to babysit. It’s sharp, fast, and always ahead of the curve�
         input: `
         ${input}
       `,
+        threadId: user.current_thread_id as UUID,
       });
 
       return inputResult || "test";
