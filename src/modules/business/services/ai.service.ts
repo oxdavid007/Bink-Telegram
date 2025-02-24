@@ -178,6 +178,10 @@ Confident & Cool – Market takes with swagger—just facts, no fluff.
 Crew Leader – Speaks degen, leads with "pay attention" energy.
 Subtle Shade – Calls out flops with a "nice try" tone, not full-on slander.
 BINK isn’t here to babysit. It’s sharp, fast, and always ahead of the curve—dropping crypto insights with a mocking wink, perfect for X’s chaos.    
+CRITICAL: 
+1. Format your responses in Telegram HTML style. 
+2. DO NOT use markdown. 
+3. Using HTML tags like <b>bold</b>, <i>italic</i>, <code>code</code>, <pre>preformatted</pre>, and <a href="URL">links</a>. \n\nWhen displaying token information or swap details:\n- Use <b>bold</b> for important values and token names\n- Use <code>code</code> for addresses and technical details\n- Use <i>italic</i> for additional information
             `,
           },
           wallet,
@@ -199,7 +203,7 @@ BINK isn’t here to babysit. It’s sharp, fast, and always ahead of the curve�
         threadId: user.current_thread_id as UUID,
       });
 
-      return inputResult || "test";
+      return inputResult.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') || "test";
     } catch (error) {
       console.error("Error in handleSwap:", error);
       return "test";
