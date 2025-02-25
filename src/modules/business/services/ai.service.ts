@@ -25,6 +25,8 @@ import { FourMemeProvider } from "@binkai/four-meme-provider";
 import { OkxProvider } from "@binkai/okx-provider";
 import { deBridgeProvider } from "@binkai/debridge-provider";
 import { BridgePlugin } from "@binkai/bridge-plugin";
+import { WalletPlugin } from '@binkai/wallet-plugin';
+import { BnbProvider } from '@binkai/bnb-provider';
 
 @Injectable()
 export class AiService implements OnApplicationBootstrap {
@@ -33,7 +35,7 @@ export class AiService implements OnApplicationBootstrap {
   private birdeyeApi: BirdeyeProvider;
   private postgresAdapter: PostgresDatabaseAdapter;
   private binkProvider: BinkProvider;
-
+  private bnbProvider: BnbProvider;
   mapAgent: Record<string, Agent> = {};
   @Inject("BSC_CONNECTION") private bscProvider: JsonRpcProvider;
   @Inject("ETHEREUM_CONNECTION") private ethProvider: JsonRpcProvider;
@@ -98,6 +100,10 @@ export class AiService implements OnApplicationBootstrap {
       apiKey: this.configService.get<string>("bink.apiKey"),
       baseUrl: this.configService.get<string>("bink.baseUrl"),
     });
+
+    this.bnbProvider = new BnbProvider({
+      rpcUrl: process.env.BSC_RPC_URL,
+    });
   }
 
   async onApplicationBootstrap() {
@@ -141,6 +147,8 @@ export class AiService implements OnApplicationBootstrap {
         const knowledgePlugin = new KnowledgePlugin();
         const bridgePlugin = new BridgePlugin();
         const debridge = new deBridgeProvider(this.bscProvider);
+        const walletPlugin = new WalletPlugin();
+
 
         // Initialize the swap plugin with supported chains and providers
         await Promise.all([
@@ -162,6 +170,11 @@ export class AiService implements OnApplicationBootstrap {
             defaultChain: "bnb",
             providers: [debridge],
             supportedChains: ["bnb", "solana"],
+          }),
+          await walletPlugin.initialize({
+            defaultChain: 'bnb',
+            providers: [this.bnbProvider, this.birdeyeApi],
+            supportedChains: ['bnb'],
           }),
         ]);
 
@@ -193,6 +206,7 @@ CRITICAL:
         await agent.registerDatabase(this.postgresAdapter);
         await agent.registerPlugin(knowledgePlugin);
         await agent.registerPlugin(bridgePlugin);
+        await agent.registerPlugin(walletPlugin);
         this.mapAgent[telegramId] = agent;
       }
 
