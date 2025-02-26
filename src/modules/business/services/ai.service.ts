@@ -44,6 +44,7 @@ export class AiService implements OnApplicationBootstrap {
   @Inject(TelegramBot)
   private bot: TelegramBot;
   mapAgent: Record<string, Agent> = {};
+  mapToolExecutionCallback: Record<string, ExampleToolExecutionCallback> = {};
   @Inject("BSC_CONNECTION") private bscProvider: JsonRpcProvider;
   @Inject("ETHEREUM_CONNECTION") private ethProvider: JsonRpcProvider;
 
@@ -140,10 +141,7 @@ export class AiService implements OnApplicationBootstrap {
 
       //init agent
       if (!agent) {
-        const pancakeswap = new PancakeSwapProvider(
-          this.bscProvider,
-          56
-        );
+        const pancakeswap = new PancakeSwapProvider(this.bscProvider, 56);
 
         const okx = new OkxProvider(this.bscProvider, 56);
 
@@ -222,16 +220,17 @@ CRITICAL:
         await agent.registerPlugin(bridgePlugin);
         await agent.registerPlugin(walletPlugin);
         await agent.registerPlugin(stakingPlugin);
+        const toolExecutionCallback = new ExampleToolExecutionCallback(
+          telegramId,
+          this.bot,
+          messageId
+        );
+        this.mapToolExecutionCallback[telegramId] = toolExecutionCallback;
+        agent.registerToolExecutionCallback(toolExecutionCallback as any);
         this.mapAgent[telegramId] = agent;
       }
 
-      const toolExecutionCallback = new ExampleToolExecutionCallback(
-        telegramId,
-        this.bot,
-        messageId
-      );
-
-      agent.registerToolExecutionCallback(toolExecutionCallback as any);
+      this.mapToolExecutionCallback[telegramId].setMessageId(messageId);
 
       const inputResult = await agent.execute({
         input: `

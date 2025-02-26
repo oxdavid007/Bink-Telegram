@@ -45,6 +45,10 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
     this.messageId = messageId;
   }
 
+  setMessageId(messageId: number) {
+    this.messageId = messageId;
+  }
+
   onToolExecution(data: ToolExecutionData): void {
     const stateEmoji = {
       [ToolExecutionState.STARTED]: "🚀",
