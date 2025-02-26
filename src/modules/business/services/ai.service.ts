@@ -29,6 +29,8 @@ import { WalletPlugin } from "@binkai/wallet-plugin";
 import { BnbProvider } from "@binkai/bnb-provider";
 import { ExampleToolExecutionCallback } from "@/shared/tools/tool-execution";
 import { TelegramBot } from "@/telegram-bot/telegram-bot";
+import { StakingPlugin } from "@binkai/staking-plugin";
+import { VenusProvider } from "@binkai/venus-provider";
 
 @Injectable()
 export class AiService implements OnApplicationBootstrap {
@@ -146,6 +148,7 @@ export class AiService implements OnApplicationBootstrap {
         const okx = new OkxProvider(this.bscProvider, 56);
 
         const fourMeme = new FourMemeProvider(this.bscProvider, 56);
+        const venus = new VenusProvider(this.bscProvider, 56);
 
         const swapPlugin = new SwapPlugin();
         const tokenPlugin = new TokenPlugin();
@@ -153,6 +156,7 @@ export class AiService implements OnApplicationBootstrap {
         const bridgePlugin = new BridgePlugin();
         const debridge = new deBridgeProvider(this.bscProvider);
         const walletPlugin = new WalletPlugin();
+        const stakingPlugin = new StakingPlugin();
 
         // Initialize the swap plugin with supported chains and providers
         await Promise.all([
@@ -179,6 +183,12 @@ export class AiService implements OnApplicationBootstrap {
             defaultChain: "bnb",
             providers: [this.bnbProvider, this.birdeyeApi],
             supportedChains: ["bnb"],
+          }),
+          await stakingPlugin.initialize({
+            defaultSlippage: 0.5,
+            defaultChain: "bnb",
+            providers: [venus],
+            supportedChains: ["bnb", "ethereum"], // These will be intersected with agent's networks
           }),
         ]);
 
@@ -211,6 +221,7 @@ CRITICAL:
         await agent.registerPlugin(knowledgePlugin);
         await agent.registerPlugin(bridgePlugin);
         await agent.registerPlugin(walletPlugin);
+        await agent.registerPlugin(stakingPlugin);
         this.mapAgent[telegramId] = agent;
       }
 

@@ -46,8 +46,6 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
   }
 
   onToolExecution(data: ToolExecutionData): void {
-
-    console.log("Aaaaaaaaaaaaaaaaaaaaaaaaaaaa",data)
     const stateEmoji = {
       [ToolExecutionState.STARTED]: "🚀",
       [ToolExecutionState.IN_PROCESS]: "⏳",
@@ -62,13 +60,13 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
     );
 
     if (data.state === ToolExecutionState.IN_PROCESS && data.data) {
-      this.bot.editMessageText(
-        ` ${emoji}  Progress: ${data.data.progress || 0}%\n\n${data.message}`,
-        {
+      if (data.data.progress < 100) {
+        this.bot.editMessageText(`${emoji} ${data.message}`, {
           chat_id: this.chatId,
           message_id: this.messageId,
-        }
-      );
+        });
+      }
+
       console.log(`   Progress: ${data.data.progress || 0}%`);
     }
 
