@@ -46,7 +46,8 @@ export class UserInputHandler implements Handler {
       //implement
       const message = await this.aiService.handleSwap(
         data.telegramId,
-        data.text
+        data.text,
+        messageId.message_id
       );
       await this.bot.editMessageText(message, {
         chat_id: data.chatId,

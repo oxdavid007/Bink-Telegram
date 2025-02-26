@@ -25,8 +25,10 @@ import { FourMemeProvider } from "@binkai/four-meme-provider";
 import { OkxProvider } from "@binkai/okx-provider";
 import { deBridgeProvider } from "@binkai/debridge-provider";
 import { BridgePlugin } from "@binkai/bridge-plugin";
-import { WalletPlugin } from '@binkai/wallet-plugin';
-import { BnbProvider } from '@binkai/bnb-provider';
+import { WalletPlugin } from "@binkai/wallet-plugin";
+import { BnbProvider } from "@binkai/bnb-provider";
+import { ExampleToolExecutionCallback } from "@/shared/tools/tool-execution";
+import { TelegramBot } from "@/telegram-bot/telegram-bot";
 
 @Injectable()
 export class AiService implements OnApplicationBootstrap {
@@ -36,6 +38,9 @@ export class AiService implements OnApplicationBootstrap {
   private postgresAdapter: PostgresDatabaseAdapter;
   private binkProvider: BinkProvider;
   private bnbProvider: BnbProvider;
+
+  @Inject(TelegramBot)
+  private bot: TelegramBot;
   mapAgent: Record<string, Agent> = {};
   @Inject("BSC_CONNECTION") private bscProvider: JsonRpcProvider;
   @Inject("ETHEREUM_CONNECTION") private ethProvider: JsonRpcProvider;
@@ -110,7 +115,7 @@ export class AiService implements OnApplicationBootstrap {
     // Create PancakeSwap provider with BSC chain ID
   }
 
-  async handleSwap(telegramId: string, input: string) {
+  async handleSwap(telegramId: string, input: string, messageId: number) {
     try {
       const keys = await this.userService.getMnemonicByTelegramId(telegramId);
       if (!keys) {
@@ -149,7 +154,6 @@ export class AiService implements OnApplicationBootstrap {
         const debridge = new deBridgeProvider(this.bscProvider);
         const walletPlugin = new WalletPlugin();
 
-
         // Initialize the swap plugin with supported chains and providers
         await Promise.all([
           swapPlugin.initialize({
@@ -172,9 +176,9 @@ export class AiService implements OnApplicationBootstrap {
             supportedChains: ["bnb", "solana"],
           }),
           await walletPlugin.initialize({
-            defaultChain: 'bnb',
+            defaultChain: "bnb",
             providers: [this.bnbProvider, this.birdeyeApi],
-            supportedChains: ['bnb'],
+            supportedChains: ["bnb"],
           }),
         ]);
 
@@ -210,6 +214,14 @@ CRITICAL:
         this.mapAgent[telegramId] = agent;
       }
 
+      const toolExecutionCallback = new ExampleToolExecutionCallback(
+        telegramId,
+        this.bot,
+        messageId
+      );
+
+      agent.registerToolExecutionCallback(toolExecutionCallback as any);
+
       const inputResult = await agent.execute({
         input: `
         ${input}
@@ -217,7 +229,7 @@ CRITICAL:
         threadId: user.current_thread_id as UUID,
       });
 
-      return inputResult.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') || "test";
+      return inputResult.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>") || "test";
     } catch (error) {
       console.error("Error in handleSwap:", error);
       return "test";
