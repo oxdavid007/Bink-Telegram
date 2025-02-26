@@ -4,7 +4,7 @@
 
 <p align="center">Your AI-Powered DeFi Assistant on Telegram, built on Bink OS</p>
 
-## Overview
+## Overview 
 
 Bink Telegram Bot is an intelligent DeFi assistant that brings the power of Bink OS directly to your Telegram chats. It combines AI-driven automation, wallet management, and blockchain expertise to provide a seamless DeFi experience through simple chat commands.
 
