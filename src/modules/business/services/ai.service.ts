@@ -142,7 +142,7 @@ export class AiService implements OnApplicationBootstrap {
       if (!agent) {
         const pancakeswap = new PancakeSwapProvider(
           this.bscProvider,
-          ChainId.BSC
+          56
         );
 
         const okx = new OkxProvider(this.bscProvider, 56);
