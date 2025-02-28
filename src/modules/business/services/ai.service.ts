@@ -31,6 +31,7 @@ import { ExampleToolExecutionCallback } from "@/shared/tools/tool-execution";
 import { TelegramBot } from "@/telegram-bot/telegram-bot";
 import { StakingPlugin } from "@binkai/staking-plugin";
 import { VenusProvider } from "@binkai/venus-provider";
+import { ThenaProvider } from "@binkai/thena-provider";
 
 @Injectable()
 export class AiService implements OnApplicationBootstrap {
@@ -141,12 +142,16 @@ export class AiService implements OnApplicationBootstrap {
 
       //init agent
       if (!agent) {
-        const pancakeswap = new PancakeSwapProvider(this.bscProvider, 56);
+        const bscChainId = 56;
+        const pancakeswap = new PancakeSwapProvider(
+          this.bscProvider,
+          bscChainId
+        );
 
-        const okx = new OkxProvider(this.bscProvider, 56);
+        const okx = new OkxProvider(this.bscProvider, bscChainId);
 
-        const fourMeme = new FourMemeProvider(this.bscProvider, 56);
-        const venus = new VenusProvider(this.bscProvider, 56);
+        const fourMeme = new FourMemeProvider(this.bscProvider, bscChainId);
+        const venus = new VenusProvider(this.bscProvider, bscChainId);
 
         const swapPlugin = new SwapPlugin();
         const tokenPlugin = new TokenPlugin();
@@ -156,12 +161,14 @@ export class AiService implements OnApplicationBootstrap {
         const walletPlugin = new WalletPlugin();
         const stakingPlugin = new StakingPlugin();
 
+        const thena = new ThenaProvider(this.bscProvider, bscChainId);
+
         // Initialize the swap plugin with supported chains and providers
         await Promise.all([
           swapPlugin.initialize({
             defaultSlippage: 0.5,
             defaultChain: "bnb",
-            providers: [pancakeswap, fourMeme, okx],
+            providers: [pancakeswap, fourMeme, okx, thena],
             supportedChains: ["bnb", "ethereum"], // These will be intersected with agent's networks
           }),
           tokenPlugin.initialize({
