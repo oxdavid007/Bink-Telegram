@@ -26,7 +26,7 @@ import { OkxProvider } from "@binkai/okx-provider";
 import { deBridgeProvider } from "@binkai/debridge-provider";
 import { BridgePlugin } from "@binkai/bridge-plugin";
 import { WalletPlugin } from "@binkai/wallet-plugin";
-import { BnbProvider } from "@binkai/bnb-provider";
+import { BnbProvider } from "@binkai/rpc-provider";
 import { ExampleToolExecutionCallback } from "@/shared/tools/tool-execution";
 import { TelegramBot } from "@/telegram-bot/telegram-bot";
 import { StakingPlugin } from "@binkai/staking-plugin";
