@@ -32,6 +32,8 @@ import { TelegramBot } from "@/telegram-bot/telegram-bot";
 import { StakingPlugin } from "@binkai/staking-plugin";
 import { VenusProvider } from "@binkai/venus-provider";
 import { ThenaProvider } from "@binkai/thena-provider";
+import { JupiterProvider } from "@binkai/jupiter-provider";
+import { Connection } from "@solana/web3.js";
 
 @Injectable()
 export class AiService implements OnApplicationBootstrap {
@@ -116,7 +118,7 @@ export class AiService implements OnApplicationBootstrap {
   }
 
   async onApplicationBootstrap() {
-    // Create PancakeSwap provider with BSC chain ID
+
   }
 
   async handleSwap(telegramId: string, input: string, messageId: number) {
@@ -152,6 +154,7 @@ export class AiService implements OnApplicationBootstrap {
 
         const fourMeme = new FourMemeProvider(this.bscProvider, bscChainId);
         const venus = new VenusProvider(this.bscProvider, bscChainId);
+        const jupiter = new JupiterProvider(new Connection(process.env.RPC_URL));
 
         const swapPlugin = new SwapPlugin();
         const tokenPlugin = new TokenPlugin();
@@ -168,8 +171,8 @@ export class AiService implements OnApplicationBootstrap {
           swapPlugin.initialize({
             defaultSlippage: 0.5,
             defaultChain: "bnb",
-            providers: [pancakeswap, fourMeme, okx, thena],
-            supportedChains: ["bnb", "ethereum"], // These will be intersected with agent's networks
+            providers: [pancakeswap, fourMeme, okx, thena, jupiter],
+            supportedChains: ["bnb", "ethereum", "solana"], // These will be intersected with agent's networks
           }),
           tokenPlugin.initialize({
             defaultChain: "bnb",
