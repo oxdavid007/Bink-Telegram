@@ -18,9 +18,10 @@ export class HelpHandler implements Handler {
         `🤖 <b><a href="https://t.me/BinkAI_bot">Bink AI Telegram Bot</a>: Chat & Execute On-Chain Transactions</b>\n` +
         `💠 <b>Market Insights:</b> "What's trending today?"\n` +
         `💠 <b>Swap:</b> "Swap 1 BNB for USDT on OKX."\n` +
+        `💠 <b>Swap-crosschain:</b> "Swap cross-chain 10% BNB to SOL."\n` +
         `💠 <b>Bridge:</b> "Bridge 2 SOL to BNB."\n` +
         `💠 <b>Send:</b> "Send 0.5 ETH to 0x123..."\n` +
-        `🔻 <b>Current supports:</b> OKX DEX, KyberSwap, deBridge (Solana↔BNB), OKU , Jupiter <i>(to be updated)</i>.\n\n` +
+        `🔻 <b>Current supports:</b> OKX DEX, KyberSwap, deBridge (Solana↔BNB), OKU, Pancakeswap, Thena, Venus (staking), Fourmeme, Jupiter <i>(to be updated)</i>.\n\n` +
         `📱 <b><a href="https://binkos.dev">BinkOS</a>: The DeFAI Framework</b>\n` +
         `💠 Fork BinkOS on GitHub & automate DeFi.`;
 
@@ -32,6 +33,7 @@ export class HelpHandler implements Handler {
           },
         ],
       ];
+      
 
       await this.bot.sendMessage(data.chatId, messageText, {
         reply_markup: {
