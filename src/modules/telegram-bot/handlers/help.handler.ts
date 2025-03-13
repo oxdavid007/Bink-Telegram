@@ -20,7 +20,7 @@ export class HelpHandler implements Handler {
         `💠 <b>Swap:</b> "Swap 1 BNB for USDT on OKX."\n` +
         `💠 <b>Bridge:</b> "Bridge 2 SOL to BNB."\n` +
         `💠 <b>Send:</b> "Send 0.5 ETH to 0x123..."\n` +
-        `🔻 <b>Current supports:</b> OKX DEX, KyberSwap, deBridge (Solana↔BNB), OKU , Jupiter <i>(to be updated)</i>.\n\n` +
+        `🔻 <b>Current supports:</b> OKX DEX, KyberSwap, deBridge (Solana↔BNB), OKU, Pancakeswap, Thena, Venus (staking), Fourmeme, Jupiter <i>(to be updated)</i>.\n\n` +
         `📱 <b><a href="https://binkos.dev">BinkOS</a>: The DeFAI Framework</b>\n` +
         `💠 Fork BinkOS on GitHub & automate DeFi.`;
 
