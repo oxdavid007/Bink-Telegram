@@ -176,7 +176,7 @@ export class AiService implements OnApplicationBootstrap {
           }),
           tokenPlugin.initialize({
             defaultChain: "bnb",
-            providers: [this.birdeyeApi],
+            providers: [this.birdeyeApi, fourMeme as any],
             supportedChains: ["solana", "bnb"],
           }),
           await knowledgePlugin.initialize({
