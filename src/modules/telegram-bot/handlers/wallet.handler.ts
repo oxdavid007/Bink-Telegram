@@ -24,6 +24,10 @@ export class WalletHandler implements Handler {
 
   handler = async (data: DefaultHandlerParams) => {
     try {
+      if ('ops' in data && data?.ops === COMMAND_KEYS.EXPORT_KEYS) {
+        await this.bot.deleteMessage(data.chatId, data.messageId.toString());
+      }
+
       // Get user's wallet info
       const user = await this.userService.getOrCreateUser({
         telegram_id: data.telegramId,
@@ -82,7 +86,7 @@ export class WalletHandler implements Handler {
         [
           {
             text: "← Back",
-            callback_data: COMMAND_KEYS.START,
+            callback_data: `${COMMAND_KEYS.START}::ops=${COMMAND_KEYS.START}`,
           },
         ],
       ];

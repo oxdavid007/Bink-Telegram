@@ -42,7 +42,7 @@ export class ExportKeysHandler implements Handler {
             [
               {
                 text: "← Back to Wallet",
-                callback_data: COMMAND_KEYS.WALLETS,
+                callback_data: `${COMMAND_KEYS.WALLETS}::ops=${COMMAND_KEYS.EXPORT_KEYS}`,
               },
             ],
           ],

@@ -29,7 +29,7 @@ export class HelpHandler implements Handler {
         [
           {
             text: "← Back",
-            callback_data: COMMAND_KEYS.START,
+            callback_data: `${COMMAND_KEYS.START}::ops=${COMMAND_KEYS.START}`,
           },
         ],
       ];
