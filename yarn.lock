@@ -325,42 +325,42 @@
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@binkai/bink-provider@^0.1.8-alpha.2":
-  version "0.1.8-alpha.2"
-  resolved "https://registry.yarnpkg.com/@binkai/bink-provider/-/bink-provider-0.1.8-alpha.2.tgz#227b65311e43173a0cb220b1d572cd90cc6bd545"
-  integrity sha512-2JrX5rvlkhfpWGHvTQcYnqtY8rHgkrAw2WyPzQlkYozI3dx3u0Qlbg/Gq13LZzd1F/ASwULqsWV0wMVl0umw3g==
+"@binkai/bink-provider@^0.1.8-alpha.3":
+  version "0.1.8-alpha.3"
+  resolved "https://registry.yarnpkg.com/@binkai/bink-provider/-/bink-provider-0.1.8-alpha.3.tgz#a63cc0751b22cf44728f633c48e46f60d7ef4b21"
+  integrity sha512-VDWjAIxikWErDdMY0MXkcil+sRTJMPfvAAYTLeDAMoGb2bIXJOKC+lb7JsNVAZ9fuXhxomWcJa3Li6WZpQ+PeQ==
   dependencies:
-    "@binkai/core" "0.1.8-alpha.2"
-    "@binkai/knowledge-plugin" "0.1.8-alpha.2"
+    "@binkai/core" "0.1.8-alpha.3"
+    "@binkai/knowledge-plugin" "0.1.8-alpha.3"
     axios "^1.6.7"
     zod "^3.22.4"
 
-"@binkai/birdeye-provider@^0.1.8-alpha.2":
-  version "0.1.8-alpha.2"
-  resolved "https://registry.yarnpkg.com/@binkai/birdeye-provider/-/birdeye-provider-0.1.8-alpha.2.tgz#12572d2efd2c80eac7593035e044ad93d062b809"
-  integrity sha512-gp8MQYGQ5BYzUYVt+w28R4g7w2AQpKyS3tizrK6JVll9zW0n1OQW3/zdFyp2xlIgI64AaCWwGfyIewe3yzvyfQ==
+"@binkai/birdeye-provider@^0.1.8-alpha.3":
+  version "0.1.8-alpha.3"
+  resolved "https://registry.yarnpkg.com/@binkai/birdeye-provider/-/birdeye-provider-0.1.8-alpha.3.tgz#f8d2450da6feb47702b638c89605839a939f4764"
+  integrity sha512-bT94xDiebjUUh6V7mJQQRWNB7Old2sBR6HcDmDKqdkfj+kPAjzobURMaK0EBeLh7JOF52gXOBPkoGhvA5pSNCA==
   dependencies:
-    "@binkai/core" "0.1.8-alpha.2"
-    "@binkai/token-plugin" "0.1.8-alpha.2"
-    "@binkai/wallet-plugin" "0.1.8-alpha.2"
+    "@binkai/core" "0.1.8-alpha.3"
+    "@binkai/token-plugin" "0.1.8-alpha.3"
+    "@binkai/wallet-plugin" "0.1.8-alpha.3"
     axios "^1.6.7"
     zod "^3.22.4"
 
-"@binkai/bridge-plugin@0.1.8-alpha.2", "@binkai/bridge-plugin@^0.1.8-alpha.2":
-  version "0.1.8-alpha.2"
-  resolved "https://registry.yarnpkg.com/@binkai/bridge-plugin/-/bridge-plugin-0.1.8-alpha.2.tgz#355e80fe38d5db047397914619553756d26fe6be"
-  integrity sha512-KgKW8PmrUqQ7uToH2Er+9zLq+f1iJ50Y5OnJtTdpRs38JIJHdkVBkxGjXuU0TUR/Zn1erF/ne41K9yZOl+O5bQ==
+"@binkai/bridge-plugin@0.1.8-alpha.3", "@binkai/bridge-plugin@^0.1.8-alpha.3":
+  version "0.1.8-alpha.3"
+  resolved "https://registry.yarnpkg.com/@binkai/bridge-plugin/-/bridge-plugin-0.1.8-alpha.3.tgz#acb80d2e01c8e791a7ca5dbd81c67095622905a8"
+  integrity sha512-OCveKGyqJKHb3co+YH3DHK0q0rY+zmLg9uwMFgP8lQpAmekHPgFPeFqCh8seIOYkpSUuetKRW8TgLWB9aucpJQ==
   dependencies:
-    "@binkai/core" "0.1.8-alpha.2"
+    "@binkai/core" "0.1.8-alpha.3"
     "@langchain/core" "^0.3.32"
     "@solana/web3.js" "^1.98.0"
     ethers "^6.0.0"
     zod "^3.22.4"
 
-"@binkai/core@0.1.8-alpha.2", "@binkai/core@^0.1.8-alpha.2":
-  version "0.1.8-alpha.2"
-  resolved "https://registry.yarnpkg.com/@binkai/core/-/core-0.1.8-alpha.2.tgz#bdef97f0e31b9adffc05e47caaa32a59b838d241"
-  integrity sha512-75XJ5j31kVObWUkk1Gxqr64MZCGA9QmRn+ncDD55LR9rKx/0MaK0wmOnwqoIgmXVKSLt4CCs7wySHVzfQBh8Fg==
+"@binkai/core@0.1.8-alpha.3", "@binkai/core@^0.1.8-alpha.3":
+  version "0.1.8-alpha.3"
+  resolved "https://registry.yarnpkg.com/@binkai/core/-/core-0.1.8-alpha.3.tgz#256e5733025908ee83059b6d6c345702bf8febef"
+  integrity sha512-8td9pphyRQlTk9c/PCtQZCpi2K5FY+vGdyorT9V9LN/8gFg34TEZAclPtZb3qUg/nabUMuYmYjIo/1o/1WlL3Q==
   dependencies:
     "@langchain/community" "^0.3.26"
     "@langchain/core" "^0.3.32"
@@ -376,66 +376,66 @@
     uuid "^10.0.0"
     zod "^3.24.1"
 
-"@binkai/debridge-provider@^0.1.8-alpha.2":
-  version "0.1.8-alpha.2"
-  resolved "https://registry.yarnpkg.com/@binkai/debridge-provider/-/debridge-provider-0.1.8-alpha.2.tgz#f63badd46b60e8dbc69b0986c6bfb7c24e369996"
-  integrity sha512-Y5NNpnbJENwiGEJlIIG/PcEwbQ5saknMWTu0AlMjyKNtCZVlN5MVQrqLyyi2nM8oHodVEW4YD5++bFzzPPp5Iw==
+"@binkai/debridge-provider@^0.1.8-alpha.3":
+  version "0.1.8-alpha.3"
+  resolved "https://registry.yarnpkg.com/@binkai/debridge-provider/-/debridge-provider-0.1.8-alpha.3.tgz#94ac54973a8684fa1834a0512f15212bf37f88af"
+  integrity sha512-K9WAUVc8fhQHUpfSNqOi+S2yGeve4cY57hc3CnmRbI8hEs8iLmjokC8tEwgDfz8WEtQGwUVJNfBkJk1eeyfzWA==
   dependencies:
-    "@binkai/bridge-plugin" "0.1.8-alpha.2"
-    "@binkai/core" "0.1.8-alpha.2"
+    "@binkai/bridge-plugin" "0.1.8-alpha.3"
+    "@binkai/core" "0.1.8-alpha.3"
     "@solana/web3.js" "^1.98.0"
     axios "^1.7.9"
     ethers "^6.0.0"
     graphql-request "5.0.0"
     viem "1"
 
-"@binkai/four-meme-provider@^0.1.8-alpha.2":
-  version "0.1.8-alpha.2"
-  resolved "https://registry.yarnpkg.com/@binkai/four-meme-provider/-/four-meme-provider-0.1.8-alpha.2.tgz#c3fedd099655c94aec7598c73047eef3b2838204"
-  integrity sha512-tG/+WH7twmJsPc7+RTgDQdkT57HSHRVASXsSN2JOCJopF3GOUETUipTFmtlHm517o+QAKB0k4JVdFoEiL1I6aw==
+"@binkai/four-meme-provider@^0.1.8-alpha.3":
+  version "0.1.8-alpha.3"
+  resolved "https://registry.yarnpkg.com/@binkai/four-meme-provider/-/four-meme-provider-0.1.8-alpha.3.tgz#4dc35544d2e9a24e8fe90632741e715db7196a87"
+  integrity sha512-NaVTcSZlBvLj0233mbQjmhTao5zmeD4ZRnKjDSQQpmbuAQ60Es+HQSOJP4019GiWSAJwThAtEa6/2Gp51lME5w==
   dependencies:
-    "@binkai/core" "0.1.8-alpha.2"
-    "@binkai/swap-plugin" "0.1.8-alpha.2"
+    "@binkai/core" "0.1.8-alpha.3"
+    "@binkai/swap-plugin" "0.1.8-alpha.3"
     ethers "^6.0.0"
 
-"@binkai/jupiter-provider@^0.1.8-alpha.2":
-  version "0.1.8-alpha.2"
-  resolved "https://registry.yarnpkg.com/@binkai/jupiter-provider/-/jupiter-provider-0.1.8-alpha.2.tgz#1be5d2ebc21a7828d0246e355cdf0859b258de74"
-  integrity sha512-inRSC5Kq1047WCKsHvcgTp7mBkQNm9w1pzw4or3UBofBMUxVODeQoFZYiBqAI0HBAXkggZJs+XDL86KDbKuQww==
+"@binkai/jupiter-provider@^0.1.8-alpha.3":
+  version "0.1.8-alpha.3"
+  resolved "https://registry.yarnpkg.com/@binkai/jupiter-provider/-/jupiter-provider-0.1.8-alpha.3.tgz#b2ff31bc4e482835df7305050af10fb18c8f6ca6"
+  integrity sha512-Mrq1eKONp8FPDtJvCihriPKWUj7Ul+3JCsw2SCqvVPbw8/DVZJLFF7aIatEZjysGl1G2ulpNqtexy8KsabPI0g==
   dependencies:
-    "@binkai/core" "0.1.8-alpha.2"
-    "@binkai/swap-plugin" "0.1.8-alpha.2"
+    "@binkai/core" "0.1.8-alpha.3"
+    "@binkai/swap-plugin" "0.1.8-alpha.3"
     "@solana/spl-token" "^0.4.0"
     "@solana/web3.js" "^1.98.0"
     axios "^1.7.9"
     ethers "^6.0.0"
 
-"@binkai/knowledge-plugin@0.1.8-alpha.2", "@binkai/knowledge-plugin@^0.1.8-alpha.2":
-  version "0.1.8-alpha.2"
-  resolved "https://registry.yarnpkg.com/@binkai/knowledge-plugin/-/knowledge-plugin-0.1.8-alpha.2.tgz#df07e82baa1211d20135be1e0f2c91b7a7e48fff"
-  integrity sha512-XbbjDyinHacBDzWuPnIXGSQSzybfq52DzXkT7Pfkm+V6ka2RXuCYIGJjEdJlxMdLzkuQMvpe9tWURr26zpJP2A==
+"@binkai/knowledge-plugin@0.1.8-alpha.3", "@binkai/knowledge-plugin@^0.1.8-alpha.3":
+  version "0.1.8-alpha.3"
+  resolved "https://registry.yarnpkg.com/@binkai/knowledge-plugin/-/knowledge-plugin-0.1.8-alpha.3.tgz#642949cfc05c403b42f6ea104422d96e477d67c8"
+  integrity sha512-SdHbxlErR9I++1Vhw5ZfZCNq7u+VlCzp6v9D7xkvJ1bV7XED4UDYMqpR1ADtehPAQhOwXF+2GUhzRXY9Ks7Zuw==
   dependencies:
-    "@binkai/core" "0.1.8-alpha.2"
+    "@binkai/core" "0.1.8-alpha.3"
     "@langchain/core" "^0.3.32"
     zod "^3.22.4"
 
-"@binkai/okx-provider@^0.1.8-alpha.2":
-  version "0.1.8-alpha.2"
-  resolved "https://registry.yarnpkg.com/@binkai/okx-provider/-/okx-provider-0.1.8-alpha.2.tgz#4e0b0578496b02663f0cefcf4d5e08a02b1d170e"
-  integrity sha512-Q9r5zGefsxD1Ozai15FIu4EaLw+8JI7KRjH/vdrHuZ5QEM6UPp3Agi8RXJBp3oreLJVh/hY1VTe0s13W0REcGg==
+"@binkai/okx-provider@^0.1.8-alpha.3":
+  version "0.1.8-alpha.3"
+  resolved "https://registry.yarnpkg.com/@binkai/okx-provider/-/okx-provider-0.1.8-alpha.3.tgz#79ef3af3e8327eac2d4b6f9f59ffd23a3d744dc9"
+  integrity sha512-g567bFAu01SEOPzMzhigYFCzK4UiP0QNMRsa39jewHPpVVKRiyHpgQ65cok5BXkVagFHqNAO24L1uF3dX0FoOg==
   dependencies:
-    "@binkai/core" "0.1.8-alpha.2"
-    "@binkai/swap-plugin" "0.1.8-alpha.2"
+    "@binkai/core" "0.1.8-alpha.3"
+    "@binkai/swap-plugin" "0.1.8-alpha.3"
     crypto-js "^4.1.1"
     ethers "^6.0.0"
 
-"@binkai/pancakeswap-provider@^0.1.8-alpha.2":
-  version "0.1.8-alpha.2"
-  resolved "https://registry.yarnpkg.com/@binkai/pancakeswap-provider/-/pancakeswap-provider-0.1.8-alpha.2.tgz#36161306d6d73024126ce039856a298f0205447a"
-  integrity sha512-uEKlOGZoOFppNFdo2NQyoqDT2Lo/UYGRYxxzFmuyg7n9oWQpx494t+BVkZPwigGS1nlL+bse5QOJfNBcjtCcmQ==
+"@binkai/pancakeswap-provider@^0.1.8-alpha.3":
+  version "0.1.8-alpha.3"
+  resolved "https://registry.yarnpkg.com/@binkai/pancakeswap-provider/-/pancakeswap-provider-0.1.8-alpha.3.tgz#8d281cf58ad443187740d420e6617e409233870d"
+  integrity sha512-L0ApeTmPvqnTSx6BhzkGZ7TKkYkAc2GJlL1FQbuoluTrppybowRi9VoFU4b/6THue9X062emSKd/IvI0KRwZ1g==
   dependencies:
-    "@binkai/core" "0.1.8-alpha.2"
-    "@binkai/swap-plugin" "0.1.8-alpha.2"
+    "@binkai/core" "0.1.8-alpha.3"
+    "@binkai/swap-plugin" "0.1.8-alpha.3"
     "@pancakeswap/sdk" "5.8.10"
     "@pancakeswap/smart-router" "7.0.2"
     "@pancakeswap/universal-router-sdk" "1.0.42"
@@ -444,82 +444,82 @@
     graphql-request "5.0.0"
     viem "^2.22.11"
 
-"@binkai/postgres-adapter@^0.1.8-alpha.2":
-  version "0.1.8-alpha.2"
-  resolved "https://registry.yarnpkg.com/@binkai/postgres-adapter/-/postgres-adapter-0.1.8-alpha.2.tgz#fa21714f5336e3e6b188ec96fc1dc5fae88121c4"
-  integrity sha512-0ilZCXhs0FckiojxHgopuHDkPUtIy+EDacsNH+dnqon/ImsPtV9WOX9AMk2qHCYCM1NBGO0NIq7WE94F/MtowA==
+"@binkai/postgres-adapter@^0.1.8-alpha.3":
+  version "0.1.8-alpha.3"
+  resolved "https://registry.yarnpkg.com/@binkai/postgres-adapter/-/postgres-adapter-0.1.8-alpha.3.tgz#6e716d4d1af3293e32084ee49696f1b901b82ea7"
+  integrity sha512-GdVBk98rYPgTEjkLjpX7FPqHNlwAKVXT0WNK9LGirHZ1op1E7Scm6zP0EA8bkh8Wg3+xQDcYKWmZ+qnOJUFEPQ==
   dependencies:
-    "@binkai/core" "0.1.8-alpha.2"
+    "@binkai/core" "0.1.8-alpha.3"
     "@types/pg" "8.11.10"
     pg "8.13.1"
     uuid "^9.0.0"
 
-"@binkai/rpc-provider@^0.1.8-alpha.2":
-  version "0.1.8-alpha.2"
-  resolved "https://registry.yarnpkg.com/@binkai/rpc-provider/-/rpc-provider-0.1.8-alpha.2.tgz#1540fd80eb2e1983955cac7b63cc65b936dae834"
-  integrity sha512-DTbkdFBLcbHC2eanNxSY+LCYe/77d2My8k9NxCx83ibUGHW9htjJo2t635ttmXPi8Wn0nJ3uGtfW04yd30m1Sw==
+"@binkai/rpc-provider@^0.1.8-alpha.3":
+  version "0.1.8-alpha.3"
+  resolved "https://registry.yarnpkg.com/@binkai/rpc-provider/-/rpc-provider-0.1.8-alpha.3.tgz#ac161502b35506a5e109b4476307a646b5f237fa"
+  integrity sha512-xFRKmQFMgGnRPaIaJQBPW8la8biq8a1ft0UVeLsD92dH83aOojIl1sKhu8qsE0O0BVEVk4bAPqogJtrpT6BOAQ==
   dependencies:
-    "@binkai/core" "0.1.8-alpha.2"
-    "@binkai/wallet-plugin" "0.1.8-alpha.2"
+    "@binkai/core" "0.1.8-alpha.3"
+    "@binkai/wallet-plugin" "0.1.8-alpha.3"
     ethers "^6.0.0"
 
-"@binkai/staking-plugin@0.1.8-alpha.2", "@binkai/staking-plugin@^0.1.8-alpha.2":
-  version "0.1.8-alpha.2"
-  resolved "https://registry.yarnpkg.com/@binkai/staking-plugin/-/staking-plugin-0.1.8-alpha.2.tgz#3ca64edfbcc9ce30825560871a459bcbfa8ee3d8"
-  integrity sha512-EhjmIueK6TBk9/fotOAmhYiEw6Kj+udk1Sx2GO5JXcKH3PO4I7lsqqayrDbZmY+xp+JoI3mjdzSCo6JqJKT+eQ==
+"@binkai/staking-plugin@0.1.8-alpha.3", "@binkai/staking-plugin@^0.1.8-alpha.3":
+  version "0.1.8-alpha.3"
+  resolved "https://registry.yarnpkg.com/@binkai/staking-plugin/-/staking-plugin-0.1.8-alpha.3.tgz#588f5d571bbdb379e75ecec72eba898e773b12a6"
+  integrity sha512-rs37c492efb3A3utZdMqFyNMri/DHRHiAi0LsLNJSrh7DIAuUO4ST1NCZuBCbFSnF0/PlRYJvUzZpcCz9qC3rw==
   dependencies:
-    "@binkai/core" "0.1.8-alpha.2"
+    "@binkai/core" "0.1.8-alpha.3"
     "@langchain/core" "^0.3.32"
     "@solana/web3.js" "1.98.0"
     ethers "^6.0.0"
     zod "^3.22.4"
 
-"@binkai/swap-plugin@0.1.8-alpha.2", "@binkai/swap-plugin@^0.1.8-alpha.2":
-  version "0.1.8-alpha.2"
-  resolved "https://registry.yarnpkg.com/@binkai/swap-plugin/-/swap-plugin-0.1.8-alpha.2.tgz#3311f6bbb2904be79785ec3c58dab84e8e98117e"
-  integrity sha512-pws+YzkMugUVW26cBQQqbzUAb3WOQGgxfjMJLNqdVZ5uNg4V11XS37IWtt4xgo232Hwb7KQ4BE2a2NMrLbigqA==
+"@binkai/swap-plugin@0.1.8-alpha.3", "@binkai/swap-plugin@^0.1.8-alpha.3":
+  version "0.1.8-alpha.3"
+  resolved "https://registry.yarnpkg.com/@binkai/swap-plugin/-/swap-plugin-0.1.8-alpha.3.tgz#e09e7e62c8bf8f1be619e102e864811768986f06"
+  integrity sha512-8iamAuuQWq0rTOXUZHig5OOVBmC8wFehJ3DakvVnxzuKhQ7ZSx6FrdgHQoOlQv8aDgJoeG8oYUzWhCAikbcXFg==
   dependencies:
-    "@binkai/core" "0.1.8-alpha.2"
-    "@binkai/token-plugin" "0.1.8-alpha.2"
+    "@binkai/core" "0.1.8-alpha.3"
+    "@binkai/token-plugin" "0.1.8-alpha.3"
     "@langchain/core" "^0.3.32"
     "@solana/web3.js" "1.98.0"
     ethers "^6.0.0"
     zod "^3.22.4"
 
-"@binkai/thena-provider@^0.1.8-alpha.2":
-  version "0.1.8-alpha.2"
-  resolved "https://registry.yarnpkg.com/@binkai/thena-provider/-/thena-provider-0.1.8-alpha.2.tgz#e87ce2dbea96d1cd745be980a6930b05117d56bc"
-  integrity sha512-ON06fJrcSpbmElCKIHnsq517IRGoQ2SKwJDqHFdeNhHodR1RaSv6pLS+Fcu4sjH6T6ICRCLXmcqkHjHVi0SCYg==
+"@binkai/thena-provider@^0.1.8-alpha.3":
+  version "0.1.8-alpha.3"
+  resolved "https://registry.yarnpkg.com/@binkai/thena-provider/-/thena-provider-0.1.8-alpha.3.tgz#e21d381dc3f7119db5f8554efee5b48df1dc2ae2"
+  integrity sha512-BCYjZGI8EH/mOvyU4YALwrB06c5lCZvIH13lrU8EYcEoaVR+MNRZoX+/13wA0mMHZzujDNx7eiR5o9xQklxIZg==
   dependencies:
-    "@binkai/core" "0.1.8-alpha.2"
-    "@binkai/swap-plugin" "0.1.8-alpha.2"
+    "@binkai/core" "0.1.8-alpha.3"
+    "@binkai/swap-plugin" "0.1.8-alpha.3"
     crypto-js "^4.1.1"
     ethers "^6.0.0"
 
-"@binkai/token-plugin@0.1.8-alpha.2", "@binkai/token-plugin@^0.1.8-alpha.2":
-  version "0.1.8-alpha.2"
-  resolved "https://registry.yarnpkg.com/@binkai/token-plugin/-/token-plugin-0.1.8-alpha.2.tgz#0f71873bdc001839950aba1f4755357200f2c4e4"
-  integrity sha512-I8a9SvgAP62Me6ZhpujQWeAmQuVpOHabIiw0RPVqCmCVEDiqO/A6AWPbE3AR1F4Bz3iO+qgy7V7U+aKXyBTRuA==
+"@binkai/token-plugin@0.1.8-alpha.3", "@binkai/token-plugin@^0.1.8-alpha.3":
+  version "0.1.8-alpha.3"
+  resolved "https://registry.yarnpkg.com/@binkai/token-plugin/-/token-plugin-0.1.8-alpha.3.tgz#fe399910f8363205c70b575dc98c3f7f24310b04"
+  integrity sha512-CGwTujUVuKQMKbBiV2D+Zmgd2F/jzPh9cLVVMMVjtAsQbu58yhcwY0POvkZtA3YV4EOehKBDTOPXQqzkwSYLgg==
   dependencies:
-    "@binkai/core" "0.1.8-alpha.2"
+    "@binkai/core" "0.1.8-alpha.3"
     "@langchain/core" "^0.3.32"
     zod "^3.22.4"
 
-"@binkai/venus-provider@^0.1.8-alpha.2":
-  version "0.1.8-alpha.2"
-  resolved "https://registry.yarnpkg.com/@binkai/venus-provider/-/venus-provider-0.1.8-alpha.2.tgz#2a2ed5ea479615b089c7b4d27457a407ae5e5f34"
-  integrity sha512-kcYihY2IipWnbTpKZvoX0pBZVc17xQdbKF5a9YTNyNcCPHOmbynxZejjOhFSyiDJ0uDFesecig6jwzk1f/evdg==
+"@binkai/venus-provider@^0.1.8-alpha.3":
+  version "0.1.8-alpha.3"
+  resolved "https://registry.yarnpkg.com/@binkai/venus-provider/-/venus-provider-0.1.8-alpha.3.tgz#17c52e68f278f97b19e0fa85002b905c80deaa14"
+  integrity sha512-9UbSyuWp6GUbqMmvXB7m//TNH07OS8qzwIriD35UUkAJS1X8S21pr72v6Lpn/LR41g+8lL8fB84O2ikTd410bg==
   dependencies:
-    "@binkai/core" "0.1.8-alpha.2"
-    "@binkai/staking-plugin" "0.1.8-alpha.2"
+    "@binkai/core" "0.1.8-alpha.3"
+    "@binkai/staking-plugin" "0.1.8-alpha.3"
     ethers "^6.0.0"
 
-"@binkai/wallet-plugin@0.1.8-alpha.2", "@binkai/wallet-plugin@^0.1.8-alpha.2":
-  version "0.1.8-alpha.2"
-  resolved "https://registry.yarnpkg.com/@binkai/wallet-plugin/-/wallet-plugin-0.1.8-alpha.2.tgz#ce16b508d537f87449e8127c0c012222fd05c30d"
-  integrity sha512-r5HMCuKG9GcFWnkT80gpmqiGurjt60YD8bCSX1GSi1s8NxE3ONa2Ia2RiBgHhGeuWd/00amOHP9fcl8eDVkkCg==
+"@binkai/wallet-plugin@0.1.8-alpha.3", "@binkai/wallet-plugin@^0.1.8-alpha.3":
+  version "0.1.8-alpha.3"
+  resolved "https://registry.yarnpkg.com/@binkai/wallet-plugin/-/wallet-plugin-0.1.8-alpha.3.tgz#e0e5bdbea3adbcd450ce2bf9b6f637808373fede"
+  integrity sha512-R9HP+IK8MhhKGTebf/8zB0UkT5rL45AFbUN6SX3PWdfd+5MFOvHIfytvA6TuK/2x6gLe71xdnX5eWFNeOKRfdg==
   dependencies:
-    "@binkai/core" "0.1.8-alpha.2"
+    "@binkai/core" "0.1.8-alpha.3"
     "@langchain/core" "^0.3.32"
     ethers "^6.0.0"
     zod "^3.22.0"
