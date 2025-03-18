@@ -40,7 +40,7 @@ export class ReferralHandler implements Handler {
       // Create menu buttons
       const menu: InlineKeyboardButton[][] = [
         [
-          createMenuButton("← Back", COMMAND_KEYS.START),
+          createMenuButton("← Back", `${COMMAND_KEYS.START}::ops=${COMMAND_KEYS.START}`),
           //   createMenuButton("💳 Wallet", COMMAND_KEYS.WALLET),
         ],
       ];

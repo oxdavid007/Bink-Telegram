@@ -19,7 +19,7 @@ export const parseCommand = (
   let [cmd, query] = url.split("::");
   const params = {};
   if (query) {
-    query = Buffer.from(query, "base64").toString("utf-8");
+    //query = Buffer.from(query, "base64").toString("utf-8");
     query.split("&").forEach(function (part) {
       const item = part.split("=");
       params[item[0]] = decodeURIComponent(item[1]);
