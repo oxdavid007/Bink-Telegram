@@ -23,5 +23,5 @@ export const COMMAND_KEYS = {
   CLEAR: "clear",
   BRIDGE: "bridge",
   SWAP: "swap",
-  SWAP_CROSSCHAIN: "swap_crosschain"
+  CROSSCHAIN: "crosschain"
 } as const;
