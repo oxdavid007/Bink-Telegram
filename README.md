@@ -129,7 +129,6 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 ## License
 
 This project is [MIT licensed](LICENSE).
-
 ---
 
 ⚠️ **Important**: This bot is in beta. Always verify transactions and use with caution.
