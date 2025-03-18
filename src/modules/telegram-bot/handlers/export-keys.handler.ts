@@ -42,7 +42,7 @@ export class ExportKeysHandler implements Handler {
             [
               {
                 text: "← Back to Wallet",
-                callback_data: COMMAND_KEYS.WALLETS,
+                callback_data: `${COMMAND_KEYS.WALLETS}::ops=${COMMAND_KEYS.EXPORT_KEYS}`,
               },
             ],
           ],
@@ -59,7 +59,7 @@ export class ExportKeysHandler implements Handler {
         } catch (error) {
           console.error("Error deleting private key message:", error);
         }
-      }, 120 * 1000); // 120 seconds
+      }, 60 * 1000); // 60 seconds
     } catch (error) {
       console.error("Error in ExportKeysHandler:", error);
       await this.bot.sendMessage(

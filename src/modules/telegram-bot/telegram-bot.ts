@@ -2,27 +2,19 @@ import TelegramBotApi, {
   ChatId,
   SendMessageOptions,
   AnswerCallbackQueryOptions,
-} from "node-telegram-bot-api";
-import { ConfigService } from "@nestjs/config";
-import { PageResponse, PhotoResponse, TelegramBotState } from "./types";
-import {
-  parserCallbackMessageTelegram,
-  parserMessageTelegram,
-} from "./utils/telegram";
-import {
-  Inject,
-  Injectable,
-  Logger,
-  OnApplicationBootstrap,
-} from "@nestjs/common";
-import { COMMAND_KEYS } from "./constants/command-keys";
-import { MAX_TIME_STATE_OUT_DATE, USER_INPUT } from "./constants/index";
-import { Handler } from "./handlers/handler";
-import process from "process";
-import Redis from "ioredis";
-import { parseCommand } from "./utils";
-import { isURL } from "class-validator";
-import { SellTokenState, TokenInfoState } from "./interfaces";
+} from 'node-telegram-bot-api';
+import { ConfigService } from '@nestjs/config';
+import { PageResponse, PhotoResponse, TelegramBotState } from './types';
+import { parserCallbackMessageTelegram, parserMessageTelegram } from './utils/telegram';
+import { Inject, Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
+import { COMMAND_KEYS } from './constants/command-keys';
+import { MAX_TIME_STATE_OUT_DATE, USER_INPUT } from './constants/index';
+import { Handler } from './handlers/handler';
+import process from 'process';
+import Redis from 'ioredis';
+import { parseCommand } from './utils';
+import { isURL } from 'class-validator';
+import { SellTokenState, TokenInfoState } from './interfaces';
 
 @Injectable()
 export class TelegramBot implements OnApplicationBootstrap {
@@ -38,11 +30,11 @@ export class TelegramBot implements OnApplicationBootstrap {
 
   private handlers: Record<string, Handler>;
 
-  @Inject("TELEGRAM_BOT_STATE")
+  @Inject('TELEGRAM_BOT_STATE')
   private botStateStore: Redis;
 
   constructor(private readonly configService: ConfigService) {
-    const token = this.configService.get<string>("telegram.token");
+    const token = this.configService.get<string>('telegram.token');
     const isBot = Boolean(Number(process.env.IS_BOT || 0));
     if (isBot) {
       this.bot = new TelegramBotApi(token, { polling: true });
@@ -52,29 +44,25 @@ export class TelegramBot implements OnApplicationBootstrap {
     this.state = {};
   }
   onApplicationBootstrap() {
-    this.bot.getMe().then((rs) => {
+    this.bot.getMe().then(rs => {
       this.name = rs.username;
       this.loggerService.log(`Telegram bot run name: ${this.name}`);
     });
     process.env.CHANNEL_ID &&
       this.bot
         .getChat(process.env.CHANNEL_ID)
-        .then((rs) => {
+        .then(rs => {
           this.channelName = rs.username;
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(
-            "🚀 ~ file: telegram-bot.ts:60 ~ TelegramBot ~ onApplicationBootstrap ~ err:",
-            err
+            '🚀 ~ file: telegram-bot.ts:60 ~ TelegramBot ~ onApplicationBootstrap ~ err:',
+            err,
           );
         });
   }
 
-  async sendMessage(
-    chatId: ChatId,
-    text: string,
-    options?: SendMessageOptions
-  ) {
+  async sendMessage(chatId: ChatId, text: string, options?: SendMessageOptions) {
     return this.bot.sendMessage(chatId, text, options);
   }
 
@@ -82,7 +70,7 @@ export class TelegramBot implements OnApplicationBootstrap {
     try {
       return this.bot.sendMessage(chatId, data.text, data.menu);
     } catch (error) {
-      console.log("🚀 ~ file: telegram-bot.ts:97 ~ error:", error);
+      console.log('🚀 ~ file: telegram-bot.ts:97 ~ error:', error);
     }
   }
 
@@ -90,7 +78,7 @@ export class TelegramBot implements OnApplicationBootstrap {
     try {
       return await this.bot.sendPhoto(chatId, data.photo, data.menu);
     } catch (error) {
-      console.log("🚀 ~ file: telegram-bot.ts:105 ~ error:", error?.message);
+      console.log('🚀 ~ file: telegram-bot.ts:105 ~ error:', error?.message);
     }
   }
 
@@ -99,50 +87,50 @@ export class TelegramBot implements OnApplicationBootstrap {
   }
 
   setupStartCommand(callback: any) {
-    this.bot.onText(/\/start/, (msg) => {
+    this.bot.onText(/\/start/, msg => {
       callback(parserMessageTelegram(msg));
     });
   }
 
   setupWalletCommand(callback: any) {
-    this.bot.onText(/\/wallets/, (msg) => {
+    this.bot.onText(/\/wallets/, msg => {
       callback(parserMessageTelegram(msg));
     });
   }
 
   setupBuyCommand(callback: any) {
-    this.bot.onText(/\/buy/, (msg) => {
+    this.bot.onText(/\/buy/, msg => {
       callback(parserMessageTelegram(msg));
     });
   }
 
   setupHelpCommand(callback: any) {
-    this.bot.onText(/\/help/, (msg) => {
+    this.bot.onText(/\/help/, msg => {
       callback(parserMessageTelegram(msg));
     });
   }
 
   setupReferralCommand(callback: any) {
-    this.bot.onText(/\/referral/, (msg) => {
+    this.bot.onText(/\/referral/, msg => {
       callback(parserMessageTelegram(msg));
     });
   }
 
   // sell
   setupSellCommand(callback: any) {
-    this.bot.onText(/\/sell/, (msg) => {
+    this.bot.onText(/\/sell/, msg => {
       callback(parserMessageTelegram(msg));
     });
   }
 
   setupClearCommand(callback: any) {
-    this.bot.onText(/\/clear/, (msg) => {
+    this.bot.onText(/\/clear/, msg => {
       callback(parserMessageTelegram(msg));
     });
   }
 
   setupMenuCallback(callback: any) {
-    this.bot.on("callback_query", (query) => {
+    this.bot.on('callback_query', query => {
       const { data: action } = query;
       const data = parserCallbackMessageTelegram(query);
 
@@ -151,9 +139,9 @@ export class TelegramBot implements OnApplicationBootstrap {
   }
 
   userReply(callback: any) {
-    this.bot.on("message", (msg) => {
+    this.bot.on('message', msg => {
       if (isURL(msg.text)) {
-        this.bot.sendMessage(msg.chat.id, "open this", {
+        this.bot.sendMessage(msg.chat.id, 'open this', {
           reply_markup: {
             inline_keyboard: [
               [
@@ -161,13 +149,26 @@ export class TelegramBot implements OnApplicationBootstrap {
                   web_app: {
                     url: msg.text,
                   },
-                  text: "🔫",
+                  text: '🔫',
                 },
               ],
             ],
           },
         });
       }
+
+      // Add photo to the parsed message if present
+      const parsedMessage = parserMessageTelegram(msg);
+      if (msg.photo && parsedMessage) {
+        // Create a new object with the photo property
+        const messageWithPhoto = {
+          ...parsedMessage,
+          photo: msg.photo,
+        };
+        callback(messageWithPhoto);
+        return;
+      }
+
       callback(parserMessageTelegram(msg));
     });
   }
@@ -222,14 +223,14 @@ export class TelegramBot implements OnApplicationBootstrap {
         handler
           .handler({ ...data, ...params })
           .then()
-          .catch((e) => {
+          .catch(e => {
             this.loggerService.error(e, {
-              file: "TelegramBot.start",
+              file: 'TelegramBot.start',
               text: `handler command ${_cmd} error: `,
             });
           });
       } else {
-        this.loggerService.log("unknown callback:", { _cmd });
+        this.loggerService.log('unknown callback:', { _cmd });
       }
     });
 
@@ -244,9 +245,7 @@ export class TelegramBot implements OnApplicationBootstrap {
   async getUrlAvatar(telegramId: number) {
     const result = await this.bot.getUserProfilePhotos(telegramId, 0 as any); // TODO: recheck
     const fileId =
-      result.photos.length > 0 && result.photos[0].length > 0
-        ? result.photos[0][0].file_id
-        : null;
+      result.photos.length > 0 && result.photos[0].length > 0 ? result.photos[0][0].file_id : null;
 
     if (!fileId) {
       return null;
@@ -264,24 +263,16 @@ export class TelegramBot implements OnApplicationBootstrap {
   }
 
   async getBoostsChannel(chatId: ChatId, userId: number) {
-    const url = "https://api.telegram.org/bot";
-    const token = this.configService.get<string>("telegram.token");
-    const res = await fetch(
-      `${url}${token}/getUserChatBoosts?chat_id=${chatId}&user_id=${userId}`
-    );
+    const url = 'https://api.telegram.org/bot';
+    const token = this.configService.get<string>('telegram.token');
+    const res = await fetch(`${url}${token}/getUserChatBoosts?chat_id=${chatId}&user_id=${userId}`);
     const data = await res.json();
     const boosts = data?.result?.boosts;
-    console.log(
-      "🚀 ~ file: telegram-bot.ts ~ line 191 ~ TelegramBot ~ boosts",
-      boosts
-    );
+    console.log('🚀 ~ file: telegram-bot.ts ~ line 191 ~ TelegramBot ~ boosts', boosts);
     return boosts;
   }
 
-  async answerCallbackQuery(
-    callbackQueryId: string,
-    options?: AnswerCallbackQueryOptions
-  ) {
+  async answerCallbackQuery(callbackQueryId: string, options?: AnswerCallbackQueryOptions) {
     return this.bot.answerCallbackQuery(callbackQueryId, options);
   }
 
@@ -289,7 +280,7 @@ export class TelegramBot implements OnApplicationBootstrap {
     try {
       return await this.bot.editMessageText(text, options);
     } catch (error) {
-      console.error("Error in TelegramBot.editMessageText:", error);
+      console.error('Error in TelegramBot.editMessageText:', error);
       return null;
     }
   }
@@ -311,10 +302,7 @@ export class TelegramBot implements OnApplicationBootstrap {
       ...state,
       updatedAt: Date.now(),
     };
-    await this.botStateStore.set(
-      `user:${telegramId}:sell_token`,
-      JSON.stringify(newState)
-    );
+    await this.botStateStore.set(`user:${telegramId}:sell_token`, JSON.stringify(newState));
     return newState;
   }
 
@@ -325,10 +313,7 @@ export class TelegramBot implements OnApplicationBootstrap {
       ...state,
       updatedAt: Date.now(),
     };
-    await this.botStateStore.set(
-      `user:${telegramId}:token_info`,
-      JSON.stringify(newState)
-    );
+    await this.botStateStore.set(`user:${telegramId}:token_info`, JSON.stringify(newState));
     return newState;
   }
 

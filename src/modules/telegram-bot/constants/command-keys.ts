@@ -21,4 +21,7 @@ export const COMMAND_KEYS = {
   HELP: "help",
   REFERRAL: "referral",
   CLEAR: "clear",
+  BRIDGE: "bridge",
+  SWAP: "swap",
+  CROSSCHAIN: "crosschain"
 } as const;

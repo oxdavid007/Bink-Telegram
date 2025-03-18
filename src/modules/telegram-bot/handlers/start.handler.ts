@@ -5,6 +5,7 @@ import { Handler } from "../handlers/handler";
 import { MainPage } from "../ui/pages/main.page";
 import { UserService } from "@/business/services/user.service";
 import { TokenInfoHandler } from "./token-info.handler";
+import { COMMAND_KEYS } from "../constants/command-keys";
 
 @Injectable()
 export class StartHandler implements Handler {
@@ -35,5 +36,9 @@ export class StartHandler implements Handler {
 
     // Display main page with user info
     await this.bot.sendPagePhoto(data.chatId, new MainPage().build());
+
+    if('ops' in data && data?.ops === COMMAND_KEYS.START) {
+      await this.bot.deleteMessage(data.chatId, data.messageId.toString());
+    }
   };
 }
