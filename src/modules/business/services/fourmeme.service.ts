@@ -103,7 +103,7 @@ export class FourMemeService implements OnApplicationBootstrap {
 
   async uploadFile(filePath: string, userAddress: string, signature: string) {
     try {
-      const url = 'https://four.meme/meme-api/v1/private/token/upload';
+      const url = `${CONSTANTS.FOUR_MEME_API_BASE}/private/token/upload`;
 
       const memeWebAccess = await this.getAccessToken(signature, userAddress, 'bnb');
 
