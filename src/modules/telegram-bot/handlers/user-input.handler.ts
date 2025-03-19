@@ -52,9 +52,11 @@ export class UserInputHandler implements Handler {
     telegramId: string;
     messageId?: number;
     text: string;
+    caption?: string;
     reply_to_message_id?: number;
     photo?: string;
   }) => {
+    console.log('🚀 ~ UserInputHandler ~ data:', data);
     const defaultImg =
       'https://api.telegram.org/file/bot6651136367:AAEk90fO1lpOmz2W5j8SPIovGMOQaUdij9s/photos/file_2.jpg';
     try {
@@ -63,6 +65,9 @@ export class UserInputHandler implements Handler {
         const fileId = photo?.file_id || '';
         const filePath = (await this.bot.bot.getFileLink(fileId)) || defaultImg;
         console.log('🚀 ~ UserInputHandler ~ fileId:', filePath);
+        // Get caption if exists
+        const captionText = data.caption || '';
+        console.log('🚀 ~ UserInputHandler ~ captionText:', captionText);
 
         const keys = await this.userService.getMnemonicByTelegramId(data.telegramId);
 
@@ -90,6 +95,8 @@ export class UserInputHandler implements Handler {
           parse_mode: 'HTML',
         });
 
+        // Uncomment when ready to use FourMeme
+
         const signature = await wallet.signMessage({
           network: 'bnb' as any,
           message: signatureMessage,
@@ -110,10 +117,11 @@ export class UserInputHandler implements Handler {
             parse_mode: 'HTML',
           });
 
-          // save to redis with image URL
+          // save to redis with image URL and caption
           await this.botStateStore.set(`${data.telegramId}:img`, JSON.stringify({
             imageUrl: response.url || filePath,
             messageId: messageId.message_id,
+            captionText: captionText // Store caption with the image data
           }));
         } else {
           const message = 'Failed to upload on FourMeme';
@@ -124,6 +132,7 @@ export class UserInputHandler implements Handler {
             parse_mode: 'HTML',
           });
         }
+
       } else {
         //remove /
         const text = data?.text?.replace('/', '');
@@ -139,11 +148,13 @@ export class UserInputHandler implements Handler {
         // Get image from cache if exists
         const cachedImageData = await this.botStateStore.get(`${data.telegramId}:img`);
         let imageUrl = null;
+        let cachedCaption = null;
 
         if (cachedImageData) {
           try {
             const parsedData = JSON.parse(cachedImageData);
             imageUrl = parsedData.imageUrl;
+            cachedCaption = parsedData.captionText;
             // Clear the cache after using it
             await this.botStateStore.del(`${data.telegramId}:img`);
           } catch (e) {
@@ -154,7 +165,9 @@ export class UserInputHandler implements Handler {
         //implement
         const message = await this.aiService.handleSwap(
           data.telegramId,
-          imageUrl ? `${text} [Image: ${imageUrl}]` : data.text,
+          imageUrl ?
+            `${text}${cachedCaption ? ` ${cachedCaption}` : ''} [Image: ${imageUrl}]`
+            : data.text,
           messageId.message_id,
         );
 

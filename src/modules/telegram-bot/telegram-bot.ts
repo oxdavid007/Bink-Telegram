@@ -164,6 +164,7 @@ export class TelegramBot implements OnApplicationBootstrap {
         const messageWithPhoto = {
           ...parsedMessage,
           photo: msg.photo,
+          caption: msg.caption
         };
         callback(messageWithPhoto);
         return;
