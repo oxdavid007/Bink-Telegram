@@ -84,6 +84,12 @@ export class UserInputHandler implements Handler {
           'bnb',
         );
 
+        const firstMessage = 'Uploading on FourMeme...';
+
+        const messageId = await this.bot.sendMessage(data.chatId, firstMessage, {
+          parse_mode: 'HTML',
+        });
+
         const signature = await wallet.signMessage({
           network: 'bnb' as any,
           message: signatureMessage,
@@ -95,21 +101,29 @@ export class UserInputHandler implements Handler {
           signature,
         );
 
-        const firstMessage = 'Uploading...';
-        const messageId = await this.bot.sendMessage(data.chatId, firstMessage, {
-          parse_mode: 'HTML',
-        });
+        if (response) {
+          const message = 'Uploaded on FourMeme';
 
-        const message = await this.aiService.handleSwap(
-          data.telegramId,
-          response?.data,
-          messageId.message_id,
-        );
-        await this.bot.editMessageText(message, {
-          chat_id: data.chatId,
-          message_id: messageId.message_id,
-          parse_mode: 'HTML',
-        });
+          await this.bot.editMessageText(message, {
+            chat_id: data.chatId,
+            message_id: messageId.message_id,
+            parse_mode: 'HTML',
+          });
+
+          // save to redis with image URL
+          await this.botStateStore.set(`${data.telegramId}:img`, JSON.stringify({
+            imageUrl: response.url || filePath,
+            messageId: messageId.message_id,
+          }));
+        } else {
+          const message = 'Failed to upload on FourMeme';
+
+          await this.bot.editMessageText(message, {
+            chat_id: data.chatId,
+            message_id: messageId.message_id,
+            parse_mode: 'HTML',
+          });
+        }
       } else {
         //remove /
         const text = data?.text?.replace('/', '');
@@ -121,17 +135,35 @@ export class UserInputHandler implements Handler {
         const messageId = await this.bot.sendMessage(data.chatId, firstMessage, {
           parse_mode: 'HTML',
         });
+
+        // Get image from cache if exists
+        const cachedImageData = await this.botStateStore.get(`${data.telegramId}:img`);
+        let imageUrl = null;
+
+        if (cachedImageData) {
+          try {
+            const parsedData = JSON.parse(cachedImageData);
+            imageUrl = parsedData.imageUrl;
+            // Clear the cache after using it
+            await this.botStateStore.del(`${data.telegramId}:img`);
+          } catch (e) {
+            console.error('Error parsing cached image data:', e);
+          }
+        }
+
         //implement
         const message = await this.aiService.handleSwap(
           data.telegramId,
-          data.text,
+          imageUrl ? `${text} [Image: ${imageUrl}]` : data.text,
           messageId.message_id,
         );
+
         await this.bot.editMessageText(message, {
           chat_id: data.chatId,
           message_id: messageId.message_id,
           parse_mode: 'HTML',
         });
+
         if (message.includes('bscscan') && process.env.TELEGRAM_GROUP_ID) {
           const user = await this.userService.getOrCreateUser({
             telegram_id: data.telegramId,
@@ -144,8 +176,8 @@ export class UserInputHandler implements Handler {
                 message_thread_id: Number(process.env.TELEGRAM_THREAD_ID),
               },
             )
-            .then(() => {})
-            .catch(() => {});
+            .then(() => { })
+            .catch(() => { });
         }
       }
     } catch (error) {
