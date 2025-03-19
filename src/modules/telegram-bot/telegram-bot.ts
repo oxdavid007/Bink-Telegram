@@ -24,7 +24,7 @@ export class TelegramBot implements OnApplicationBootstrap {
 
   public telegramIdStatus: Record<string, number> = {};
 
-  private bot: TelegramBotApi;
+  public bot: TelegramBotApi;
 
   private state: Record<string, TelegramBotState>;
 
@@ -164,6 +164,7 @@ export class TelegramBot implements OnApplicationBootstrap {
         const messageWithPhoto = {
           ...parsedMessage,
           photo: msg.photo,
+          caption: msg.caption
         };
         callback(messageWithPhoto);
         return;

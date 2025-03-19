@@ -12,6 +12,7 @@ import { configCache } from "./configs/cache";
 import { BusinessModule } from "@/business/business.module";
 import { openaiConfig } from "./configs/openai";
 import { binkConfig, birdeyeConfig, postgresConfig } from "./configs/bink";
+import { fourMemeConfig } from "./configs/four-meme";
 @Module({
   imports: [
     ThrottlerModule.forRoot({
@@ -46,6 +47,7 @@ import { binkConfig, birdeyeConfig, postgresConfig } from "./configs/bink";
         birdeyeConfig,
         postgresConfig,
         binkConfig,
+        fourMemeConfig,
       ],
     }),
     JwtModule.registerAsync({
@@ -69,7 +71,7 @@ import { binkConfig, birdeyeConfig, postgresConfig } from "./configs/bink";
   ],
 })
 export class ApiModule implements OnApplicationBootstrap {
-  constructor() {}
+  constructor() { }
 
-  async onApplicationBootstrap() {}
+  async onApplicationBootstrap() { }
 }

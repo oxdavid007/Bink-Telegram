@@ -8,6 +8,7 @@ export const parserMessageTelegram = (msg: Message) => ({
   lastName: msg.from.last_name,
   username: msg.from.username,
   text: msg.text,
+  caption: msg.caption,
   isInputMessage: !msg?.entities,
   reply_to_message_id: msg?.reply_to_message?.message_id,
 });

@@ -42,7 +42,7 @@ export class HandlerService {
     private readonly helpHandler: HelpHandler,
     private readonly referralHandler: ReferralHandler,
     private readonly clearHandler: ClearHandler,
-  ) {}
+  ) { }
 
   getHandlers(): Record<string, Handler> {
     return {
@@ -68,7 +68,9 @@ export class HandlerService {
   }
 
   async handleMessage(message: Message) {
+    console.log('🚀 ~ HandlerService ~ handleMessage ~ message:', message);
     const { text, chat, from } = message;
+    console.log('🚀 ~ HandlerService ~ handleMessage ~ text:', text);
 
     if (!text) return;
 
