@@ -56,18 +56,20 @@ export class UserInputHandler implements Handler {
     reply_to_message_id?: number;
     photo?: string;
   }) => {
-    console.log('🚀 ~ UserInputHandler ~ data:', data);
-    const defaultImg =
-      'https://api.telegram.org/file/bot6651136367:AAEk90fO1lpOmz2W5j8SPIovGMOQaUdij9s/photos/file_2.jpg';
     try {
       if (data.photo) {
         const photo = data.photo[data.photo.length - 1] as any; // Get highest resolution photo
         const fileId = photo?.file_id || '';
-        const filePath = (await this.bot.bot.getFileLink(fileId)) || defaultImg;
-        console.log('🚀 ~ UserInputHandler ~ fileId:', filePath);
+        const filePath = await this.bot.bot.getFileLink(fileId);
+        if (!filePath) {
+          const message = 'Failed to upload on FourMeme. Please try again or use other image.';
+          await this.bot.sendMessage(data.chatId, message, {
+            parse_mode: 'HTML',
+          });
+        }
+
         // Get caption if exists
         const captionText = data.caption || '';
-        console.log('🚀 ~ UserInputHandler ~ captionText:', captionText);
 
         const keys = await this.userService.getMnemonicByTelegramId(data.telegramId);
 
@@ -108,7 +110,7 @@ export class UserInputHandler implements Handler {
           signature,
         );
 
-        if (response) {
+        if (response?.data) {
           const message = 'Uploaded on FourMeme';
 
           await this.bot.editMessageText(message, {
@@ -117,14 +119,31 @@ export class UserInputHandler implements Handler {
             parse_mode: 'HTML',
           });
 
+          const messageSwap = await this.aiService.handleSwap(
+            data.telegramId,
+            `${captionText} [img: ${response.data || filePath}]`,
+            messageId.message_id,
+          );
+
+          await this.bot.editMessageText(messageSwap, {
+            chat_id: data.chatId,
+            message_id: messageId.message_id,
+            parse_mode: 'HTML',
+          });
+
           // save to redis with image URL and caption
-          await this.botStateStore.set(`${data.telegramId}:img`, JSON.stringify({
-            imageUrl: response.url || filePath,
-            messageId: messageId.message_id,
-            captionText: captionText // Store caption with the image data
-          }));
+          await this.botStateStore.set(
+            `${data.telegramId}:img`,
+            JSON.stringify({
+              imageUrl: response.data || filePath,
+              messageId: messageId.message_id,
+              captionText: captionText, // Store caption with the image data
+            }),
+            'EX',
+            120, // 2 minutes in seconds
+          );
         } else {
-          const message = 'Failed to upload on FourMeme';
+          const message = 'Failed to upload on FourMeme. Please try again or use other image.';
 
           await this.bot.editMessageText(message, {
             chat_id: data.chatId,
@@ -132,7 +151,6 @@ export class UserInputHandler implements Handler {
             parse_mode: 'HTML',
           });
         }
-
       } else {
         //remove /
         const text = data?.text?.replace('/', '');
@@ -165,8 +183,8 @@ export class UserInputHandler implements Handler {
         //implement
         const message = await this.aiService.handleSwap(
           data.telegramId,
-          imageUrl ?
-            `${text}${cachedCaption ? ` ${cachedCaption}` : ''} [Image: ${imageUrl}]`
+          imageUrl
+            ? `${text}${cachedCaption ? ` ${cachedCaption}` : ''} [Image: ${imageUrl}]`
             : data.text,
           messageId.message_id,
         );
@@ -189,8 +207,8 @@ export class UserInputHandler implements Handler {
                 message_thread_id: Number(process.env.TELEGRAM_THREAD_ID),
               },
             )
-            .then(() => { })
-            .catch(() => { });
+            .then(() => {})
+            .catch(() => {});
         }
       }
     } catch (error) {
