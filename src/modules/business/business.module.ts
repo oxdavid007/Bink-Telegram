@@ -12,7 +12,7 @@ import { TransactionService } from "./services/transaction.service";
 import { ApiService } from "./services/api.service";
 import { ethers } from "ethers";
 import { AiService } from "./services/ai.service";
-
+import { FourMemeService } from "./services/fourmeme.service";
 const services = [
   TokenService,
   UserService,
@@ -21,6 +21,7 @@ const services = [
   TransactionService,
   ApiService,
   AiService,
+  FourMemeService,
 ];
 @Global()
 @Module({
