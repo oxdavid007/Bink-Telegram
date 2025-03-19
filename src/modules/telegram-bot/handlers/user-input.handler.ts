@@ -10,9 +10,13 @@ import { isSolanaAddress } from '../utils/solana.utils';
 import { CustomPercentageHandler } from './custom-percentage.handler';
 import { COMMAND_KEYS } from '../constants';
 import { AiService } from '@/business/services/ai.service';
+import { FourMemeService } from '@/business/services/fourmeme.service';
+import { Network, NetworksConfig, NetworkType, Wallet } from '@binkai/core';
 
 @Injectable()
 export class UserInputHandler implements Handler {
+  private networks: NetworksConfig['networks'];
+
   @Inject(TelegramBot)
   private readonly bot: TelegramBot;
 
@@ -23,7 +27,25 @@ export class UserInputHandler implements Handler {
     private readonly aiService: AiService,
     private readonly tokenInfoHandler: TokenInfoHandler,
     private readonly customPercentageHandler: CustomPercentageHandler,
-  ) {}
+    private readonly fourMemeService: FourMemeService,
+  ) {
+    // using with fourmeme, support only bnb
+    this.networks = {
+      bnb: {
+        type: 'evm' as NetworkType,
+        config: {
+          chainId: 56,
+          rpcUrl: process.env.BSC_RPC_URL,
+          name: 'BNB Chain',
+          nativeCurrency: {
+            name: 'BNB',
+            symbol: 'BNB',
+            decimals: 18,
+          },
+        },
+      },
+    };
+  }
 
   handler = async (data: {
     chatId: ChatId;
@@ -33,11 +55,61 @@ export class UserInputHandler implements Handler {
     reply_to_message_id?: number;
     photo?: string;
   }) => {
+    const defaultImg =
+      'https://api.telegram.org/file/bot6651136367:AAEk90fO1lpOmz2W5j8SPIovGMOQaUdij9s/photos/file_2.jpg';
     try {
       if (data.photo) {
         const photo = data.photo[data.photo.length - 1] as any; // Get highest resolution photo
         const fileId = photo?.file_id || '';
-        const url = await this.uploadPhoto(fileId);
+        const filePath = (await this.bot.bot.getFileLink(fileId)) || defaultImg;
+        console.log('🚀 ~ UserInputHandler ~ fileId:', filePath);
+
+        const keys = await this.userService.getMnemonicByTelegramId(data.telegramId);
+
+        const user = await this.userService.getOrCreateUser({
+          telegram_id: data.telegramId,
+        });
+
+        const network = new Network({ networks: this.networks });
+        const wallet = new Wallet(
+          {
+            seedPhrase: keys,
+            index: 0,
+          },
+          network,
+        );
+
+        const signatureMessage = await this.fourMemeService.buildSignatureMessage(
+          user.wallet_evm_address,
+          'bnb',
+        );
+
+        const signature = await wallet.signMessage({
+          network: 'bnb' as any,
+          message: signatureMessage,
+        });
+
+        const response = await this.fourMemeService.uploadFile(
+          filePath,
+          user.wallet_evm_address,
+          signature,
+        );
+
+        const firstMessage = 'Uploading...';
+        const messageId = await this.bot.sendMessage(data.chatId, firstMessage, {
+          parse_mode: 'HTML',
+        });
+
+        const message = await this.aiService.handleSwap(
+          data.telegramId,
+          response?.data,
+          messageId.message_id,
+        );
+        await this.bot.editMessageText(message, {
+          chat_id: data.chatId,
+          message_id: messageId.message_id,
+          parse_mode: 'HTML',
+        });
       } else {
         //remove /
         const text = data?.text?.replace('/', '');
@@ -80,22 +152,6 @@ export class UserInputHandler implements Handler {
       console.error('Error in UserInputHandler:', error);
     }
   };
-  // upload photo to fourmeme
-  async uploadPhoto(photo: string) {
-    try {
-      const URL_UPLOAD_IMG_FOURMEME = 'https://four.meme/meme-api/v1/private/token/upload';
-
-      const response = await fetch(URL_UPLOAD_IMG_FOURMEME, {
-        method: 'POST',
-        body: JSON.stringify({ photo }),
-      });
-      const data = await response.json();
-      return data?.data;
-    } catch (error) {
-      console.error('Error in uploadPhoto:', error);
-      return null;
-    }
-  }
 
   async clearMessage(data: { chatId: ChatId; messageId?: number; replyMessageId?: number }) {
     if (data.messageId) {
