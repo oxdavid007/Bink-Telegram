@@ -155,7 +155,7 @@ export class UserInputHandler implements Handler {
         //remove /
         const text = data?.text?.replace('/', '');
         //skip if COMMAND_KEYS includes data.text
-        if (Object.keys(COMMAND_KEYS).includes(text.toUpperCase() as any)) {
+        if (Object.keys(COMMAND_KEYS).includes(text?.toUpperCase() as any)) {
           return;
         }
         const firstMessage = 'Thinking...';
@@ -207,8 +207,8 @@ export class UserInputHandler implements Handler {
                 message_thread_id: Number(process.env.TELEGRAM_THREAD_ID),
               },
             )
-            .then(() => {})
-            .catch(() => {});
+            .then(() => { })
+            .catch(() => { });
         }
       }
     } catch (error) {
