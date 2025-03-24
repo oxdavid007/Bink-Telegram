@@ -48,9 +48,9 @@ export class UserService implements OnApplicationBootstrap {
     @Inject("SOLANA_CONNECTION") private connection: Connection,
     @Inject("BSC_CONNECTION") private bscProvider: JsonRpcProvider,
     @Inject("ETHEREUM_CONNECTION") private ethProvider: JsonRpcProvider
-  ) {}
+  ) { }
 
-  async onApplicationBootstrap() {}
+  async onApplicationBootstrap() { }
 
   async createUser(
     createUserDto: CreateUserDto & {
@@ -109,17 +109,29 @@ export class UserService implements OnApplicationBootstrap {
       }
     }
 
+
     if (process.env.TELEGRAM_GROUP_ID) {
+      const totalUsers = (await this.userRepository.count()) + 1;
+
+      const message =
+        `🎉<b> New User Registration !</b>\n` +
+        `👤 Name: ${user.telegram_username}\n` +
+        `👥 Total Users: ${totalUsers} `;
+
       this.bot
         .sendMessage(
           process.env.TELEGRAM_GROUP_ID,
-          `🚀 New user registered: ${user.telegram_username}`,
+          message,
           {
             message_thread_id: Number(process.env.TELEGRAM_THREAD_ID),
+            parse_mode: "HTML",
+            disable_web_page_preview: true,
           }
         )
         .then()
-        .catch(()=>{});
+        .catch((error) => {
+          console.error('Error sending message to Telegram group:', error);
+        });
     }
 
     return user;
