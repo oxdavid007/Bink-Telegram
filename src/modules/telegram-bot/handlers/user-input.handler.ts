@@ -180,7 +180,7 @@ export class UserInputHandler implements Handler {
           }
         }
 
-        //implement
+        // handle swap
         const message = await this.aiService.handleSwap(
           data.telegramId,
           imageUrl
@@ -189,13 +189,18 @@ export class UserInputHandler implements Handler {
           messageId.message_id,
         );
 
-        await this.bot.editMessageText(message, {
-          chat_id: data.chatId,
-          message_id: messageId.message_id,
-          parse_mode: 'HTML',
-        });
+        const messageKey = `message:${data.chatId}:${messageId.message_id}`;
+        const cachedMessage = await this.botStateStore.get(messageKey);
+        if (!cachedMessage) {
+          await this.bot.editMessageText(message, {
+            chat_id: data.chatId,
+            message_id: messageId.message_id,
+            parse_mode: 'HTML',
+          });
+        }
 
-        if (message.includes('bscscan') && process.env.TELEGRAM_GROUP_ID) {
+
+        if (message?.includes('bscscan') && process.env.TELEGRAM_GROUP_ID) {
           const user = await this.userService.getOrCreateUser({
             telegram_id: data.telegramId,
           });
