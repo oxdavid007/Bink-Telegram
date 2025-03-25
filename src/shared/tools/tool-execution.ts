@@ -41,21 +41,23 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
   bot: TelegramBot;
   chatId: string;
   messageId: number;
-  private hasEditedMessage: boolean = false;
+  onMessage: (message: string) => void;
 
-  constructor(chatId: string, bot: TelegramBot, messageId: number) {
+  constructor(chatId: string, bot: TelegramBot, messageId: number, onMessage: (message: string) => void) {
     this.chatId = chatId;
     this.bot = bot;
     this.messageId = messageId;
+    this.onMessage = onMessage;
   }
 
   setMessageId(messageId: number) {
     this.messageId = messageId;
   }
 
-  hasMessageBeenEdited(): boolean {
-    return this.hasEditedMessage;
+  setOnMessage(onMessage: (message: string) => void) {
+    this.onMessage = onMessage;
   }
+
 
   onToolExecution(data: ToolExecutionData): void {
     const stateEmoji = {
@@ -97,25 +99,19 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
         let message;
 
         if (data.toolName === 'swap') {
-          message = `Congratulations, your transaction has been successful.
+          message = `🎉 Congratulations, your transaction has been successful.
 - <b>Swapped:</b> ${formatSmartNumber(data.data.fromAmount)} ${data.data.fromToken?.symbol || ''} 
 - <b>Received:</b> ${formatSmartNumber(data.data.toAmount)} ${data.data.toToken?.symbol || ''}
 - <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
 `;
         } else { // bridge
-          message = `Congratulations, your transaction has been successful.
+          message = `🎉 Congratulations, your transaction has been successful.
 - <b>Swapped:</b> ${formatSmartNumber(data.data.fromAmount)} ${data.data.fromToken?.symbol || ''} (${data.data.fromNetwork})
 - <b>Received:</b> ${formatSmartNumber(data.data.toAmount)} ${data.data.toToken?.symbol || ''} (${data.data.toNetwork})
 - <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
 `;
         }
-
-        this.bot.editMessageText(`${emoji} ${message}`, {
-          chat_id: this.chatId,
-          message_id: this.messageId,
-          parse_mode: 'HTML',
-        });
-        this.hasEditedMessage = true;
+        this.onMessage(message);
       }
 
       console.log(

@@ -224,6 +224,7 @@ CRITICAL:
           telegramId,
           this.bot,
           messageId,
+          onMessage
         );
         this.mapToolExecutionCallback[telegramId] = toolExecutionCallback;
         agent.registerToolExecutionCallback(toolExecutionCallback as any);
@@ -231,6 +232,7 @@ CRITICAL:
       }
 
       this.mapToolExecutionCallback[telegramId].setMessageId(messageId);
+      this.mapToolExecutionCallback[telegramId].setOnMessage(onMessage);
 
       const inputResult = await agent.execute({
         input: `
@@ -245,8 +247,7 @@ CRITICAL:
       if (onMessage) {
         onMessage(result);
       }
-
-      return result;
+      // return result;
     } catch (error) {
       console.error('Error in handleSwap:', error);
       return 'test';
