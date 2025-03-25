@@ -180,25 +180,36 @@ export class UserInputHandler implements Handler {
           }
         }
 
+        let isReceivedMessage = false;
+
         // handle swap
-        const message = await this.aiService.handleSwap(
+        await this.aiService.handleSwap(
           data.telegramId,
           imageUrl
             ? `${text}${cachedCaption ? ` ${cachedCaption}` : ''} [Image: ${imageUrl}]`
             : data.text,
           messageId.message_id,
+          async (message: string) => {
+            if (!isReceivedMessage) {
+              isReceivedMessage = true;
+              await this.bot.editMessageText(message, {
+                chat_id: data.chatId,
+                message_id: messageId.message_id,
+                parse_mode: 'HTML',
+              });
+            }
+          }
         );
 
-        const messageKey = `message:${data.chatId}:${messageId.message_id}`;
-        const cachedMessage = await this.botStateStore.get(messageKey);
-        if (!cachedMessage) {
-          await this.bot.editMessageText(message, {
-            chat_id: data.chatId,
-            message_id: messageId.message_id,
-            parse_mode: 'HTML',
-          });
-        }
-
+        // Only edit message if tool execution callback hasn't edited it yet
+        // if (!this.aiService.mapToolExecutionCallback[data.telegramId]?.hasMessageBeenEdited()) {
+        // if (!this.aiService.mapToolExecutionCallback[data.telegramId]?.hasMessageBeenEdited()) {
+        //   await this.bot.editMessageText(message, {
+        //     chat_id: data.chatId,
+        //     message_id: messageId.message_id,
+        //     parse_mode: 'HTML',
+        //   });
+        // }
 
         // if (message?.includes('bscscan') && process.env.TELEGRAM_GROUP_ID) {
         //   const user = await this.userService.getOrCreateUser({

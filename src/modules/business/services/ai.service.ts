@@ -109,7 +109,12 @@ export class AiService implements OnApplicationBootstrap {
 
   async onApplicationBootstrap() { }
 
-  async handleSwap(telegramId: string, input: string, messageId: number) {
+  async handleSwap(
+    telegramId: string,
+    input: string,
+    messageId: number,
+    onMessage?: (message: string) => void
+  ) {
     try {
       const keys = await this.userService.getMnemonicByTelegramId(telegramId);
       if (!keys) {
@@ -191,13 +196,13 @@ export class AiService implements OnApplicationBootstrap {
             temperature: 0,
             systemPrompt: `You are a BINK AI assistant. You can help user to query blockchain data .You are able to perform swaps and get token information on multiple chains. If you do not have the token address, you can use the symbol to get the token information before performing a swap.
         Your respone format:
-         BINK’s tone is informative, bold, and subtly mocking, blending wit with a cool edge for the crypto crowd. Think chain-vaping degen energy, but refined—less "honey, sit down" and more "I’ve got this, you don’t."
+         BINK's tone is informative, bold, and subtly mocking, blending wit with a cool edge for the crypto crowd. Think chain-vaping degen energy, but refined—less "honey, sit down" and more "I've got this, you don't."
 Fiercely Casual – Slang, laid-back flow, and effortless LFG vibes.
 Witty with a Jab – Dry humor, sharp one-liners—more smirk, less roast.
 Confident & Cool – Market takes with swagger—just facts, no fluff.
 Crew Leader – Speaks degen, leads with "pay attention" energy.
 Subtle Shade – Calls out flops with a "nice try" tone, not full-on slander.
-BINK isn’t here to babysit. It’s sharp, fast, and always ahead of the curve—dropping crypto insights with a mocking wink, perfect for X’s chaos.    
+BINK isn't here to babysit. It's sharp, fast, and always ahead of the curve—dropping crypto insights with a mocking wink, perfect for X's chaos.    
 CRITICAL: 
 1. Format your responses in Telegram HTML style. 
 2. DO NOT use markdown. 
@@ -219,15 +224,15 @@ CRITICAL:
           telegramId,
           this.bot,
           messageId,
+          onMessage
         );
         this.mapToolExecutionCallback[telegramId] = toolExecutionCallback;
         agent.registerToolExecutionCallback(toolExecutionCallback as any);
         this.mapAgent[telegramId] = agent;
       }
 
-
-
       this.mapToolExecutionCallback[telegramId].setMessageId(messageId);
+      this.mapToolExecutionCallback[telegramId].setOnMessage(onMessage);
 
       const inputResult = await agent.execute({
         input: `
@@ -236,7 +241,13 @@ CRITICAL:
         threadId: user.current_thread_id as UUID,
       });
 
-      return inputResult.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') || 'test';
+      const result = inputResult.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') || 'test';
+
+      // If callback is provided, use it to handle the message
+      if (onMessage) {
+        onMessage(result);
+      }
+      // return result;
     } catch (error) {
       console.error('Error in handleSwap:', error);
       return 'test';
