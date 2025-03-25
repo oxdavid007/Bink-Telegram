@@ -180,36 +180,53 @@ export class UserInputHandler implements Handler {
           }
         }
 
-        //implement
-        const message = await this.aiService.handleSwap(
+        let isReceivedMessage = false;
+
+        // handle swap
+        await this.aiService.handleSwap(
           data.telegramId,
           imageUrl
             ? `${text}${cachedCaption ? ` ${cachedCaption}` : ''} [Image: ${imageUrl}]`
             : data.text,
           messageId.message_id,
+          async (message: string) => {
+            if (!isReceivedMessage) {
+              isReceivedMessage = true;
+              await this.bot.editMessageText(message, {
+                chat_id: data.chatId,
+                message_id: messageId.message_id,
+                parse_mode: 'HTML',
+              });
+            }
+          }
         );
 
-        await this.bot.editMessageText(message, {
-          chat_id: data.chatId,
-          message_id: messageId.message_id,
-          parse_mode: 'HTML',
-        });
+        // Only edit message if tool execution callback hasn't edited it yet
+        // if (!this.aiService.mapToolExecutionCallback[data.telegramId]?.hasMessageBeenEdited()) {
+        // if (!this.aiService.mapToolExecutionCallback[data.telegramId]?.hasMessageBeenEdited()) {
+        //   await this.bot.editMessageText(message, {
+        //     chat_id: data.chatId,
+        //     message_id: messageId.message_id,
+        //     parse_mode: 'HTML',
+        //   });
+        // }
 
-        if (message.includes('bscscan') && process.env.TELEGRAM_GROUP_ID) {
-          const user = await this.userService.getOrCreateUser({
-            telegram_id: data.telegramId,
-          });
-          this.bot
-            .sendMessage(
-              process.env.TELEGRAM_GROUP_ID,
-              `🚀 New transaction -${user.telegram_username}- on BSC:\n\n${message}`,
-              {
-                message_thread_id: Number(process.env.TELEGRAM_THREAD_ID),
-              },
-            )
-            .then(() => { })
-            .catch(() => { });
-        }
+        // if (message?.includes('bscscan') && process.env.TELEGRAM_GROUP_ID) {
+        //   const user = await this.userService.getOrCreateUser({
+        //     telegram_id: data.telegramId,
+        //   });
+        //   this.bot
+        //     .sendMessage(
+        //       process.env.TELEGRAM_GROUP_ID,
+        //       `🚀 New transaction -${user.telegram_username}- on BSC:\n\n${message}`,
+        //       {
+        //         message_thread_id: Number(process.env.TELEGRAM_THREAD_ID),
+        //         parse_mode: 'HTML',
+        //       },
+        //     )
+        //     .then(() => { })
+        //     .catch(() => { });
+        // }
       }
     } catch (error) {
       console.error('Error in UserInputHandler:', error);

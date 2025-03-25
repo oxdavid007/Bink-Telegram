@@ -1,4 +1,5 @@
 import { TelegramBot } from "@/telegram-bot/telegram-bot";
+import { formatSmartNumber } from "@/telegram-bot/utils/format-text";
 
 /**
  * Enum representing the different states of a tool execution
@@ -17,6 +18,7 @@ export interface ToolExecutionData {
   state: ToolExecutionState;
   timestamp: number;
   message: string;
+  toolName?: string;
   data?: {
     progress?: number;
     [key: string]: any;
@@ -39,15 +41,23 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
   bot: TelegramBot;
   chatId: string;
   messageId: number;
-  constructor(chatId: string, bot: TelegramBot, messageId: number) {
+  onMessage: (message: string) => void;
+
+  constructor(chatId: string, bot: TelegramBot, messageId: number, onMessage: (message: string) => void) {
     this.chatId = chatId;
     this.bot = bot;
     this.messageId = messageId;
+    this.onMessage = onMessage;
   }
 
   setMessageId(messageId: number) {
     this.messageId = messageId;
   }
+
+  setOnMessage(onMessage: (message: string) => void) {
+    this.onMessage = onMessage;
+  }
+
 
   onToolExecution(data: ToolExecutionData): void {
     const stateEmoji = {
@@ -71,17 +81,46 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
         });
       }
 
-      console.log(`   Progress: ${data.data.progress || 0}%`);
+      console.log(`Progress: ${data.data.progress || 0}%`);
     }
 
     if (data.state === ToolExecutionState.COMPLETED && data.data) {
+      if (data.data?.status === "success" && (data.toolName === 'swap' || data.toolName === 'bridge')) {
+        const getScanUrl = (network, txHash) => {
+          const scanUrls = {
+            'bnb': `https://bscscan.com/tx/${txHash}`,
+            'ethereum': `https://etherscan.io/tx/${txHash}`,
+            'solana': `https://solscan.io/tx/${txHash}`,
+          };
+          return scanUrls[network] || `${txHash}`;
+        };
+
+        const scanUrl = getScanUrl(data.data.network, data.data.transactionHash);
+        let message;
+
+        if (data.toolName === 'swap') {
+          message = `🎉 Congratulations, your transaction has been successful.
+- <b>Swapped:</b> ${formatSmartNumber(data.data.fromAmount)} ${data.data.fromToken?.symbol || ''} 
+- <b>Received:</b> ${formatSmartNumber(data.data.toAmount)} ${data.data.toToken?.symbol || ''}
+- <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
+`;
+        } else { // bridge
+          message = `🎉 Congratulations, your transaction has been successful.
+- <b>Swapped:</b> ${formatSmartNumber(data.data.fromAmount)} ${data.data.fromToken?.symbol || ''} (${data.data.fromNetwork})
+- <b>Received:</b> ${formatSmartNumber(data.data.toAmount)} ${data.data.toToken?.symbol || ''} (${data.data.toNetwork})
+- <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
+`;
+        }
+        this.onMessage(message);
+      }
+
       console.log(
-        `   Result: ${JSON.stringify(data.data).substring(0, 100)}${JSON.stringify(data.data).length > 100 ? "..." : ""}`
+        `Result: ${JSON.stringify(data.data).substring(0, 100)}${JSON.stringify(data.data).length > 100 ? "..." : ""} `
       );
     }
 
     if (data.state === ToolExecutionState.FAILED && data.error) {
-      this.bot.editMessageText(`   Error: ${data.error}`, {
+      this.bot.editMessageText(`Error: ${data.error} `, {
         chat_id: this.chatId,
         message_id: this.messageId,
       });
