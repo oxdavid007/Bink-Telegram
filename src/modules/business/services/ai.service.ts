@@ -107,7 +107,7 @@ export class AiService implements OnApplicationBootstrap {
     });
   }
 
-  async onApplicationBootstrap() {}
+  async onApplicationBootstrap() { }
 
   async handleSwap(telegramId: string, input: string, messageId: number) {
     try {
@@ -224,6 +224,8 @@ CRITICAL:
         agent.registerToolExecutionCallback(toolExecutionCallback as any);
         this.mapAgent[telegramId] = agent;
       }
+
+
 
       this.mapToolExecutionCallback[telegramId].setMessageId(messageId);
 
