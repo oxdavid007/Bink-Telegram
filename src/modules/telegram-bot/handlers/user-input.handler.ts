@@ -189,16 +189,14 @@ export class UserInputHandler implements Handler {
           messageId.message_id,
         );
 
-        const messageKey = `message:${data.chatId}:${messageId.message_id}`;
-        const cachedMessage = await this.botStateStore.get(messageKey);
-        if (!cachedMessage) {
+        // Only edit message if tool execution callback hasn't edited it yet
+        if (!this.aiService.mapToolExecutionCallback[data.telegramId]?.hasMessageBeenEdited()) {
           await this.bot.editMessageText(message, {
             chat_id: data.chatId,
             message_id: messageId.message_id,
             parse_mode: 'HTML',
           });
         }
-
 
         // if (message?.includes('bscscan') && process.env.TELEGRAM_GROUP_ID) {
         //   const user = await this.userService.getOrCreateUser({
