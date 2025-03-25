@@ -200,21 +200,22 @@ export class UserInputHandler implements Handler {
         }
 
 
-        if (message?.includes('bscscan') && process.env.TELEGRAM_GROUP_ID) {
-          const user = await this.userService.getOrCreateUser({
-            telegram_id: data.telegramId,
-          });
-          this.bot
-            .sendMessage(
-              process.env.TELEGRAM_GROUP_ID,
-              `🚀 New transaction -${user.telegram_username}- on BSC:\n\n${message}`,
-              {
-                message_thread_id: Number(process.env.TELEGRAM_THREAD_ID),
-              },
-            )
-            .then(() => { })
-            .catch(() => { });
-        }
+        // if (message?.includes('bscscan') && process.env.TELEGRAM_GROUP_ID) {
+        //   const user = await this.userService.getOrCreateUser({
+        //     telegram_id: data.telegramId,
+        //   });
+        //   this.bot
+        //     .sendMessage(
+        //       process.env.TELEGRAM_GROUP_ID,
+        //       `🚀 New transaction -${user.telegram_username}- on BSC:\n\n${message}`,
+        //       {
+        //         message_thread_id: Number(process.env.TELEGRAM_THREAD_ID),
+        //         parse_mode: 'HTML',
+        //       },
+        //     )
+        //     .then(() => { })
+        //     .catch(() => { });
+        // }
       }
     } catch (error) {
       console.error('Error in UserInputHandler:', error);
