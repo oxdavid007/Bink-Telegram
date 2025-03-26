@@ -281,7 +281,7 @@ export class TelegramBot implements OnApplicationBootstrap {
     try {
       return await this.bot.editMessageText(text, options);
     } catch (error) {
-      console.error('Error in TelegramBot.editMessageText:', error);
+      console.error('Error in TelegramBot.editMessageText:', error.message);
       return null;
     }
   }

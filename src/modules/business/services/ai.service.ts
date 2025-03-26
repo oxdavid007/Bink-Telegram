@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter } from 'events';
 import { ethers, JsonRpcProvider } from 'ethers';
-import { Agent, Wallet, Network, settings, NetworkType, NetworksConfig, UUID } from '@binkai/core';
+import { Agent, Wallet, Network, settings, NetworkType, NetworksConfig, UUID, PlanningAgent } from '@binkai/core';
 import { SwapPlugin } from '@binkai/swap-plugin';
 import { PancakeSwapProvider } from '@binkai/pancakeswap-provider';
 import { ChainId } from '@pancakeswap/sdk';
@@ -190,7 +190,7 @@ export class AiService implements OnApplicationBootstrap {
           }),
         ]);
 
-        agent = new Agent(
+        agent = new PlanningAgent(
           {
             model: 'gpt-4o',
             temperature: 0,

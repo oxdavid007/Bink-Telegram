@@ -190,6 +190,7 @@ export class UserInputHandler implements Handler {
             : data.text,
           messageId.message_id,
           async (message: string) => {
+            console.log("🚀 ~ message:", message)
             if (!isReceivedMessage) {
               isReceivedMessage = true;
               await this.bot.editMessageText(message, {
