@@ -70,7 +70,6 @@ export class HandlerService {
   async handleMessage(message: Message) {
     console.log('🚀 ~ HandlerService ~ handleMessage ~ message:', message);
     const { text, chat, from } = message;
-    console.log('🚀 ~ HandlerService ~ handleMessage ~ text:', text);
 
     if (!text) return;
 
@@ -78,6 +77,7 @@ export class HandlerService {
     const chatId = chat.id;
     const telegramId = from.id.toString();
     const firstName = from.first_name;
+    const username = from.username;
 
     switch (command) {
       case COMMAND_KEYS.START:
@@ -85,6 +85,7 @@ export class HandlerService {
           chatId,
           telegramId,
           firstName,
+          username,
           text,
         });
         break;
