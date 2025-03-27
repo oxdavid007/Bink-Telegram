@@ -99,13 +99,13 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
         let message;
 
         if (data.toolName === 'swap') {
-          message = `🎉 Congratulations, your transaction has been successful.
+          message = `🎉 <b>Congratulations, your transaction has been successful.</b>
 - <b>Swapped:</b> ${formatSmartNumber(data.data.fromAmount)} ${data.data.fromToken?.symbol || ''} 
 - <b>Received:</b> ${formatSmartNumber(data.data.toAmount)} ${data.data.toToken?.symbol || ''}
 - <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
 `;
         } else { // bridge
-          message = `🎉 Congratulations, your transaction has been successful.
+          message = `🎉 <b>Congratulations, your transaction has been successful.</b>
 - <b>Swapped:</b> ${formatSmartNumber(data.data.fromAmount)} ${data.data.fromToken?.symbol || ''} (${data.data.fromNetwork})
 - <b>Received:</b> ${formatSmartNumber(data.data.toAmount)} ${data.data.toToken?.symbol || ''} (${data.data.toNetwork})
 - <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
