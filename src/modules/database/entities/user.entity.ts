@@ -24,6 +24,9 @@ export class UserEntity extends BaseEntity {
   telegram_username: string;
 
   @Column({ nullable: true })
+  telegram_name: string;
+
+  @Column({ nullable: true })
   telegram_avatar_url: string;
 
   @Column({ unique: true })

@@ -56,6 +56,7 @@ export class UserService implements OnApplicationBootstrap {
     createUserDto: CreateUserDto & {
       telegram_id?: string;
       telegram_username?: string;
+      telegram_name?: string;
       telegram_avatar_url?: string;
       address?: string;
       referral_code?: string;
@@ -115,7 +116,8 @@ export class UserService implements OnApplicationBootstrap {
 
       const message =
         `🎉<b> New User Registration !</b>\n` +
-        `👤 Name: ${user.telegram_username}\n` +
+        `👤 Name: ${user.telegram_name}\n` +
+        `👤 Username: ${user.telegram_username}\n` +
         `👥 Total Users: ${totalUsers} `;
 
       this.bot
@@ -156,6 +158,7 @@ export class UserService implements OnApplicationBootstrap {
     createUserDto: CreateUserDto & {
       telegram_id?: string;
       telegram_username?: string;
+      telegram_name?: string;
       telegram_avatar_url?: string;
       address?: string;
       referral_code?: string;
