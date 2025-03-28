@@ -40,6 +40,7 @@
     "@binkai/token-plugin": "^0.1.12-alpha.1",
     "@binkai/venus-provider": "^0.1.12-alpha.1",
     "@binkai/wallet-plugin": "^0.1.12-alpha.1",
+    "@binkai/alchemy-provider": "^0.1.12-alpha.1",
     "@coral-xyz/anchor": "^0.30.1",
     "@nestjs/bull": "^10.0.1",
     "@nestjs/cache-manager": "^2.2.2",
