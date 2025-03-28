@@ -11,7 +11,7 @@ import { configAuth } from "./configs/auth";
 import { configCache } from "./configs/cache";
 import { BusinessModule } from "@/business/business.module";
 import { openaiConfig } from "./configs/openai";
-import { binkConfig, birdeyeConfig, postgresConfig } from "./configs/bink";
+import { alchemyConfig, binkConfig, birdeyeConfig, postgresConfig } from "./configs/bink";
 import { fourMemeConfig } from "./configs/four-meme";
 @Module({
   imports: [
@@ -45,6 +45,7 @@ import { fourMemeConfig } from "./configs/four-meme";
         configCache,
         openaiConfig,
         birdeyeConfig,
+        alchemyConfig,
         postgresConfig,
         binkConfig,
         fourMemeConfig,

@@ -2,13 +2,13 @@ import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import OpenAI from 'openai';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter } from 'events';
-import { ethers, JsonRpcProvider } from 'ethers';
-import { Agent, Wallet, Network, settings, NetworkType, NetworksConfig, UUID } from '@binkai/core';
+import { JsonRpcProvider } from 'ethers';
+import { Agent, Wallet, Network, NetworkType, NetworksConfig, UUID } from '@binkai/core';
 import { SwapPlugin } from '@binkai/swap-plugin';
 import { PancakeSwapProvider } from '@binkai/pancakeswap-provider';
-import { ChainId } from '@pancakeswap/sdk';
 import { UserService } from './user.service';
 import { BirdeyeProvider } from '@binkai/birdeye-provider';
+import { AlchemyProvider } from '@binkai/alchemy-provider';
 import { TokenPlugin } from '@binkai/token-plugin';
 import { PostgresDatabaseAdapter } from '@binkai/postgres-adapter';
 import { KnowledgePlugin } from '@binkai/knowledge-plugin';
@@ -32,6 +32,7 @@ export class AiService implements OnApplicationBootstrap {
   private openai: OpenAI;
   private networks: NetworksConfig['networks'];
   private birdeyeApi: BirdeyeProvider;
+  private alchemyApi: AlchemyProvider;
   private postgresAdapter: PostgresDatabaseAdapter;
   private binkProvider: BinkProvider;
   private bnbProvider: BnbProvider;
@@ -92,6 +93,9 @@ export class AiService implements OnApplicationBootstrap {
     };
     this.birdeyeApi = new BirdeyeProvider({
       apiKey: this.configService.get<string>('birdeye.birdeyeApiKey'),
+    });
+    this.alchemyApi = new AlchemyProvider({
+      apiKey: this.configService.get<string>('alchemy.alchemyApiKey'),
     });
     this.postgresAdapter = new PostgresDatabaseAdapter({
       connectionString: this.configService.get<string>('postgres_ai.postgresUrl'),
@@ -179,7 +183,7 @@ export class AiService implements OnApplicationBootstrap {
           }),
           await walletPlugin.initialize({
             defaultChain: 'bnb',
-            providers: [this.bnbProvider, this.birdeyeApi],
+            providers: [this.bnbProvider, this.birdeyeApi, this.alchemyApi],
             supportedChains: ['bnb'],
           }),
           await stakingPlugin.initialize({

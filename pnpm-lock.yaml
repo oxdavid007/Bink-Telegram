@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@binkai/alchemy-provider':
+        specifier: ^0.1.12-alpha.0
+        version: 0.1.12-alpha.0(@browserbasehq/sdk@2.4.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.51.1)(bufferutil@4.0.9)(deepmerge@4.3.1)(dotenv@16.4.7)(openai@4.87.4(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(utf-8-validate@5.0.10)(zod@3.24.2))(@ibm-cloud/watsonx-ai@1.6.0(@langchain/core@0.3.42(openai@4.87.4(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))))(bufferutil@4.0.9)(crypto-js@4.2.0)(ibm-cloud-sdk-core@5.3.2)(ignore@5.3.2)(ioredis@5.6.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.87.4(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(pg@8.14.1)(playwright@1.51.1)(redis@4.7.0)(typeorm@0.3.21(ioredis@5.6.0)(pg@8.14.1)(redis@4.7.0)(reflect-metadata@0.1.14)(ts-node@10.9.2(@types/node@20.17.24)(typescript@5.8.2)))(utf-8-validate@5.0.10)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@binkai/bink-provider':
         specifier: ^0.1.12-alpha.1
         version: 0.1.12-alpha.1(@browserbasehq/sdk@2.4.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.51.1)(bufferutil@4.0.9)(deepmerge@4.3.1)(dotenv@16.4.7)(openai@4.87.4(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(utf-8-validate@5.0.10)(zod@3.24.2))(@ibm-cloud/watsonx-ai@1.6.0(@langchain/core@0.3.42(openai@4.87.4(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))))(bufferutil@4.0.9)(crypto-js@4.2.0)(ibm-cloud-sdk-core@5.3.2)(ignore@5.3.2)(ioredis@5.6.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.87.4(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(pg@8.14.1)(playwright@1.51.1)(redis@4.7.0)(typeorm@0.3.21(ioredis@5.6.0)(pg@8.14.1)(redis@4.7.0)(reflect-metadata@0.1.14)(ts-node@10.9.2(@types/node@20.17.24)(typescript@5.8.2)))(utf-8-validate@5.0.10)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))
@@ -143,6 +146,9 @@ importers:
       ioredis:
         specifier: ^5.3.2
         version: 5.6.0
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       nestjs-pino:
         specifier: ^4.1.0
         version: 4.3.1(@nestjs/common@10.4.15(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.2))(pino-http@10.4.0)(pino@9.6.0)(rxjs@7.8.2)
@@ -7606,6 +7612,7 @@ snapshots:
       - encoding
       - epub2
       - fast-xml-parser
+      - fastestsmallesttextencoderdecoder
       - firebase-admin
       - google-auth-library
       - googleapis
@@ -7643,7 +7650,9 @@ snapshots:
       - replicate
       - sonix-speech-recognition
       - srt-parser-2
+      - supports-color
       - typeorm
+      - typescript
       - typesense
       - usearch
       - utf-8-validate
