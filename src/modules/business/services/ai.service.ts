@@ -10,6 +10,7 @@ import { UserService } from './user.service';
 import { BirdeyeProvider } from '@binkai/birdeye-provider';
 import { AlchemyProvider } from '@binkai/alchemy-provider';
 import { TokenPlugin } from '@binkai/token-plugin';
+import { ImagePlugin } from '@binkai/image-plugin';
 import { PostgresDatabaseAdapter } from '@binkai/postgres-adapter';
 import { KnowledgePlugin } from '@binkai/knowledge-plugin';
 import { BinkProvider } from '@binkai/bink-provider';
@@ -111,13 +112,13 @@ export class AiService implements OnApplicationBootstrap {
     });
   }
 
-  async onApplicationBootstrap() { }
+  async onApplicationBootstrap() {}
 
   async handleSwap(
     telegramId: string,
     input: string,
     messageId: number,
-    onMessage?: (message: string) => void
+    onMessage?: (message: string) => void,
   ) {
     try {
       const keys = await this.userService.getMnemonicByTelegramId(telegramId);
@@ -149,7 +150,7 @@ export class AiService implements OnApplicationBootstrap {
         const fourMeme = new FourMemeProvider(this.bscProvider, bscChainId);
         const venus = new VenusProvider(this.bscProvider, bscChainId);
         const jupiter = new JupiterProvider(new Connection(process.env.RPC_URL));
-
+        const imagePlugin = new ImagePlugin();
         const swapPlugin = new SwapPlugin();
         const tokenPlugin = new TokenPlugin();
         const knowledgePlugin = new KnowledgePlugin();
@@ -174,6 +175,10 @@ export class AiService implements OnApplicationBootstrap {
             supportedChains: ['solana', 'bnb'],
           }),
           await knowledgePlugin.initialize({
+            providers: [this.binkProvider],
+          }),
+          await imagePlugin.initialize({
+            defaultChain: 'bnb',
             providers: [this.binkProvider],
           }),
           await bridgePlugin.initialize({
@@ -224,11 +229,13 @@ CRITICAL:
         await agent.registerPlugin(bridgePlugin);
         await agent.registerPlugin(walletPlugin);
         await agent.registerPlugin(stakingPlugin);
+        await agent.registerPlugin(imagePlugin);
+
         const toolExecutionCallback = new ExampleToolExecutionCallback(
           telegramId,
           this.bot,
           messageId,
-          onMessage
+          onMessage,
         );
         this.mapToolExecutionCallback[telegramId] = toolExecutionCallback;
         agent.registerToolExecutionCallback(toolExecutionCallback as any);
