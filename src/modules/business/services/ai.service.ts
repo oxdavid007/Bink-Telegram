@@ -2,14 +2,15 @@ import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import OpenAI from 'openai';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter } from 'events';
-import { ethers, JsonRpcProvider } from 'ethers';
-import { Agent, Wallet, Network, settings, NetworkType, NetworksConfig, UUID } from '@binkai/core';
+import { JsonRpcProvider } from 'ethers';
+import { Agent, Wallet, Network, NetworkType, NetworksConfig, UUID } from '@binkai/core';
 import { SwapPlugin } from '@binkai/swap-plugin';
 import { PancakeSwapProvider } from '@binkai/pancakeswap-provider';
-import { ChainId } from '@pancakeswap/sdk';
 import { UserService } from './user.service';
 import { BirdeyeProvider } from '@binkai/birdeye-provider';
+import { AlchemyProvider } from '@binkai/alchemy-provider';
 import { TokenPlugin } from '@binkai/token-plugin';
+import { ImagePlugin } from '@binkai/image-plugin';
 import { PostgresDatabaseAdapter } from '@binkai/postgres-adapter';
 import { KnowledgePlugin } from '@binkai/knowledge-plugin';
 import { BinkProvider } from '@binkai/bink-provider';
@@ -32,6 +33,7 @@ export class AiService implements OnApplicationBootstrap {
   private openai: OpenAI;
   private networks: NetworksConfig['networks'];
   private birdeyeApi: BirdeyeProvider;
+  private alchemyApi: AlchemyProvider;
   private postgresAdapter: PostgresDatabaseAdapter;
   private binkProvider: BinkProvider;
   private bnbProvider: BnbProvider;
@@ -93,6 +95,9 @@ export class AiService implements OnApplicationBootstrap {
     this.birdeyeApi = new BirdeyeProvider({
       apiKey: this.configService.get<string>('birdeye.birdeyeApiKey'),
     });
+    this.alchemyApi = new AlchemyProvider({
+      apiKey: this.configService.get<string>('alchemy.alchemyApiKey'),
+    });
     this.postgresAdapter = new PostgresDatabaseAdapter({
       connectionString: this.configService.get<string>('postgres_ai.postgresUrl'),
     });
@@ -107,13 +112,13 @@ export class AiService implements OnApplicationBootstrap {
     });
   }
 
-  async onApplicationBootstrap() { }
+  async onApplicationBootstrap() {}
 
   async handleSwap(
     telegramId: string,
     input: string,
     messageId: number,
-    onMessage?: (message: string) => void
+    onMessage?: (message: string) => void,
   ) {
     try {
       const keys = await this.userService.getMnemonicByTelegramId(telegramId);
@@ -145,7 +150,7 @@ export class AiService implements OnApplicationBootstrap {
         const fourMeme = new FourMemeProvider(this.bscProvider, bscChainId);
         const venus = new VenusProvider(this.bscProvider, bscChainId);
         const jupiter = new JupiterProvider(new Connection(process.env.RPC_URL));
-
+        const imagePlugin = new ImagePlugin();
         const swapPlugin = new SwapPlugin();
         const tokenPlugin = new TokenPlugin();
         const knowledgePlugin = new KnowledgePlugin();
@@ -172,6 +177,10 @@ export class AiService implements OnApplicationBootstrap {
           await knowledgePlugin.initialize({
             providers: [this.binkProvider],
           }),
+          await imagePlugin.initialize({
+            defaultChain: 'bnb',
+            providers: [this.binkProvider],
+          }),
           await bridgePlugin.initialize({
             defaultChain: 'bnb',
             providers: [debridge],
@@ -179,7 +188,7 @@ export class AiService implements OnApplicationBootstrap {
           }),
           await walletPlugin.initialize({
             defaultChain: 'bnb',
-            providers: [this.bnbProvider, this.birdeyeApi],
+            providers: [this.bnbProvider, this.birdeyeApi, this.alchemyApi],
             supportedChains: ['bnb'],
           }),
           await stakingPlugin.initialize({
@@ -220,11 +229,13 @@ CRITICAL:
         await agent.registerPlugin(bridgePlugin);
         await agent.registerPlugin(walletPlugin);
         await agent.registerPlugin(stakingPlugin);
+        await agent.registerPlugin(imagePlugin);
+
         const toolExecutionCallback = new ExampleToolExecutionCallback(
           telegramId,
           this.bot,
           messageId,
-          onMessage
+          onMessage,
         );
         this.mapToolExecutionCallback[telegramId] = toolExecutionCallback;
         agent.registerToolExecutionCallback(toolExecutionCallback as any);
