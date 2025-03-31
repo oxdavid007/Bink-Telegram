@@ -15,4 +15,5 @@ export const postgresConfig = registerAs("postgres_ai", () => ({
 export const binkConfig = registerAs("bink", () => ({
   apiKey: process.env.BINK_API_KEY || "",
   baseUrl: process.env.BINK_API_URL || "",
+  imageApiUrl: process.env.IMAGE_API_URL || "",
 }));
