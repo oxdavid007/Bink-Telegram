@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter } from 'events';
 import { JsonRpcProvider } from 'ethers';
-import { Agent, Wallet, Network, NetworkType, NetworksConfig, UUID } from '@binkai/core';
+import { Agent, Wallet, Network, NetworkType, NetworksConfig, UUID, PlanningAgent, ToolExecutionData } from '@binkai/core';
 import { SwapPlugin } from '@binkai/swap-plugin';
 import { PancakeSwapProvider } from '@binkai/pancakeswap-provider';
 import { UserService } from './user.service';
@@ -119,7 +119,7 @@ export class AiService implements OnApplicationBootstrap {
     telegramId: string,
     input: string,
     messageId: number,
-    onMessage?: (message: string) => void,
+    onData?: (data: ToolExecutionData) => void,
   ) {
     try {
       const keys = await this.userService.getMnemonicByTelegramId(telegramId);
@@ -200,9 +200,10 @@ export class AiService implements OnApplicationBootstrap {
           }),
         ]);
 
-        agent = new Agent(
+        agent = new PlanningAgent(
           {
             model: 'gpt-4o',
+            isHumanReview: true,
             temperature: 0,
             systemPrompt: `You are a BINK AI assistant. You can help user to query blockchain data .You are able to perform swaps and get token information on multiple chains. If you do not have the token address, you can use the symbol to get the token information before performing a swap.
         Your respone format:
@@ -236,7 +237,7 @@ CRITICAL:
           telegramId,
           this.bot,
           messageId,
-          onMessage,
+          onData,
         );
         this.mapToolExecutionCallback[telegramId] = toolExecutionCallback;
         agent.registerToolExecutionCallback(toolExecutionCallback as any);
@@ -244,7 +245,7 @@ CRITICAL:
       }
 
       this.mapToolExecutionCallback[telegramId].setMessageId(messageId);
-      this.mapToolExecutionCallback[telegramId].setOnMessage(onMessage);
+      this.mapToolExecutionCallback[telegramId].setOnData(onData);
 
       const inputResult = await agent.execute({
         input: `
@@ -256,8 +257,8 @@ CRITICAL:
       const result = inputResult.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') || 'test';
 
       // If callback is provided, use it to handle the message
-      if (onMessage) {
-        onMessage(result);
+      if (onData) {
+        onData(result);
       }
       // return result;
     } catch (error) {

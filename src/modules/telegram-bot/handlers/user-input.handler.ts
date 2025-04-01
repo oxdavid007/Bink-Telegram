@@ -11,7 +11,7 @@ import { CustomPercentageHandler } from './custom-percentage.handler';
 import { COMMAND_KEYS } from '../constants';
 import { AiService } from '@/business/services/ai.service';
 import { FourMemeService } from '@/business/services/fourmeme.service';
-import { Network, NetworksConfig, NetworkType, Wallet } from '@binkai/core';
+import { Network, NetworksConfig, NetworkType, ToolExecutionData, Wallet } from '@binkai/core';
 
 @Injectable()
 export class UserInputHandler implements Handler {
@@ -88,10 +88,11 @@ export class UserInputHandler implements Handler {
           ? `${text}${captionText ? ` ${captionText}` : ''} [Image: ${imageUrl}]`
           : data.text,
         messageId.message_id,
-        async (message: string) => {
+        async (dataResult: ToolExecutionData) => {
+          console.log("🚀 ~ UserInputHandler ~ dataResult:", dataResult)
           if (!isReceivedMessage) {
             isReceivedMessage = true;
-            await this.bot.editMessageText(message, {
+            await this.bot.editMessageText(dataResult.message, {
               chat_id: data.chatId,
               message_id: messageId.message_id,
               parse_mode: 'HTML',
