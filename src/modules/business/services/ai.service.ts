@@ -105,6 +105,7 @@ export class AiService implements OnApplicationBootstrap {
     this.binkProvider = new BinkProvider({
       apiKey: this.configService.get<string>('bink.apiKey'),
       baseUrl: this.configService.get<string>('bink.baseUrl'),
+      imageApiUrl: this.configService.get<string>('bink.imageApiUrl'),
     });
 
     this.bnbProvider = new BnbProvider({
@@ -112,7 +113,7 @@ export class AiService implements OnApplicationBootstrap {
     });
   }
 
-  async onApplicationBootstrap() {}
+  async onApplicationBootstrap() { }
 
   async handleSwap(
     telegramId: string,
