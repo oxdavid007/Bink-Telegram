@@ -63,11 +63,17 @@ export class UserInputHandler implements Handler {
       if (Object.keys(COMMAND_KEYS).includes(text?.toUpperCase() as any)) {
         return;
       }
-      const firstMessage = 'Thinking...';
-      const messageId = await this.bot.sendMessage(data.chatId, firstMessage, {
-        parse_mode: 'HTML',
-      });
-      messageErrorId = messageId.message_id;
+      // const firstMessage = 'Getting List Plan...';
+      // const messagePlanListId = await this.bot.sendMessage(data.chatId, firstMessage, {
+      //   parse_mode: 'HTML',
+      // });
+
+      // const secondMessage = 'Thinking...';
+      // const messageId = await this.bot.sendMessage(data.chatId, secondMessage, {
+      //   parse_mode: 'HTML',
+      // });
+
+      // messageErrorId = messageId.message_id;
       const captionText = data.caption || '';
       let imageUrl = null;
       if (data.photo) {
@@ -79,26 +85,12 @@ export class UserInputHandler implements Handler {
 
       console.log("🚀 ~ UserInputHandler ~ imageUrl:", imageUrl)
 
-      let isReceivedMessage = false;
-
       // handle swap
       await this.aiService.handleSwap(
         data.telegramId,
         imageUrl
           ? `${text}${captionText ? ` ${captionText}` : ''} [Image: ${imageUrl}]`
           : data.text,
-        messageId.message_id,
-        async (dataResult: ToolExecutionData) => {
-          console.log("🚀 ~ UserInputHandler ~ dataResult:", dataResult)
-          if (!isReceivedMessage) {
-            isReceivedMessage = true;
-            await this.bot.editMessageText(dataResult.message, {
-              chat_id: data.chatId,
-              message_id: messageId.message_id,
-              parse_mode: 'HTML',
-            });
-          }
-        }
       );
     } catch (error) {
       console.error('Error in UserInputHandler:', error);

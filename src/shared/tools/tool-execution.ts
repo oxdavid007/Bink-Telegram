@@ -38,6 +38,14 @@ export interface ToolExecutionData {
   };
   data?: {
     progress?: number;
+    network?: string;
+    transactionHash?: string;
+    fromAmount?: number;
+    toAmount?: number;
+    fromToken?: { symbol: string };
+    toToken?: { symbol: string };
+    fromNetwork?: string;
+    toNetwork?: string;
     [key: string]: any;
   };
   error?: Error | string;
@@ -50,168 +58,155 @@ export interface IToolExecutionCallback {
   onToolExecution(data: ToolExecutionData): void;
 }
 
+class MessageFormatter {
+  private static readonly stateEmoji = {
+    [ToolExecutionState.STARTED]: "🔸",
+    [ToolExecutionState.IN_PROCESS]: "⏳",
+    [ToolExecutionState.COMPLETED]: "✅",
+    [ToolExecutionState.FAILED]: "❌",
+    [ToolExecutionState.PENDING]: "⏳",
+  };
+
+  static getStateEmoji(state: ToolExecutionState): string {
+    return this.stateEmoji[state] || "🔄";
+  }
+
+  static formatPlanMessage(plans: any[], emoji: string): string {
+    let message = '';
+    plans.forEach((plan: any, planIndex: number) => {
+      if (plan.title) {
+        message += `<b>Plan ${planIndex + 1}: ${plan.title}</b>\n\n`;
+        if (plan.tasks?.length) {
+          plan.tasks.forEach((task: string) => {
+            message += `${emoji} ${task}\n`;
+          });
+        }
+        message += '\n';
+      }
+    });
+    return message;
+  }
+
+  static formatTransactionMessage(data: any, toolName: ToolName): string {
+    const getScanUrl = (network: string, txHash: string) => {
+      const scanUrls = {
+        'bnb': `https://bscscan.com/tx/${txHash}`,
+        'ethereum': `https://etherscan.io/tx/${txHash}`,
+        'solana': `https://solscan.io/tx/${txHash}`,
+      };
+      return scanUrls[network] || txHash;
+    };
+
+    const scanUrl = getScanUrl(data.network, data.transactionHash);
+    const networkName = data.network.charAt(0).toUpperCase() + data.network.slice(1);
+
+    if (toolName === ToolName.SWAP) {
+      return `🎉 <b>Congratulations, your transaction has been successful.</b>
+- <b>Swapped:</b> ${formatSmartNumber(data.fromAmount)} ${data.fromToken?.symbol || ''} 
+- <b>Received:</b> ${formatSmartNumber(data.toAmount)} ${data.toToken?.symbol || ''}
+- <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${networkName} Explorer</a>`;
+    }
+
+    return `🎉 <b>Congratulations, your transaction has been successful.</b>
+- <b>Swapped:</b> ${formatSmartNumber(data.fromAmount)} ${data.fromToken?.symbol || ''} (${data.fromNetwork})
+- <b>Received:</b> ${formatSmartNumber(data.toAmount)} ${data.toToken?.symbol || ''} (${data.toNetwork})
+- <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${networkName} Explorer</a>`;
+  }
+
+  static formatUpdatePlanMessage(tasks: any[]): string {
+    let message = '';
+    tasks.forEach((task: any, taskIndex: number) => {
+      if (task.title) {
+        message += `<b>Updated Task ${taskIndex + 1}: ${task.title}</b>\n\n`;
+        if (task.tasks?.length) {
+          task.tasks.forEach((subTask: any) => {
+            const taskEmoji = this.getStateEmoji(subTask.status);
+            message += `${taskEmoji} ${subTask.title}\n`;
+          });
+        }
+        message += '\n';
+      }
+    });
+    return message;
+  }
+}
+
 /**
  * Example implementation of the IToolExecutionCallback interface
  * that logs tool execution data with emojis and formatting
  */
 export class ExampleToolExecutionCallback implements IToolExecutionCallback {
-  bot: TelegramBot;
-  chatId: string;
-  messageId: number;
-  messagePlanListId: number;
-  onData: (data: ToolExecutionData) => void;
+  constructor(
+    private readonly chatId: string,
+    private readonly bot: TelegramBot,
+    private messageId: number,
+    private onMessage: ({ message, toolName }: { message: string, toolName: string }) => void,
+    private onPlanningMessage: ({ message, toolName }: { message: string, toolName: string }) => void
+  ) { }
 
-  constructor(chatId: string, bot: TelegramBot, messageId: number, onData: (data: ToolExecutionData) => void) {
-    this.chatId = chatId;
-    this.bot = bot;
-    this.messageId = messageId;
-    this.messagePlanListId = 0;
-    this.onData = onData;
-  }
-
-  setMessageId(messageId: number) {
+  setMessageId(messageId: number): void {
     this.messageId = messageId;
   }
 
-  setMessagePlanListId(messagePlanListId: number) {
-    this.messagePlanListId = messagePlanListId;
+  setOnMessage(onMessage: ({ message, toolName }: { message: string, toolName: string }) => void): void {
+    this.onMessage = onMessage;
   }
 
-  setOnData(onData: (data: ToolExecutionData) => void) {
-    this.onData = onData;
+  setOnPlanningMessage(onPlanningMessage: ({ message, toolName }: { message: string, toolName: string }) => void): void {
+    this.onPlanningMessage = onPlanningMessage;
   }
-
 
   onToolExecution(data: ToolExecutionData): void {
-    const stateEmoji = {
-      [ToolExecutionState.STARTED]: "🔸",
-      [ToolExecutionState.IN_PROCESS]: "⏳",
-      [ToolExecutionState.COMPLETED]: "✅",
-      [ToolExecutionState.FAILED]: "❌",
-      [ToolExecutionState.PENDING]: "⏳",
-    };
+    const emoji = MessageFormatter.getStateEmoji(data.state);
+    console.log(`${emoji} [${new Date(data.timestamp).toISOString()}] ${data.message}`);
 
-    const emoji = stateEmoji[data.state] || "🔄";
+    switch (data.state) {
+      case ToolExecutionState.STARTED:
+        this.handleStartedState(data, emoji);
+        break;
+      case ToolExecutionState.IN_PROCESS:
+        this.handleInProcessState(data, emoji);
+        break;
+      case ToolExecutionState.COMPLETED:
+        this.handleCompletedState(data, emoji);
+        break;
+      case ToolExecutionState.FAILED:
+        this.handleFailedState(data);
+        break;
+    }
+  }
 
-    console.log(
-      `${emoji} [${new Date(data.timestamp).toISOString()}] ${data.message}`
-    );
+  private handleStartedState(data: ToolExecutionData, emoji: string): void {
+    if (data.toolName === ToolName.CREATE_PLAN && data.input?.plans) {
+      const message = MessageFormatter.formatPlanMessage(data.input.plans, emoji);
+      this.onPlanningMessage({ message, toolName: ToolName.CREATE_PLAN });
+    }
+  }
 
-    console.log("🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ data", data)
-
-    if (data.state === ToolExecutionState.STARTED && data.toolName === ToolName.CREATE_PLAN) {
-      let message = ``;
-
-      // Format plans with title and tasks with radio buttons
-      data.input.plans.forEach((plan: any, planIndex: number) => {
-        if (plan.title) {
-          message += `<b>Plan ${planIndex + 1}: ${plan.title}</b>\n\n`;
-
-          if (plan.tasks && Array.isArray(plan.tasks)) {
-            plan.tasks.forEach((task: string, taskIndex: number) => {
-              message += `${emoji} ${task}\n`;
-            });
-          }
-
-          message += '\n';
-        }
-      });
-
-      this.bot.sendMessage(this.chatId, message, {
-        parse_mode: "HTML",
-      }).then(messagePlanListId => {
-        this.setMessagePlanListId(messagePlanListId.message_id);
-      }).catch(error => {
-        console.error("🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error", error)
+  private handleInProcessState(data: ToolExecutionData, emoji: string): void {
+    if (data.data?.progress && data.data.progress < 100) {
+      this.bot.editMessageText(`${emoji} ${data.message}`, {
+        chat_id: this.chatId,
+        message_id: this.messageId,
       });
     }
+  }
 
-
-    if (data.state === ToolExecutionState.IN_PROCESS && data.data) {
-      console.log("🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ data:IN_PROCESS", data)
-      if (data.data.progress < 100) {
-        this.bot.editMessageText(`${emoji} ${data.message}`, {
-          chat_id: this.chatId,
-          message_id: this.messageId,
-        });
-      }
-
-      console.log(`Progress: ${data.data.progress || 0}%`);
+  private handleCompletedState(data: ToolExecutionData, emoji: string): void {
+    if (data.data?.status === "success" && (data.toolName === ToolName.SWAP || data.toolName === ToolName.BRIDGE)) {
+      const message = MessageFormatter.formatTransactionMessage(data.data, data.toolName);
+      this.onMessage({ message, toolName: data.toolName });
     }
 
-    if (data.state === ToolExecutionState.COMPLETED && data.data) {
-      console.log("🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ data:COMPLETED", data)
-      if (data.data?.status === "success" && (data.toolName === ToolName.SWAP || data.toolName === ToolName.BRIDGE)) {
-        const getScanUrl = (network, txHash) => {
-          const scanUrls = {
-            'bnb': `https://bscscan.com/tx/${txHash}`,
-            'ethereum': `https://etherscan.io/tx/${txHash}`,
-            'solana': `https://solscan.io/tx/${txHash}`,
-          };
-          return scanUrls[network] || `${txHash}`;
-        };
-
-        const scanUrl = getScanUrl(data.data.network, data.data.transactionHash);
-        let message;
-
-        if (data.toolName === ToolName.SWAP) {
-          message = `🎉 <b>Congratulations, your transaction has been successful.</b>
-- <b>Swapped:</b> ${formatSmartNumber(data.data.fromAmount)} ${data.data.fromToken?.symbol || ''} 
-- <b>Received:</b> ${formatSmartNumber(data.data.toAmount)} ${data.data.toToken?.symbol || ''}
-- <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
-`;
-        } else { // bridge
-          message = `🎉 <b>Congratulations, your transaction has been successful.</b>
-- <b>Swapped:</b> ${formatSmartNumber(data.data.fromAmount)} ${data.data.fromToken?.symbol || ''} (${data.data.fromNetwork})
-- <b>Received:</b> ${formatSmartNumber(data.data.toAmount)} ${data.data.toToken?.symbol || ''} (${data.data.toNetwork})
-- <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
-`;
-        }
-        this.onData(message);
-      }
-      if (data.toolName === ToolName.UPDATE_PLAN) {
-        let message = ``;
-
-        console.log("🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ data.data:COMPLETED", data?.data[0].tasks)
-
-        // Format plans with title and tasks with radio buttons
-        data.data.forEach((task: any, taskIndex: number) => {
-          if (task.title) {
-            message += `<b>Updated Task ${taskIndex + 1}: ${task.title}</b>\n\n`;
-
-            if (task.tasks && Array.isArray(task.tasks)) {
-              task.tasks.forEach((task: any, index: number) => {
-                console.log("🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ task", task)
-                const taskEmoji = stateEmoji[task.status] || "🔄";
-                message += `${taskEmoji} ${task.title}\n`;
-
-                // Check if this is the last task in the array and its status is completed
-                if (task.status === ToolExecutionState.COMPLETED && task.tasks && index === task.tasks.length - 1) {
-                  // Remove the message by deleting it
-                  if (this.messagePlanListId) {
-                    this.bot.deleteMessage(this.chatId, this.messagePlanListId.toString());
-                  }
-                }
-              });
-            }
-
-            message += '\n';
-          }
-        });
-        this.bot.editMessageText(message, {
-          chat_id: this.chatId,
-          message_id: this.messagePlanListId,
-          parse_mode: "HTML",
-        })
-      }
-
-      console.log(
-        `----- Result Task -----: ${JSON.stringify(data.data)} `
-      );
+    if (data.toolName === ToolName.UPDATE_PLAN && Array.isArray(data.data)) {
+      const message = MessageFormatter.formatUpdatePlanMessage(data.data);
+      this.onPlanningMessage({ message, toolName: ToolName.UPDATE_PLAN });
     }
+  }
 
-    if (data.state === ToolExecutionState.FAILED && data.error) {
-      this.bot.editMessageText(`Error: ${data.error} `, {
+  private handleFailedState(data: ToolExecutionData): void {
+    if (data.error) {
+      this.bot.editMessageText(`Error: ${data.error}`, {
         chat_id: this.chatId,
         message_id: this.messageId,
       });
