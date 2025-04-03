@@ -154,13 +154,109 @@ export class UserService implements OnApplicationBootstrap {
     return refCode;
   }
 
+  private async createUserWithTelegramInfo(
+    createUserDto: CreateUserDto & {
+      telegram_id?: string;
+      telegram_username?: string;
+      telegram_name?: string;
+      telegram_avatar_url?: string;
+      referral_code?: string;
+    }
+  ): Promise<UserEntity> {
+    const referralCode = await this.generateReferralCode();
+
+    // Create user with only telegram info first
+    const user = await this.userRepository.save({
+      ...createUserDto,
+      referral_code: referralCode,
+      current_thread_id: uuidv4(),
+    });
+
+
+    if (createUserDto.referral_code) {
+      const referrer = await this.userRepository.findOne({
+        where: { referral_code: createUserDto.referral_code },
+      });
+      if (referrer && referrer.id !== user.id) {
+        await this.userReferralRepository.save({
+          referrer_user_id: referrer.id,
+          referee_user_id: user.id,
+        });
+      }
+    }
+
+    if (process.env.TELEGRAM_GROUP_ID) {
+      const totalUsers = (await this.userRepository.count()) + 1;
+
+      const message =
+        `🎉<b> New User Registration !</b>\n` +
+        `👤 Name: ${user.telegram_name}\n` +
+        `👤 Username: ${user.telegram_username}\n` +
+        `👥 Total Users: ${totalUsers} `;
+
+      this.bot
+        .sendMessage(
+          process.env.TELEGRAM_GROUP_ID,
+          message,
+          {
+            message_thread_id: Number(process.env.TELEGRAM_THREAD_ID),
+            parse_mode: "HTML",
+            disable_web_page_preview: true,
+          }
+        )
+        .then()
+        .catch((error) => {
+          console.error('Error sending message to Telegram group:', error);
+        });
+    }
+
+    return user;
+  }
+
+  private generateWalletInfo(): Promise<{
+    walletAddress: string;
+    walletEvmAddress: string;
+    encryptedPhrase: string;
+  }> {
+    return new Promise((resolve, reject) => {
+      try {
+        const mnemonic = bip39.generateMnemonic();
+        const seed = bip39.mnemonicToSeedSync(mnemonic);
+        const derivedSeed = derivePath(
+          "m/44'/501'/0'/0'",
+          seed.toString("hex")
+        ).key;
+        const wallet = Keypair.fromSeed(derivedSeed);
+        const walletAddress = wallet.publicKey.toString();
+        const walletEvm = Wallet.fromPhrase(mnemonic);
+        const walletEvmAddress = walletEvm.address.toLowerCase();
+
+        // Get encryption key from environment
+        const encryptionKey = process.env.WALLET_ENCRYPTION_KEY || "123";
+        if (!encryptionKey) {
+          throw new Error("Wallet encryption key not configured");
+        }
+
+        // Encrypt private key
+        const encryptedPhrase = encryptPrivateKey(mnemonic, encryptionKey);
+
+        resolve({
+          walletAddress,
+          walletEvmAddress,
+          encryptedPhrase
+        });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
   async getOrCreateUser(
     createUserDto: CreateUserDto & {
       telegram_id?: string;
       telegram_username?: string;
       telegram_name?: string;
       telegram_avatar_url?: string;
-      address?: string;
       referral_code?: string;
     }
   ): Promise<UserEntity> {
@@ -180,8 +276,22 @@ export class UserService implements OnApplicationBootstrap {
       }
     }
 
-    // If user doesn't exist, create a new one
-    return await this.createUser(createUserDto);
+    // First create user with telegram info
+    const user = await this.createUserWithTelegramInfo(createUserDto);
+
+    // Then generate wallet info
+    this.generateWalletInfo()
+      .then(({ walletAddress, walletEvmAddress, encryptedPhrase }) => {
+        return this.userRepository.update(user.id, {
+          wallet_sol_address: walletAddress,
+          encrypted_private_key: encryptedPhrase,
+          wallet_evm_address: walletEvmAddress,
+          encrypted_phrase: encryptedPhrase,
+        });
+      })
+      .then(() => user);
+
+    return user;
   }
 
   async getEncryptedPrivateKeyByTelegramId(

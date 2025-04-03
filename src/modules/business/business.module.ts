@@ -73,7 +73,7 @@ const services = [
   exports: [...services, "SOLANA_CONNECTION"],
 })
 export class BusinessModule implements OnApplicationBootstrap {
-  constructor() {}
+  constructor() { }
 
-  async onApplicationBootstrap() {}
+  async onApplicationBootstrap() { }
 }
