@@ -113,7 +113,7 @@ export class AiService implements OnApplicationBootstrap {
     });
   }
 
-  async onApplicationBootstrap() { }
+  async onApplicationBootstrap() {}
 
   async handleSwap(
     telegramId: string,
@@ -217,6 +217,7 @@ CRITICAL:
 1. Format your responses in Telegram HTML style. 
 2. DO NOT use markdown. 
 3. Using HTML tags like <b>bold</b>, <i>italic</i>, <code>code</code>, <pre>preformatted</pre>, and <a href="URL">links</a>. \n\nWhen displaying token information or swap details:\n- Use <b>bold</b> for important values and token names\n- Use <code>code</code> for addresses and technical details\n- Use <i>italic</i> for additional information
+4. If has limit order, show list id limit order.
             `,
           },
           wallet,
