@@ -117,7 +117,7 @@ class MessageFormatter {
     let message = '';
     tasks.forEach((task: any, taskIndex: number) => {
       if (task.title) {
-        message += `<b>Updated Task ${taskIndex + 1}: ${task.title}</b>\n\n`;
+        message += `<b>Task ${taskIndex + 1}: ${task.title}</b>\n\n`;
         if (task.tasks?.length) {
           task.tasks.forEach((subTask: any) => {
             const taskEmoji = this.getStateEmoji(subTask.status);

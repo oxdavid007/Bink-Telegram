@@ -27,6 +27,8 @@ import { VenusProvider } from '@binkai/venus-provider';
 import { ThenaProvider } from '@binkai/thena-provider';
 import { JupiterProvider } from '@binkai/jupiter-provider';
 import { Connection } from '@solana/web3.js';
+import { ExampleHumanReviewCallback } from '@/shared/tools/tool-human-review';
+import { ExampleAskUserCallback } from '@/shared/tools/tool-ask-user';
 
 interface NetworkConfig {
   type: NetworkType;
@@ -53,6 +55,8 @@ export class AiService implements OnApplicationBootstrap {
   private readonly bnbProvider: BnbProvider;
   private readonly mapAgent: Record<string, Agent> = {};
   private readonly mapToolExecutionCallback: Record<string, ExampleToolExecutionCallback> = {};
+  private readonly mapToolHumanReviewCallback: Record<string, ExampleHumanReviewCallback> = {};
+  private readonly mapToolAskUserCallback: Record<string, ExampleAskUserCallback> = {};
 
   @Inject(TelegramBot)
   private readonly bot: TelegramBot;
@@ -158,9 +162,16 @@ export class AiService implements OnApplicationBootstrap {
 
   async handleSwap(telegramId: string, input: string): Promise<string> {
     try {
+      let messageThinkingId;
+      let messagePlanningId;
+
       const message = await this.bot.sendMessage(telegramId, 'Thinking...', {
         parse_mode: 'HTML',
       });
+      messageThinkingId = message.message_id;
+
+      console.log("🚀1. ~ AiService ~ message id Thinking:", messageThinkingId)
+      console.log("🚀1. ~ AiService ~ message id Planning:", messagePlanningId)
 
       const keys = await this.userService.getMnemonicByTelegramId(telegramId);
       if (!keys) {
@@ -187,19 +198,21 @@ export class AiService implements OnApplicationBootstrap {
       } else {
         // Update the message ID for existing agent
         this.mapToolExecutionCallback[telegramId]?.setMessageId(message.message_id);
+        this.mapToolHumanReviewCallback[telegramId]?.setCurrentMessageId(message.message_id);
+        this.mapToolAskUserCallback[telegramId]?.setCurrentMessageId(message.message_id);
       }
       const inputResult = await agent.execute({
         input: input,
         threadId: user.current_thread_id as UUID,
       });
 
-      const result = inputResult?.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') || 'Something went wrong while cooking. Try again in a bit 🛠️✨';
-
-      await this.bot.editMessageText(result, {
-        chat_id: telegramId,
-        message_id: message.message_id,
-        parse_mode: 'HTML',
-      });
+      if (inputResult && inputResult.length > 0) {
+        await this.bot.editMessageText(inputResult, {
+          chat_id: telegramId,
+          message_id: message.message_id,
+          parse_mode: 'HTML',
+        });
+      }
 
     } catch (error) {
       console.error('Error in handleSwap:', error);
@@ -216,6 +229,7 @@ export class AiService implements OnApplicationBootstrap {
         isHumanReview: true,
         temperature: 0,
         systemPrompt: this.getSystemPrompt(),
+        isMockResponseTool:true
       },
       wallet,
       this.networks,
@@ -224,6 +238,8 @@ export class AiService implements OnApplicationBootstrap {
     await agent.initialize();
     await this.registerPlugins(agent, plugins);
     await this.setupToolExecutionCallback(agent, telegramId, messageId);
+    await this.setupToolHumanReviewCallback(agent, telegramId, messageId);
+    await this.setupToolAskUserCallback(agent, telegramId, messageId);
 
     this.mapAgent[telegramId] = agent;
     return agent;
@@ -292,7 +308,7 @@ export class AiService implements OnApplicationBootstrap {
     await Promise.all([
       agent.registerPlugin(plugins.swap),
       agent.registerPlugin(plugins.token),
-      agent.registerDatabase(this.postgresAdapter),
+      agent.registerDatabase(this.postgresAdapter as any),
       agent.registerPlugin(plugins.knowledge),
       agent.registerPlugin(plugins.bridge),
       agent.registerPlugin(plugins.wallet),
@@ -302,8 +318,8 @@ export class AiService implements OnApplicationBootstrap {
   }
 
   private async setupToolExecutionCallback(agent: Agent, telegramId: string, messageId: number): Promise<void> {
-    let onMessage: { message: string, toolName: string } = { message: '', toolName: '' };
-    let onPlanningMessage: { message: string, toolName: string } = { message: '', toolName: '' };
+    let messageData: { message: string, toolName: string } = { message: '', toolName: '' };
+    let planningMessageData: { message: string, toolName: string } = { message: '', toolName: '' };
     let planningMessageId: number;
     let currentMessageId = messageId;
 
@@ -312,9 +328,9 @@ export class AiService implements OnApplicationBootstrap {
       this.bot,
       currentMessageId,
       async ({ message, toolName }) => {
-        onMessage = { message, toolName };
-        if (onMessage.message.length > 0) {
-          await this.bot.editMessageText(onMessage.message, {
+        messageData = { message, toolName };
+        if (messageData.message.length > 0) {
+          await this.bot.editMessageText(messageData.message, {
             chat_id: telegramId,
             message_id: currentMessageId,
             parse_mode: 'HTML',
@@ -322,33 +338,35 @@ export class AiService implements OnApplicationBootstrap {
         }
       },
       async ({ message, toolName }) => {
-        onPlanningMessage = { message, toolName };
-        if (onPlanningMessage.message.length > 0) {
-          if (onPlanningMessage.toolName === ToolName.CREATE_PLAN) {
+        planningMessageData = { message, toolName };
+        if (planningMessageData.message.length > 0) {
+          if (planningMessageData.toolName === ToolName.CREATE_PLAN) {
             try {
               // Delete the thinking message
               await this.bot.deleteMessage(telegramId, currentMessageId.toString());
 
               // First, send the planning message
-              const planningMessage = await this.bot.sendMessage(telegramId, onPlanningMessage.message, {
+              const planningMessage = await this.bot.sendMessage(telegramId, planningMessageData.message, {
                 parse_mode: 'HTML',
               });
               planningMessageId = planningMessage.message_id;
 
+              console.log("🚀2. ~ AiService ~ message Create Plan id Planning:", planningMessageId)
+
               // Then, send waiting message
-              const waitingMessage = await this.bot.sendMessage(telegramId, "Waiting for execution ...", {
-                parse_mode: 'HTML',
-              });
+              // const waitingMessage = await this.bot.sendMessage(telegramId, "Waiting for execution ...", {
+              //   parse_mode: 'HTML',
+              // });
 
               // Update currentMessageId to the waiting message
-              currentMessageId = waitingMessage.message_id;
+              // messagePlanningId = waitingMessage.message_id;
 
               // Update the callback's messageId
-              this.mapToolExecutionCallback[telegramId].setMessageId(currentMessageId);
+              // this.mapToolExecutionCallback[telegramId].setMessageId(currentMessageId);
             } catch (error) {
               console.error('Error handling CREATE_PLAN:', error);
               // If anything fails, try to edit the original message
-              await this.bot.editMessageText(onPlanningMessage.message, {
+              await this.bot.editMessageText(planningMessageData.message, {
                 chat_id: telegramId,
                 message_id: currentMessageId,
                 parse_mode: 'HTML',
@@ -356,7 +374,7 @@ export class AiService implements OnApplicationBootstrap {
             }
             console.log("🚀 ~ AiService ~ currentMessageId:", currentMessageId)
           } else {
-            await this.bot.editMessageText(onPlanningMessage.message, {
+            await this.bot.editMessageText(planningMessageData.message, {
               chat_id: telegramId,
               message_id: planningMessageId,
               parse_mode: 'HTML',
@@ -368,6 +386,43 @@ export class AiService implements OnApplicationBootstrap {
 
     this.mapToolExecutionCallback[telegramId] = toolExecutionCallback;
     agent.registerToolExecutionCallback(toolExecutionCallback as any);
+  }
+
+  private async setupToolHumanReviewCallback(agent: Agent, telegramId: string, messageId: number): Promise<void> {
+
+    const toolHumanReviewCallback = new ExampleHumanReviewCallback(
+      messageId,
+      async ({ message, toolName, currentMessageId }) => {
+        console.log("🚀 ~ AiService ~ toolHumanReviewCallback ~ currentMessageId:", currentMessageId)
+        console.log("🚀 ~ AiService ~ toolHumanReviewCallback ~ message:", message)
+        console.log("🚀 ~ AiService ~ toolHumanReviewCallback ~ toolName:", toolName)
+
+        if (toolName === ToolName.SWAP) {
+          await this.bot.sendMessage(telegramId, message, {
+            parse_mode: 'HTML',
+          });
+        }
+      },
+    );
+
+    this.mapToolHumanReviewCallback[telegramId] = toolHumanReviewCallback;
+    agent.registerHumanReviewCallback(toolHumanReviewCallback as any);
+  }
+
+  private async setupToolAskUserCallback(agent: Agent, telegramId: string, messageId: number): Promise<void> {
+    const toolAskUserCallback = new ExampleAskUserCallback(
+      messageId,
+      async ({ message, timestamp, currentMessageId }) => {
+        console.log("🚀 ~ AiService ~ currentMessageId:", currentMessageId)
+        console.log("🚀 ~ AiService ~ message:", message)
+        console.log("🚀 ~ AiService ~ timestamp:", timestamp)
+        await this.bot.sendMessage(telegramId, message, {
+          parse_mode: 'HTML',
+        });
+      },
+    );
+    this.mapToolAskUserCallback[telegramId] = toolAskUserCallback;
+    agent.registerAskUserCallback(toolAskUserCallback as any);
   }
 
   private getSystemPrompt(): string {
