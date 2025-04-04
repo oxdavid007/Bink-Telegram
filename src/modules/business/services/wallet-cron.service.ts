@@ -25,7 +25,6 @@ export class WalletCronService {
       const usersWithoutWallets = await this.userService.findUsersWithoutWallets(this.BATCH_SIZE);
 
       if (usersWithoutWallets.length === 0) {
-        console.log('No users found without wallets');
         this.isRunning = false;
         return;
       }
