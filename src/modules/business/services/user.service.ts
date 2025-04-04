@@ -1,6 +1,6 @@
 import { Inject, Injectable, OnApplicationBootstrap } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { IsNull, Repository } from "typeorm";
 import { UserEntity } from "../../database/entities/user.entity";
 import {
   TransactionRepository,
@@ -213,41 +213,44 @@ export class UserService implements OnApplicationBootstrap {
     return user;
   }
 
-  private generateWalletInfo(): Promise<{
-    walletAddress: string;
-    walletEvmAddress: string;
-    encryptedPhrase: string;
-  }> {
-    return new Promise((resolve, reject) => {
-      try {
-        const mnemonic = bip39.generateMnemonic();
-        const seed = bip39.mnemonicToSeedSync(mnemonic);
-        const derivedSeed = derivePath(
-          "m/44'/501'/0'/0'",
-          seed.toString("hex")
-        ).key;
-        const wallet = Keypair.fromSeed(derivedSeed);
-        const walletAddress = wallet.publicKey.toString();
-        const walletEvm = Wallet.fromPhrase(mnemonic);
-        const walletEvmAddress = walletEvm.address.toLowerCase();
+  async findUsersWithoutWallets(limit: number): Promise<UserEntity[]> {
+    return this.userRepository.find({
+      where: {
+        wallet_sol_address: IsNull(),
+        wallet_evm_address: IsNull()
+      },
+      take: limit
+    });
+  }
 
-        // Get encryption key from environment
-        const encryptionKey = process.env.WALLET_ENCRYPTION_KEY || "123";
-        if (!encryptionKey) {
-          throw new Error("Wallet encryption key not configured");
-        }
+  async createWalletForUser(user: UserEntity): Promise<void> {
+    // Generate wallet info
+    const mnemonic = bip39.generateMnemonic();
+    const seed = bip39.mnemonicToSeedSync(mnemonic);
+    const derivedSeed = derivePath(
+      "m/44'/501'/0'/0'",
+      seed.toString("hex")
+    ).key;
+    const wallet = Keypair.fromSeed(derivedSeed);
+    const walletAddress = wallet.publicKey.toString();
+    const walletEvm = Wallet.fromPhrase(mnemonic);
+    const walletEvmAddress = walletEvm.address.toLowerCase();
 
-        // Encrypt private key
-        const encryptedPhrase = encryptPrivateKey(mnemonic, encryptionKey);
+    // Get encryption key from environment
+    const encryptionKey = process.env.WALLET_ENCRYPTION_KEY || "123";
+    if (!encryptionKey) {
+      throw new Error("Wallet encryption key not configured");
+    }
 
-        resolve({
-          walletAddress,
-          walletEvmAddress,
-          encryptedPhrase
-        });
-      } catch (error) {
-        reject(error);
-      }
+    // Encrypt private key
+    const encryptedPhrase = encryptPrivateKey(mnemonic, encryptionKey);
+
+    // Update user with wallet info
+    await this.userRepository.update(user.id, {
+      wallet_sol_address: walletAddress,
+      encrypted_private_key: encryptedPhrase,
+      wallet_evm_address: walletEvmAddress,
+      encrypted_phrase: encryptedPhrase
     });
   }
 
@@ -279,18 +282,7 @@ export class UserService implements OnApplicationBootstrap {
     // First create user with telegram info
     const user = await this.createUserWithTelegramInfo(createUserDto);
 
-    // Then generate wallet info
-    this.generateWalletInfo()
-      .then(({ walletAddress, walletEvmAddress, encryptedPhrase }) => {
-        return this.userRepository.update(user.id, {
-          wallet_sol_address: walletAddress,
-          encrypted_private_key: encryptedPhrase,
-          wallet_evm_address: walletEvmAddress,
-          encrypted_phrase: encryptedPhrase,
-        });
-      })
-      .then(() => user);
-
+    // Return user without wallet info
     return user;
   }
 

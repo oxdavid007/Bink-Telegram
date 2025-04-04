@@ -13,6 +13,7 @@ import { ApiService } from "./services/api.service";
 import { ethers } from "ethers";
 import { AiService } from "./services/ai.service";
 import { FourMemeService } from "./services/fourmeme.service";
+import { WalletCronService } from "./services/wallet-cron.service";
 const services = [
   TokenService,
   UserService,
@@ -69,6 +70,7 @@ const services = [
       },
       inject: [ConfigService],
     },
+    WalletCronService,
   ],
   exports: [...services, "SOLANA_CONNECTION"],
 })
