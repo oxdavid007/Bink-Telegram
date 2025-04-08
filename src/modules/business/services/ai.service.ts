@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter } from 'events';
 import { JsonRpcProvider } from 'ethers';
-import { Agent, Wallet, Network, NetworkType, NetworksConfig, UUID } from '@binkai/core';
+import { Agent, Wallet, Network, NetworkType, NetworksConfig, UUID, PlanningAgent } from '@binkai/core';
 import { SwapPlugin } from '@binkai/swap-plugin';
 import { PancakeSwapProvider } from '@binkai/pancakeswap-provider';
 import { UserService } from './user.service';
@@ -27,7 +27,9 @@ import { VenusProvider } from '@binkai/venus-provider';
 import { ThenaProvider } from '@binkai/thena-provider';
 import { JupiterProvider } from '@binkai/jupiter-provider';
 import { Connection } from '@solana/web3.js';
-
+import ExampleAskUserCallback from '@/shared/tools/ask-user';
+import ExampleHumanReviewCallback from '@/shared/tools/human-review';
+import { EMessageType } from '@/shared/constants/enums';
 @Injectable()
 export class AiService implements OnApplicationBootstrap {
   private openai: OpenAI;
@@ -42,6 +44,8 @@ export class AiService implements OnApplicationBootstrap {
   private bot: TelegramBot;
   mapAgent: Record<string, Agent> = {};
   mapToolExecutionCallback: Record<string, ExampleToolExecutionCallback> = {};
+  mapAskUserCallback: Record<string, ExampleAskUserCallback> = {};
+  mapHumanReviewCallback: Record<string, ExampleHumanReviewCallback> = {};
   @Inject('BSC_CONNECTION') private bscProvider: JsonRpcProvider;
   @Inject('ETHEREUM_CONNECTION') private ethProvider: JsonRpcProvider;
 
@@ -118,8 +122,6 @@ export class AiService implements OnApplicationBootstrap {
   async handleSwap(
     telegramId: string,
     input: string,
-    messageId: number,
-    onMessage?: (message: string) => void,
   ) {
     try {
       const keys = await this.userService.getMnemonicByTelegramId(telegramId);
@@ -138,6 +140,17 @@ export class AiService implements OnApplicationBootstrap {
         },
         network,
       );
+
+      let messageThinkingId: number;
+      let messagePlanListId: number;
+      let isTransactionSuccess: boolean = false;
+
+      const messageThinking = await this.bot.sendMessage(telegramId, 'Thinking...', {
+        parse_mode: 'HTML',
+      });
+      messageThinkingId = messageThinking.message_id;
+
+      console.log("🚀 ~ messageThinkingId:", messageThinkingId)
 
       let agent = this.mapAgent[telegramId];
 
@@ -200,10 +213,11 @@ export class AiService implements OnApplicationBootstrap {
           }),
         ]);
 
-        agent = new Agent(
+        agent = new PlanningAgent(
           {
             model: 'gpt-4o',
             temperature: 0,
+            isHumanReview: true,
             systemPrompt: `You are a BINK AI assistant. You can help user to query blockchain data .You are able to perform swaps and get token information on multiple chains. If you do not have the token address, you can use the symbol to get the token information before performing a swap.Additionally, you have the ability to get wallet balances across various networks. If the user doesn't specify a particular network, you can retrieve wallet balances from multiple chains like BNB, Solana, and Ethereum.
         Your respone format:
          BINK's tone is informative, bold, and subtly mocking, blending wit with a cool edge for the crypto crowd. Think chain-vaping degen energy, but refined—less "honey, sit down" and more "I've got this, you don't."
@@ -236,16 +250,52 @@ CRITICAL:
         const toolExecutionCallback = new ExampleToolExecutionCallback(
           telegramId,
           this.bot,
-          messageId,
-          onMessage,
+          messageThinkingId,
+          (type: string, message: string) => {
+            console.log("🚀 ~ AiService ~ type:", type)
+            console.log("🚀 ~ AiService ~ message:", message)
+            if (type === EMessageType.TOOL_EXECUTION) {
+              isTransactionSuccess = true;
+            }
+          }
         );
+
+        const askUserCallback = new ExampleAskUserCallback(
+          telegramId,
+          this.bot,
+          messageThinkingId,
+          (type: string, message: string) => {
+            console.log("🚀 ~ AiService ~ type ask user:", type)
+            console.log("🚀 ~ AiService ~ message ask user:", message)
+          }
+        );
+        const humanReviewCallback = new ExampleHumanReviewCallback(
+          telegramId,
+          this.bot,
+          messageThinkingId,
+          (type: string, message: string) => {
+            console.log("🚀 ~ AiService ~ type:", type)
+            console.log("🚀 ~ AiService ~ message:", message)
+          }
+        );
+
         this.mapToolExecutionCallback[telegramId] = toolExecutionCallback;
+        this.mapAskUserCallback[telegramId] = askUserCallback;
+        this.mapHumanReviewCallback[telegramId] = humanReviewCallback;
+
         agent.registerToolExecutionCallback(toolExecutionCallback as any);
+        agent.registerAskUserCallback(askUserCallback as any);
+        agent.registerHumanReviewCallback(humanReviewCallback as any);
+
         this.mapAgent[telegramId] = agent;
+      } else {
+        this.mapToolExecutionCallback[telegramId].setMessageId(messageThinkingId);
+        this.mapToolExecutionCallback[telegramId].setMessagePlanListId(messagePlanListId);
+        this.mapAskUserCallback[telegramId].setMessageId(messageThinkingId);
+        this.mapHumanReviewCallback[telegramId].setMessageId(messageThinkingId);
+        // this.mapToolExecutionCallback[telegramId].setMessageData(messageData);
       }
 
-      this.mapToolExecutionCallback[telegramId].setMessageId(messageId);
-      this.mapToolExecutionCallback[telegramId].setOnMessage(onMessage);
 
       const inputResult = await agent.execute({
         input: `
@@ -254,16 +304,29 @@ CRITICAL:
         threadId: user.current_thread_id as UUID,
       });
 
-      const result = inputResult.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') || 'test';
+      let result;
+      if (inputResult && inputResult.length > 0) {
+        result = inputResult.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') || 'Please try again';
+      }
+
+      console.log("🚀 ~ AiService ~ result:", result)
 
       // If callback is provided, use it to handle the message
-      if (onMessage) {
-        onMessage(result);
+      // if (messageData) {
+      // console.log("🚀 ~ AiService ~ messageData:", messageData)
+      // messageData(EMessageType.OTHER, result);
+      // TODO: 
+      if (result && !isTransactionSuccess) {
+        // TODO: Delete message in chat
+        await this.bot.editMessageText(result, {
+          chat_id: telegramId,
+          message_id: messageThinkingId,
+          parse_mode: 'HTML',
+        });
       }
-      // return result;
     } catch (error) {
       console.error('Error in handleSwap:', error);
-      return 'test';
+      return 'Please try again';
     }
   }
 
@@ -335,7 +398,7 @@ CRITICAL:
   }
 
   // Helper method to consume stream with async iterator
-  async *generateStreamResponse(
+  async * generateStreamResponse(
     messages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
     options: {
       model?: string;
