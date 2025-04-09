@@ -25,7 +25,7 @@
     "@binkai/bink-provider": "^0.2.2-alpha.0.2",
     "@binkai/birdeye-provider": "^0.2.2-alpha.0.2",
     "@binkai/bridge-plugin": "^0.2.2-alpha.0.2",
-    "@binkai/core": "file:../BinkOS/packages/core",
+    "@binkai/core": "^0.2.2-alpha.0.2",
     "@binkai/debridge-provider": "^0.2.2-alpha.0.2",
     "@binkai/four-meme-provider": "^0.2.2-alpha.0.2",
     "@binkai/jupiter-provider": "^0.2.2-alpha.0.2",

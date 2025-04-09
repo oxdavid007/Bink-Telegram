@@ -140,7 +140,10 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
             console.error("🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error", error);
           });
       } catch (error) {
-        console.error("🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error", error.message)
+        console.log("🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error")
+        this.bot.sendMessage(this.chatId, 'Please try again', {
+          parse_mode: "HTML",
+        });
       }
     }
 
@@ -208,9 +211,9 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
             message += '\n';
             if (task.status === ToolExecutionState.COMPLETED || task.status === ToolExecutionState.FAILED) {
               try {
-                this.bot.deleteMessage(this.chatId, this.messagePlanListId?.toString());
+                // this.bot.deleteMessage(this.chatId, this.messagePlanListId?.toString());
               } catch (error) {
-                console.error("🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error", error.message)
+                console.error("🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error")
               }
             }
           }
@@ -224,6 +227,7 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
           })
         } catch (error) {
           console.error("🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error", error.message)
+          return;
         }
 
 
