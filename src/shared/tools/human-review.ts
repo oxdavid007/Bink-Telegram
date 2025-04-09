@@ -24,13 +24,21 @@ class ExampleHumanReviewCallback implements IHumanReviewCallback {
     console.log(`Human review: ${data.toolName}`, data.data);
     const message = `📝 <b>Review Transaction</b>
 Please review the following transaction details carefully before proceeding:
-- <b>From:</b> ${formatSmartNumber(data.data.fromAmount)} ${data.data.fromToken?.symbol || ''} 
-- <b>To:</b> ${formatSmartNumber(data.data.toAmount)} ${data.data.toToken?.symbol || ''}
+- <b>From:</b> ${formatSmartNumber(data.data.fromAmount)} ${data.data.fromToken?.symbol || ''} (<code>${data.data.fromToken?.address || ''}</code>)
+- <b>To:</b> ${formatSmartNumber(data.data.toAmount)} ${data.data.toToken?.symbol || ''} (<code>${data.data.toToken?.address || ''}</code>)
 - <b>Network:</b> ${data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1)}
     `
     // this.messageData(EMessageType.HUMAN_REVIEW, message);
     // this.bot.deleteMessage(this.chatId, this.messageId.toString());
     console.log("🚀 ~ ExampleHumanReviewCallback ~ onHumanReview ~ this.messageId:", this.messageId)
+    console.log("🚀 ~ ExampleHumanReviewCallback ~ onHumanReview ~ 1")
+    // if (this.messageId) {
+    //   this.bot.editMessageText(message, {
+    //     chat_id: this.chatId,
+    //     message_id: this.messageId,
+    //     parse_mode: 'HTML',
+    //   })
+    // } else {
     this.bot.sendMessage(this.chatId, message, {
       parse_mode: 'HTML',
     }).then(messageId => {
@@ -38,6 +46,7 @@ Please review the following transaction details carefully before proceeding:
     }).catch(error => {
       console.error("🚀 ~ ExampleHumanReviewCallback ~ onHumanReview ~ error", error)
     });
+    // }
   }
 }
 

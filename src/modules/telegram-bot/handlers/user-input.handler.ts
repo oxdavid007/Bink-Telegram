@@ -74,27 +74,12 @@ export class UserInputHandler implements Handler {
 
       console.log("🚀 ~ UserInputHandler ~ imageUrl:", imageUrl)
 
-      let isReceivedMessage = false;
-
       // handle swap
       await this.aiService.handleSwap(
         data.telegramId,
         imageUrl
           ? `${text}${captionText ? ` ${captionText}` : ''} [Image: ${imageUrl}]`
           : data.text,
-        // async (type: string, message: string,) => {
-        //   console.log("🚀 ~ UserInputHandler ~ message:", message)
-        //   console.log("🚀 ~ UserInputHandler ~ type:", type)
-        //   console.log("🚀 ~ UserInputHandler ~ isReceivedMessage:", isReceivedMessage)
-        // if (!isReceivedMessage) {
-        //   isReceivedMessage = true;
-        //   await this.bot.editMessageText(message, {
-        //     chat_id: data.chatId,
-        //     message_id: messageId.message_id,
-        //     parse_mode: 'HTML',
-        //   });
-        // }
-        // }
       );
     } catch (error) {
       console.error('Error in UserInputHandler:', error);

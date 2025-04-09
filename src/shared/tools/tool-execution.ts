@@ -117,27 +117,31 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
           message += '\n';
         }
       });
-      // Delete the current message first
-      this.bot.deleteMessage(this.chatId, this.messageId.toString())
-        .then(() => {
-          // After successful deletion, send the plan message
-          return this.bot.sendMessage(this.chatId, message, {
-            parse_mode: "HTML",
+      try {
+        // Delete the current message first
+        this.bot.deleteMessage(this.chatId, this.messageId.toString())
+          .then(() => {
+            // After successful deletion, send the plan message
+            return this.bot.sendMessage(this.chatId, message, {
+              parse_mode: "HTML",
+            });
+          })
+          .then(messagePlanListId => {
+            this.setMessagePlanListId(messagePlanListId.message_id);
+            // After sending plan message, send the executing message
+            return this.bot.sendMessage(this.chatId, 'Executing plans...', {
+              parse_mode: "HTML",
+            });
+          })
+          .then(messageId => {
+            this.setMessageId(messageId.message_id);
+          })
+          .catch(error => {
+            console.error("🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error", error);
           });
-        })
-        .then(messagePlanListId => {
-          this.setMessagePlanListId(messagePlanListId.message_id);
-          // After sending plan message, send the executing message
-          return this.bot.sendMessage(this.chatId, 'Executing plans...', {
-            parse_mode: "HTML",
-          });
-        })
-        .then(messageId => {
-          this.setMessageId(messageId.message_id);
-        })
-        .catch(error => {
-          console.error("🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error", error);
-        });
+      } catch (error) {
+        console.error("🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error", error.message)
+      }
     }
 
     if (data.state === ToolExecutionState.IN_PROCESS && data.data) {
@@ -164,20 +168,21 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
           return scanUrls[network] || `${txHash}`;
         };
 
-        const scanUrl = getScanUrl(data.data.network, data.data.transactionHash);
         let message;
 
         if (data.toolName === ToolName.SWAP) {
+          const scanUrl = getScanUrl(data.data.network, data.data.transactionHash);
           message = `🎉 <b>Congratulations, your transaction has been successful.</b>
 - <b>Swapped:</b> ${formatSmartNumber(data.data.fromAmount)} ${data.data.fromToken?.symbol || ''} 
 - <b>Received:</b> ${formatSmartNumber(data.data.toAmount)} ${data.data.toToken?.symbol || ''}
 - <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
 `;
         } else { // bridge
+          const scanUrl = getScanUrl(data.data.fromNetwork, data.data.transactionHash);
           message = `🎉 <b>Congratulations, your transaction has been successful.</b>
 - <b>Swapped:</b> ${formatSmartNumber(data.data.fromAmount)} ${data.data.fromToken?.symbol || ''} (${data.data.fromNetwork})
 - <b>Received:</b> ${formatSmartNumber(data.data.toAmount)} ${data.data.toToken?.symbol || ''} (${data.data.toNetwork})
-- <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
+- <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.fromNetwork.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
 `;
         }
         this.messageData(EMessageType.TOOL_EXECUTION, message);
@@ -202,28 +207,41 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
 
             message += '\n';
             if (task.status === ToolExecutionState.COMPLETED || task.status === ToolExecutionState.FAILED) {
-              this.bot.deleteMessage(this.chatId, this.messagePlanListId?.toString());
+              try {
+                this.bot.deleteMessage(this.chatId, this.messagePlanListId?.toString());
+              } catch (error) {
+                console.error("🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error", error.message)
+              }
             }
           }
         });
-        this.bot.editMessageText(message, {
-          chat_id: this.chatId,
-          message_id: this.messagePlanListId,
-          parse_mode: "HTML",
-        })
+
+        try {
+          this.bot.editMessageText(message, {
+            chat_id: this.chatId,
+            message_id: this.messagePlanListId,
+            parse_mode: "HTML",
+          })
+        } catch (error) {
+          console.error("🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error", error.message)
+        }
 
 
       }
       console.log(
-        `Result: ${JSON.stringify(data.data).substring(0, 100)}${JSON.stringify(data.data).length > 100 ? "..." : ""} `
+        `Result: ${JSON.stringify(data.data)} `
       );
     }
 
     if (data.state === ToolExecutionState.FAILED && data.error) {
-      this.bot.editMessageText(`Error: ${data.error} `, {
-        chat_id: this.chatId,
-        message_id: this.messageId,
-      });
+      try {
+        this.bot.editMessageText(`Error: ${data.error} `, {
+          chat_id: this.chatId,
+          message_id: this.messageId,
+        });
+      } catch (error) {
+        console.error("🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error", error.message)
+      }
     }
   }
 }

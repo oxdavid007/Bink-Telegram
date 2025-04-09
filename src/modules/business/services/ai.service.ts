@@ -213,6 +213,7 @@ export class AiService implements OnApplicationBootstrap {
           }),
         ]);
 
+        console.log("🚀 ~ AiService ~ Agent ~ 1")
         agent = new PlanningAgent(
           {
             model: 'gpt-4o',
@@ -238,24 +239,29 @@ CRITICAL:
           this.networks,
         );
         await agent.initialize();
-        await agent.registerPlugin(swapPlugin);
-        await agent.registerPlugin(tokenPlugin);
-        await agent.registerDatabase(this.postgresAdapter);
-        await agent.registerPlugin(knowledgePlugin);
-        await agent.registerPlugin(bridgePlugin);
-        await agent.registerPlugin(walletPlugin);
-        await agent.registerPlugin(stakingPlugin);
-        await agent.registerPlugin(imagePlugin);
+        await agent.registerPlugin(swapPlugin as any);
+        await agent.registerPlugin(tokenPlugin as any);
+        await agent.registerDatabase(this.postgresAdapter as any);
+        await agent.registerPlugin(knowledgePlugin as any);
+        await agent.registerPlugin(bridgePlugin as any);
+        await agent.registerPlugin(walletPlugin as any);
+        await agent.registerPlugin(stakingPlugin as any);
+        await agent.registerPlugin(imagePlugin as any);
 
         const toolExecutionCallback = new ExampleToolExecutionCallback(
           telegramId,
           this.bot,
           messageThinkingId,
           (type: string, message: string) => {
-            console.log("🚀 ~ AiService ~ type:", type)
-            console.log("🚀 ~ AiService ~ message:", message)
+            console.log("🚀 ~ AiService ~ tool execution ~ type:", type)
+            console.log("🚀 ~ AiService ~ tool execution ~ message:", message)
             if (type === EMessageType.TOOL_EXECUTION) {
               isTransactionSuccess = true;
+              this.bot.editMessageText(message, {
+                chat_id: telegramId,
+                message_id: messageThinkingId,
+                parse_mode: 'HTML',
+              });
             }
           }
         );
@@ -267,6 +273,14 @@ CRITICAL:
           (type: string, message: string) => {
             console.log("🚀 ~ AiService ~ type ask user:", type)
             console.log("🚀 ~ AiService ~ message ask user:", message)
+            // if (type === EMessageType.ASK_USER) {
+            //   isTransactionSuccess = true;
+            //   this.bot.editMessageText(message, {
+            //     chat_id: telegramId,
+            //     message_id: messageThinkingId,
+            //     parse_mode: 'HTML',
+            //   });
+            // }
           }
         );
         const humanReviewCallback = new ExampleHumanReviewCallback(
@@ -274,8 +288,17 @@ CRITICAL:
           this.bot,
           messageThinkingId,
           (type: string, message: string) => {
-            console.log("🚀 ~ AiService ~ type:", type)
-            console.log("🚀 ~ AiService ~ message:", message)
+            console.log("🚀 ~ AiService ~ human review ~ type:", type)
+            console.log("🚀 ~ AiService ~ human review ~ message:", message)
+
+            // if (type === EMessageType.HUMAN_REVIEW) {
+            //   isTransactionSuccess = true;
+            //   this.bot.editMessageText(message, {
+            //     chat_id: telegramId,
+            //     message_id: messageThinkingId,
+            //     parse_mode: 'HTML',
+            //   });
+            // }
           }
         );
 
@@ -283,17 +306,36 @@ CRITICAL:
         this.mapAskUserCallback[telegramId] = askUserCallback;
         this.mapHumanReviewCallback[telegramId] = humanReviewCallback;
 
+        console.log("🚀 ~ AiService ~ register tool execution callback ~ 1")
+
         agent.registerToolExecutionCallback(toolExecutionCallback as any);
         agent.registerAskUserCallback(askUserCallback as any);
         agent.registerHumanReviewCallback(humanReviewCallback as any);
 
         this.mapAgent[telegramId] = agent;
       } else {
+
+        console.log("🚀 ~ AiService Not Agent ~ 2")
         this.mapToolExecutionCallback[telegramId].setMessageId(messageThinkingId);
         this.mapToolExecutionCallback[telegramId].setMessagePlanListId(messagePlanListId);
         this.mapAskUserCallback[telegramId].setMessageId(messageThinkingId);
         this.mapHumanReviewCallback[telegramId].setMessageId(messageThinkingId);
-        // this.mapToolExecutionCallback[telegramId].setMessageData(messageData);
+        this.mapToolExecutionCallback[telegramId].setMessageData(
+          (type: string, message: string) => {
+            console.log("🚀 ~ AiService ~ tool execution ~ type:", type)
+            console.log("🚀 ~ AiService ~ tool execution ~ message:", message)
+            if (type === EMessageType.TOOL_EXECUTION) {
+              isTransactionSuccess = true;
+              try {
+                this.bot.sendMessage(telegramId, message, {
+                  parse_mode: 'HTML',
+                });
+              } catch (error) {
+                console.error("🚀 ~ AiService ~ edit message text ~ error", error.message)
+              }
+            }
+          }
+        );
       }
 
 
@@ -309,23 +351,25 @@ CRITICAL:
         result = inputResult.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') || 'Please try again';
       }
 
-      console.log("🚀 ~ AiService ~ result:", result)
+      console.log("🚀 ~ AiService End ~ result:", result)
+      console.log("🚀 ~ AiService End ~ isTransactionSuccess:", isTransactionSuccess)
 
-      // If callback is provided, use it to handle the message
-      // if (messageData) {
-      // console.log("🚀 ~ AiService ~ messageData:", messageData)
-      // messageData(EMessageType.OTHER, result);
-      // TODO: 
+      // TODO: handle result
       if (result && !isTransactionSuccess) {
+
         // TODO: Delete message in chat
-        await this.bot.editMessageText(result, {
-          chat_id: telegramId,
-          message_id: messageThinkingId,
-          parse_mode: 'HTML',
-        });
+        try {
+          await this.bot.editMessageText(result, {
+            chat_id: telegramId,
+            message_id: messageThinkingId,
+            parse_mode: 'HTML',
+          });
+        } catch (error) {
+          console.error("🚀 ~ AiService ~ edit message text ~ error", error.message)
+        }
       }
     } catch (error) {
-      console.error('Error in handleSwap:', error);
+      console.error('Error in handleSwap:', error.message);
       return 'Please try again';
     }
   }
