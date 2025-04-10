@@ -169,7 +169,7 @@ export class AiService implements OnApplicationBootstrap {
         const tokenPlugin = new TokenPlugin();
         const knowledgePlugin = new KnowledgePlugin();
         const bridgePlugin = new BridgePlugin();
-        const debridge = new deBridgeProvider(this.bscProvider);
+        const debridge = new deBridgeProvider([this.bscProvider, new Connection(process.env.RPC_URL)], 56, 7565164);
         const walletPlugin = new WalletPlugin();
         const stakingPlugin = new StakingPlugin();
 
