@@ -303,6 +303,7 @@ CRITICAL:
         );
 
         this.mapToolExecutionCallback[telegramId] = toolExecutionCallback;
+
         this.mapAskUserCallback[telegramId] = askUserCallback;
         this.mapHumanReviewCallback[telegramId] = humanReviewCallback;
 
