@@ -20,15 +20,7 @@ class ExampleAskUserCallback implements IAskUserCallback {
   }
 
   onAskUser(data: AskUserData): void {
-    console.log("🚀 ~ ExampleAskUserCallback ~ onAskUser ~ data:", data)
-    console.log("🚀 ~ ExampleAskUserCallback ~ onAskUser ~ 1")
     console.log(`Ask user: ${data.question}`);
-    // this.messageData(EMessageType.ASK_USER, data.question);
-
-    console.log("🚀 ~ ExampleAskUserCallback ~ onAskUser ~ this.messageId:", this.messageId)
-
-    // this.bot.deleteMessage(this.chatId, this.messageId.toString());
-
     this.bot.sendMessage(this.chatId, data.question, {
       parse_mode: 'HTML',
     })
