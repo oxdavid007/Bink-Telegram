@@ -1,7 +1,8 @@
 import { formatSmartNumber } from '@/telegram-bot/utils/format-text';
 import { IHumanReviewCallback, HumanReviewData } from '@binkai/core';
 import { TelegramBot } from '@/telegram-bot/telegram-bot';
-import { ToolName } from './tool-execution';
+import { ToolName, StakingOperationType } from './tool-execution';
+
 class ExampleHumanReviewCallback implements IHumanReviewCallback {
   private messageData: (type: string, message: string) => void;
   messageId: number;
@@ -30,13 +31,13 @@ class ExampleHumanReviewCallback implements IHumanReviewCallback {
     let message = '';
 
     if (data.toolName === ToolName.STAKE) {
-      if (data.data.type === 'stake' || data.data.type === 'supply') {
+      if (data.data.type === StakingOperationType.STAKE || data.data.type === StakingOperationType.SUPPLY) {
         message = `📝 <b>Review Transaction</b>
 Please review the following staking details carefully before proceeding:
 - <b>Amount:</b> ${formatSmartNumber(data.data.amountA || 0)} ${data.data.tokenA?.symbol || ''} 
 - <b>Network:</b> ${data.data.network ? data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1) : 'Unknown'}
       `;
-      } else if (data.data.type === 'unstake' || data.data.type === 'withdraw') {
+      } else if (data.data.type === StakingOperationType.UNSTAKE || data.data.type === StakingOperationType.WITHDRAW) {
         message = `📝 <b>Review Transaction</b>
 Please review the following unstaking details carefully before proceeding:
 - <b>Amount:</b> ${formatSmartNumber(data.data.amountA || 0)} ${data.data.tokenA?.symbol || ''} 
@@ -44,7 +45,6 @@ Please review the following unstaking details carefully before proceeding:
       `;
       }
     } else if (data.toolName === ToolName.SWAP) {
-      // Handle regular swap transaction
       message = `📝 <b>Review Transaction</b>
 Please review the following transaction details carefully before proceeding:
 - <b>From:</b> ${formatSmartNumber(data.data.fromAmount || 0)} ${data.data.fromToken?.symbol || ''} 
@@ -53,12 +53,6 @@ Please review the following transaction details carefully before proceeding:
       `;
     }
 
-    // this.messageData(EMessageType.HUMAN_REVIEW, message);
-    // this.bot.deleteMessage(this.chatId, this.messageId.toString());
-    console.log(
-      '🚀 ~ ExampleHumanReviewCallback ~ onHumanReview ~ this.messageId:',
-      this.messageId,
-    );
     this.bot
       .sendMessage(this.chatId, message, {
         parse_mode: 'HTML',
