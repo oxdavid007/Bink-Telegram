@@ -36,12 +36,16 @@ class ExampleHumanReviewCallback implements IHumanReviewCallback {
 Please review the following staking details carefully before proceeding:
 - <b>Amount:</b> ${formatSmartNumber(data.data.amountA || 0)} ${data.data.tokenA?.symbol || ''} 
 - <b>Network:</b> ${data.data.network ? data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1) : 'Unknown'}
+
+<i>Please type "yes" within 60 seconds for the transaction to proceed</i>
       `;
       } else if (data.data.type === StakingOperationType.UNSTAKE || data.data.type === StakingOperationType.WITHDRAW) {
         message = `📝 <b>Review Transaction</b>
 Please review the following unstaking details carefully before proceeding:
 - <b>Amount:</b> ${formatSmartNumber(data.data.amountA || 0)} ${data.data.tokenA?.symbol || ''} 
 - <b>Network:</b> ${data.data.network ? data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1) : 'Unknown'}
+
+<i>Please type "yes" within 60 seconds for the transaction to proceed</i>
       `;
       }
     } else if (data.toolName === ToolName.SWAP) {
@@ -50,6 +54,8 @@ Please review the following transaction details carefully before proceeding:
 - <b>From:</b> ${formatSmartNumber(data.data.fromAmount || 0)} ${data.data.fromToken?.symbol || ''} 
 - <b>To:</b> ${formatSmartNumber(data.data.toAmount || 0)} ${data.data.toToken?.symbol || ''}
 - <b>Network:</b> ${data.data.network ? data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1) : 'Unknown'}
+
+<i>Please type "yes" within 60 seconds for the transaction to proceed</i>
       `;
     }
 

@@ -31,6 +31,8 @@
     "@binkai/jupiter-provider": "^0.2.4-alpha.0",
     "@binkai/knowledge-plugin": "^0.2.4-alpha.0",
     "@binkai/okx-provider": "^0.2.4-alpha.0",
+    "@binkai/oku-provider": "^0.2.4-alpha.0",
+    "@binkai/kyber-provider": "^0.2.4-alpha.0",
     "@binkai/pancakeswap-provider": "^0.2.4-alpha.0",
     "@binkai/postgres-adapter": "^0.2.4-alpha.0",
     "@binkai/rpc-provider": "^0.2.4-alpha.0",

@@ -30,6 +30,8 @@ import { Connection } from '@solana/web3.js';
 import ExampleAskUserCallback from '@/shared/tools/ask-user';
 import ExampleHumanReviewCallback from '@/shared/tools/human-review';
 import { EMessageType } from '@/shared/constants/enums';
+import { OkuProvider } from '@binkai/oku-provider';
+import { KyberProvider } from '@binkai/kyber-provider';
 @Injectable()
 export class AiService implements OnApplicationBootstrap {
   private openai: OpenAI;
@@ -150,19 +152,17 @@ export class AiService implements OnApplicationBootstrap {
       });
       messageThinkingId = messageThinking.message_id;
 
-      console.log("🚀 ~ messageThinkingId:", messageThinkingId)
-
       let agent = this.mapAgent[telegramId];
 
       //init agent
       if (!agent) {
         const bscChainId = 56;
         const pancakeswap = new PancakeSwapProvider(this.bscProvider, bscChainId);
-
         const okx = new OkxProvider(this.bscProvider, bscChainId);
-
         const fourMeme = new FourMemeProvider(this.bscProvider, bscChainId);
         const venus = new VenusProvider(this.bscProvider, bscChainId);
+        const oku = new OkuProvider(this.bscProvider, bscChainId);
+        const kyber = new KyberProvider(this.bscProvider, bscChainId);
         const jupiter = new JupiterProvider(new Connection(process.env.RPC_URL));
         const imagePlugin = new ImagePlugin();
         const swapPlugin = new SwapPlugin();
@@ -172,7 +172,6 @@ export class AiService implements OnApplicationBootstrap {
         const debridge = new deBridgeProvider([this.bscProvider, new Connection(process.env.RPC_URL)], 56, 7565164);
         const walletPlugin = new WalletPlugin();
         const stakingPlugin = new StakingPlugin();
-
         const thena = new ThenaProvider(this.bscProvider, bscChainId);
 
         // Initialize the swap plugin with supported chains and providers
@@ -180,7 +179,7 @@ export class AiService implements OnApplicationBootstrap {
           swapPlugin.initialize({
             defaultSlippage: 0.5,
             defaultChain: 'bnb',
-            providers: [pancakeswap, fourMeme, okx, thena, jupiter],
+            providers: [pancakeswap, fourMeme, okx, thena, jupiter, oku, kyber],
             supportedChains: ['bnb', 'ethereum', 'solana'], // These will be intersected with agent's networks
           }),
           tokenPlugin.initialize({
@@ -213,7 +212,6 @@ export class AiService implements OnApplicationBootstrap {
           }),
         ]);
 
-        console.log("🚀 ~ AiService ~ Agent ~ 1")
         agent = new PlanningAgent(
           {
             model: 'gpt-4o',
@@ -303,11 +301,9 @@ CRITICAL:
         );
 
         this.mapToolExecutionCallback[telegramId] = toolExecutionCallback;
-
         this.mapAskUserCallback[telegramId] = askUserCallback;
         this.mapHumanReviewCallback[telegramId] = humanReviewCallback;
 
-        console.log("🚀 ~ AiService ~ register tool execution callback ~ 1")
 
         agent.registerToolExecutionCallback(toolExecutionCallback as any);
         agent.registerAskUserCallback(askUserCallback as any);
@@ -316,7 +312,6 @@ CRITICAL:
         this.mapAgent[telegramId] = agent;
       } else {
 
-        console.log("🚀 ~ AiService Not Agent ~ 2")
         this.mapToolExecutionCallback[telegramId].setMessageId(messageThinkingId);
         this.mapToolExecutionCallback[telegramId].setMessagePlanListId(messagePlanListId);
         this.mapAskUserCallback[telegramId].setMessageId(messageThinkingId);
@@ -353,12 +348,11 @@ CRITICAL:
       }
 
       console.log("🚀 ~ AiService End ~ result:", result)
-      console.log("🚀 ~ AiService End ~ isTransactionSuccess:", isTransactionSuccess)
 
       // TODO: handle result
       if (result && !isTransactionSuccess) {
 
-        // TODO: Delete message in chat
+        // TODO: Edit message in chat
         try {
           await this.bot.editMessageText(result, {
             chat_id: telegramId,
