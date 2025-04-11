@@ -158,7 +158,7 @@ export class AiService implements OnApplicationBootstrap {
       if (!agent) {
         const bscChainId = 56;
         const pancakeswap = new PancakeSwapProvider(this.bscProvider, bscChainId);
-        const okx = new OkxProvider(this.bscProvider, bscChainId);
+        // const okx = new OkxProvider(this.bscProvider, bscChainId);
         const fourMeme = new FourMemeProvider(this.bscProvider, bscChainId);
         const venus = new VenusProvider(this.bscProvider, bscChainId);
         const oku = new OkuProvider(this.bscProvider, bscChainId);
@@ -179,7 +179,7 @@ export class AiService implements OnApplicationBootstrap {
           swapPlugin.initialize({
             defaultSlippage: 0.5,
             defaultChain: 'bnb',
-            providers: [pancakeswap, fourMeme, okx, thena, jupiter, oku, kyber],
+            providers: [pancakeswap, fourMeme, thena, jupiter, oku, kyber],
             supportedChains: ['bnb', 'ethereum', 'solana'], // These will be intersected with agent's networks
           }),
           tokenPlugin.initialize({
