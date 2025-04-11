@@ -38,6 +38,12 @@ importers:
       '@binkai/knowledge-plugin':
         specifier: ^0.2.4-alpha.0
         version: 0.2.4-alpha.0(@browserbasehq/sdk@2.5.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.51.1)(bufferutil@4.0.9)(deepmerge@4.3.1)(dotenv@16.4.7)(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(utf-8-validate@5.0.10)(zod@3.24.2))(@ibm-cloud/watsonx-ai@1.6.4(@langchain/core@0.3.44(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))))(axios@1.4.0)(bufferutil@4.0.9)(crypto-js@4.2.0)(ibm-cloud-sdk-core@5.3.2)(ignore@5.3.2)(ioredis@5.6.0)(jsonwebtoken@9.0.2)(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(pg@8.14.1)(playwright@1.51.1)(redis@4.7.0)(typeorm@0.3.22(ioredis@5.6.0)(pg@8.14.1)(redis@4.7.0)(reflect-metadata@0.1.14)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3)))(utf-8-validate@5.0.10)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod-to-json-schema@3.24.5(zod@3.24.2))
+      '@binkai/kyber-provider':
+        specifier: ^0.2.4-alpha.0
+        version: 0.2.4-alpha.0(@browserbasehq/sdk@2.5.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.51.1)(bufferutil@4.0.9)(deepmerge@4.3.1)(dotenv@16.4.7)(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(utf-8-validate@5.0.10)(zod@3.24.2))(@ibm-cloud/watsonx-ai@1.6.4(@langchain/core@0.3.44(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))))(arweave@1.15.7)(axios@1.4.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ibm-cloud-sdk-core@5.3.2)(ignore@5.3.2)(ioredis@5.6.0)(jsonwebtoken@9.0.2)(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(pg@8.14.1)(playwright@1.51.1)(redis@4.7.0)(typeorm@0.3.22(ioredis@5.6.0)(pg@8.14.1)(redis@4.7.0)(reflect-metadata@0.1.14)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3)))(typescript@5.8.3)(utf-8-validate@5.0.10)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod-to-json-schema@3.24.5(zod@3.24.2))
+      '@binkai/oku-provider':
+        specifier: ^0.2.4-alpha.0
+        version: 0.2.4-alpha.0(@browserbasehq/sdk@2.5.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.51.1)(bufferutil@4.0.9)(deepmerge@4.3.1)(dotenv@16.4.7)(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(utf-8-validate@5.0.10)(zod@3.24.2))(@ibm-cloud/watsonx-ai@1.6.4(@langchain/core@0.3.44(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))))(arweave@1.15.7)(axios@1.4.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ibm-cloud-sdk-core@5.3.2)(ignore@5.3.2)(ioredis@5.6.0)(jsonwebtoken@9.0.2)(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(pg@8.14.1)(playwright@1.51.1)(redis@4.7.0)(typeorm@0.3.22(ioredis@5.6.0)(pg@8.14.1)(redis@4.7.0)(reflect-metadata@0.1.14)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3)))(typescript@5.8.3)(utf-8-validate@5.0.10)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod-to-json-schema@3.24.5(zod@3.24.2))
       '@binkai/okx-provider':
         specifier: ^0.2.4-alpha.0
         version: 0.2.4-alpha.0(@browserbasehq/sdk@2.5.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.51.1)(bufferutil@4.0.9)(deepmerge@4.3.1)(dotenv@16.4.7)(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(utf-8-validate@5.0.10)(zod@3.24.2))(@ibm-cloud/watsonx-ai@1.6.4(@langchain/core@0.3.44(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))))(arweave@1.15.7)(axios@1.4.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ibm-cloud-sdk-core@5.3.2)(ignore@5.3.2)(ioredis@5.6.0)(jsonwebtoken@9.0.2)(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(pg@8.14.1)(playwright@1.51.1)(redis@4.7.0)(typeorm@0.3.22(ioredis@5.6.0)(pg@8.14.1)(redis@4.7.0)(reflect-metadata@0.1.14)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3)))(typescript@5.8.3)(utf-8-validate@5.0.10)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod-to-json-schema@3.24.5(zod@3.24.2))
@@ -483,6 +489,12 @@ packages:
 
   '@binkai/knowledge-plugin@0.2.4-alpha.0':
     resolution: {integrity: sha512-uxjGPebXwVmIlrIvYNSa5dMO5eLJxbZlZKa22x8wMmYcVKmDjfpk+9pSQyE4VGFNtBSm+Q5wGRtLX+ZEEhuzKQ==}
+
+  '@binkai/kyber-provider@0.2.4-alpha.0':
+    resolution: {integrity: sha512-6ILD4wKWxwhHKuec6wCnXW+K74D0SPZi9fqRi9Z8U6+31HBBVkqXmO+1RByaWxzaL4WmelUFZLMBTVWp/el5NA==}
+
+  '@binkai/oku-provider@0.2.4-alpha.0':
+    resolution: {integrity: sha512-nScL9Yk0G4yyiwNXJVmU+z82Bd5nL7QWDIRKe8dTOhM1dvPKvj1vXyRfwCYBc8+lRaiVNKsURMZHbI0/xJjVWg==}
 
   '@binkai/okx-provider@0.2.4-alpha.0':
     resolution: {integrity: sha512-yXfaIjamPBixcLHIoiUmCGHTq79hrKrSqjVd/4uLDo1T0BGSMnhkb6QI8jIzqESCcRyiM68q/nGSwshJdivgpw==}
@@ -8550,6 +8562,322 @@ snapshots:
       - srt-parser-2
       - supports-color
       - typeorm
+      - typesense
+      - usearch
+      - utf-8-validate
+      - voy-search
+      - weaviate-ts-client
+      - web-auth-library
+      - word-extractor
+      - ws
+      - youtubei.js
+      - zod-to-json-schema
+
+  '@binkai/kyber-provider@0.2.4-alpha.0(@browserbasehq/sdk@2.5.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.51.1)(bufferutil@4.0.9)(deepmerge@4.3.1)(dotenv@16.4.7)(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(utf-8-validate@5.0.10)(zod@3.24.2))(@ibm-cloud/watsonx-ai@1.6.4(@langchain/core@0.3.44(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))))(arweave@1.15.7)(axios@1.4.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ibm-cloud-sdk-core@5.3.2)(ignore@5.3.2)(ioredis@5.6.0)(jsonwebtoken@9.0.2)(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(pg@8.14.1)(playwright@1.51.1)(redis@4.7.0)(typeorm@0.3.22(ioredis@5.6.0)(pg@8.14.1)(redis@4.7.0)(reflect-metadata@0.1.14)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3)))(typescript@5.8.3)(utf-8-validate@5.0.10)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod-to-json-schema@3.24.5(zod@3.24.2))':
+    dependencies:
+      '@binkai/core': 0.2.4-alpha.0(@browserbasehq/sdk@2.5.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.51.1)(bufferutil@4.0.9)(deepmerge@4.3.1)(dotenv@16.4.7)(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(utf-8-validate@5.0.10)(zod@3.24.2))(@ibm-cloud/watsonx-ai@1.6.4(@langchain/core@0.3.44(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))))(axios@1.4.0)(bufferutil@4.0.9)(crypto-js@4.2.0)(ibm-cloud-sdk-core@5.3.2)(ignore@5.3.2)(ioredis@5.6.0)(jsonwebtoken@9.0.2)(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(pg@8.14.1)(playwright@1.51.1)(redis@4.7.0)(typeorm@0.3.22(ioredis@5.6.0)(pg@8.14.1)(redis@4.7.0)(reflect-metadata@0.1.14)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3)))(utf-8-validate@5.0.10)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod-to-json-schema@3.24.5(zod@3.24.2))
+      '@binkai/swap-plugin': 0.2.4-alpha.0(@browserbasehq/sdk@2.5.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.51.1)(bufferutil@4.0.9)(deepmerge@4.3.1)(dotenv@16.4.7)(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(utf-8-validate@5.0.10)(zod@3.24.2))(@ibm-cloud/watsonx-ai@1.6.4(@langchain/core@0.3.44(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))))(arweave@1.15.7)(axios@1.4.0)(bufferutil@4.0.9)(crypto-js@4.2.0)(fastestsmallesttextencoderdecoder@1.0.22)(ibm-cloud-sdk-core@5.3.2)(ignore@5.3.2)(ioredis@5.6.0)(jsonwebtoken@9.0.2)(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(pg@8.14.1)(playwright@1.51.1)(redis@4.7.0)(typeorm@0.3.22(ioredis@5.6.0)(pg@8.14.1)(redis@4.7.0)(reflect-metadata@0.1.14)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3)))(typescript@5.8.3)(utf-8-validate@5.0.10)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod-to-json-schema@3.24.5(zod@3.24.2))
+      crypto-js: 4.2.0
+      ethers: 6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+    transitivePeerDependencies:
+      - '@arcjet/redact'
+      - '@aws-crypto/sha256-js'
+      - '@aws-sdk/client-bedrock-agent-runtime'
+      - '@aws-sdk/client-bedrock-runtime'
+      - '@aws-sdk/client-dynamodb'
+      - '@aws-sdk/client-kendra'
+      - '@aws-sdk/client-lambda'
+      - '@aws-sdk/client-s3'
+      - '@aws-sdk/client-sagemaker-runtime'
+      - '@aws-sdk/client-sfn'
+      - '@aws-sdk/credential-provider-node'
+      - '@aws-sdk/dsql-signer'
+      - '@azure/search-documents'
+      - '@azure/storage-blob'
+      - '@browserbasehq/sdk'
+      - '@browserbasehq/stagehand'
+      - '@clickhouse/client'
+      - '@cloudflare/ai'
+      - '@datastax/astra-db-ts'
+      - '@elastic/elasticsearch'
+      - '@getmetal/metal-sdk'
+      - '@getzep/zep-cloud'
+      - '@getzep/zep-js'
+      - '@gomomento/sdk'
+      - '@gomomento/sdk-core'
+      - '@google-ai/generativelanguage'
+      - '@google-cloud/storage'
+      - '@gradientai/nodejs-sdk'
+      - '@huggingface/inference'
+      - '@huggingface/transformers'
+      - '@ibm-cloud/watsonx-ai'
+      - '@lancedb/lancedb'
+      - '@langchain/anthropic'
+      - '@langchain/aws'
+      - '@langchain/cerebras'
+      - '@langchain/cohere'
+      - '@langchain/deepseek'
+      - '@langchain/google-genai'
+      - '@langchain/google-vertexai'
+      - '@langchain/google-vertexai-web'
+      - '@langchain/groq'
+      - '@langchain/mistralai'
+      - '@langchain/ollama'
+      - '@langchain/xai'
+      - '@layerup/layerup-security'
+      - '@libsql/client'
+      - '@mendable/firecrawl-js'
+      - '@mlc-ai/web-llm'
+      - '@mozilla/readability'
+      - '@neondatabase/serverless'
+      - '@notionhq/client'
+      - '@opensearch-project/opensearch'
+      - '@pinecone-database/pinecone'
+      - '@planetscale/database'
+      - '@premai/prem-sdk'
+      - '@qdrant/js-client-rest'
+      - '@raycast/api'
+      - '@rockset/client'
+      - '@smithy/eventstream-codec'
+      - '@smithy/protocol-http'
+      - '@smithy/signature-v4'
+      - '@smithy/util-utf8'
+      - '@spider-cloud/spider-client'
+      - '@supabase/supabase-js'
+      - '@tensorflow-models/universal-sentence-encoder'
+      - '@tensorflow/tfjs-converter'
+      - '@tensorflow/tfjs-core'
+      - '@upstash/ratelimit'
+      - '@upstash/redis'
+      - '@upstash/vector'
+      - '@vercel/kv'
+      - '@vercel/postgres'
+      - '@writerai/writer-sdk'
+      - '@xata.io/client'
+      - '@zilliz/milvus2-sdk-node'
+      - apify-client
+      - arweave
+      - assemblyai
+      - axios
+      - azion
+      - better-sqlite3
+      - bufferutil
+      - cassandra-driver
+      - cborg
+      - cheerio
+      - chromadb
+      - closevector-common
+      - closevector-node
+      - closevector-web
+      - cohere-ai
+      - convex
+      - d3-dsv
+      - discord.js
+      - dria
+      - duck-duck-scrape
+      - encoding
+      - epub2
+      - fast-xml-parser
+      - fastestsmallesttextencoderdecoder
+      - firebase-admin
+      - google-auth-library
+      - googleapis
+      - handlebars
+      - hnswlib-node
+      - html-to-text
+      - ibm-cloud-sdk-core
+      - ignore
+      - interface-datastore
+      - ioredis
+      - it-all
+      - jsdom
+      - jsonwebtoken
+      - llmonitor
+      - lunary
+      - mammoth
+      - mariadb
+      - mem0ai
+      - mongodb
+      - mysql2
+      - neo4j-driver
+      - notion-to-md
+      - officeparser
+      - openai
+      - pdf-parse
+      - peggy
+      - pg
+      - pg-copy-streams
+      - pickleparser
+      - playwright
+      - portkey-ai
+      - puppeteer
+      - pyodide
+      - react
+      - redis
+      - replicate
+      - sonix-speech-recognition
+      - srt-parser-2
+      - supports-color
+      - typeorm
+      - typescript
+      - typesense
+      - usearch
+      - utf-8-validate
+      - voy-search
+      - weaviate-ts-client
+      - web-auth-library
+      - word-extractor
+      - ws
+      - youtubei.js
+      - zod-to-json-schema
+
+  '@binkai/oku-provider@0.2.4-alpha.0(@browserbasehq/sdk@2.5.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.51.1)(bufferutil@4.0.9)(deepmerge@4.3.1)(dotenv@16.4.7)(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(utf-8-validate@5.0.10)(zod@3.24.2))(@ibm-cloud/watsonx-ai@1.6.4(@langchain/core@0.3.44(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))))(arweave@1.15.7)(axios@1.4.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ibm-cloud-sdk-core@5.3.2)(ignore@5.3.2)(ioredis@5.6.0)(jsonwebtoken@9.0.2)(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(pg@8.14.1)(playwright@1.51.1)(redis@4.7.0)(typeorm@0.3.22(ioredis@5.6.0)(pg@8.14.1)(redis@4.7.0)(reflect-metadata@0.1.14)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3)))(typescript@5.8.3)(utf-8-validate@5.0.10)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod-to-json-schema@3.24.5(zod@3.24.2))':
+    dependencies:
+      '@binkai/core': 0.2.4-alpha.0(@browserbasehq/sdk@2.5.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.51.1)(bufferutil@4.0.9)(deepmerge@4.3.1)(dotenv@16.4.7)(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(utf-8-validate@5.0.10)(zod@3.24.2))(@ibm-cloud/watsonx-ai@1.6.4(@langchain/core@0.3.44(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))))(axios@1.4.0)(bufferutil@4.0.9)(crypto-js@4.2.0)(ibm-cloud-sdk-core@5.3.2)(ignore@5.3.2)(ioredis@5.6.0)(jsonwebtoken@9.0.2)(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(pg@8.14.1)(playwright@1.51.1)(redis@4.7.0)(typeorm@0.3.22(ioredis@5.6.0)(pg@8.14.1)(redis@4.7.0)(reflect-metadata@0.1.14)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3)))(utf-8-validate@5.0.10)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod-to-json-schema@3.24.5(zod@3.24.2))
+      '@binkai/swap-plugin': 0.2.4-alpha.0(@browserbasehq/sdk@2.5.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.51.1)(bufferutil@4.0.9)(deepmerge@4.3.1)(dotenv@16.4.7)(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(utf-8-validate@5.0.10)(zod@3.24.2))(@ibm-cloud/watsonx-ai@1.6.4(@langchain/core@0.3.44(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))))(arweave@1.15.7)(axios@1.4.0)(bufferutil@4.0.9)(crypto-js@4.2.0)(fastestsmallesttextencoderdecoder@1.0.22)(ibm-cloud-sdk-core@5.3.2)(ignore@5.3.2)(ioredis@5.6.0)(jsonwebtoken@9.0.2)(openai@4.93.0(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.24.2))(pg@8.14.1)(playwright@1.51.1)(redis@4.7.0)(typeorm@0.3.22(ioredis@5.6.0)(pg@8.14.1)(redis@4.7.0)(reflect-metadata@0.1.14)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3)))(typescript@5.8.3)(utf-8-validate@5.0.10)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod-to-json-schema@3.24.5(zod@3.24.2))
+      crypto-js: 4.2.0
+      ethers: 6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+    transitivePeerDependencies:
+      - '@arcjet/redact'
+      - '@aws-crypto/sha256-js'
+      - '@aws-sdk/client-bedrock-agent-runtime'
+      - '@aws-sdk/client-bedrock-runtime'
+      - '@aws-sdk/client-dynamodb'
+      - '@aws-sdk/client-kendra'
+      - '@aws-sdk/client-lambda'
+      - '@aws-sdk/client-s3'
+      - '@aws-sdk/client-sagemaker-runtime'
+      - '@aws-sdk/client-sfn'
+      - '@aws-sdk/credential-provider-node'
+      - '@aws-sdk/dsql-signer'
+      - '@azure/search-documents'
+      - '@azure/storage-blob'
+      - '@browserbasehq/sdk'
+      - '@browserbasehq/stagehand'
+      - '@clickhouse/client'
+      - '@cloudflare/ai'
+      - '@datastax/astra-db-ts'
+      - '@elastic/elasticsearch'
+      - '@getmetal/metal-sdk'
+      - '@getzep/zep-cloud'
+      - '@getzep/zep-js'
+      - '@gomomento/sdk'
+      - '@gomomento/sdk-core'
+      - '@google-ai/generativelanguage'
+      - '@google-cloud/storage'
+      - '@gradientai/nodejs-sdk'
+      - '@huggingface/inference'
+      - '@huggingface/transformers'
+      - '@ibm-cloud/watsonx-ai'
+      - '@lancedb/lancedb'
+      - '@langchain/anthropic'
+      - '@langchain/aws'
+      - '@langchain/cerebras'
+      - '@langchain/cohere'
+      - '@langchain/deepseek'
+      - '@langchain/google-genai'
+      - '@langchain/google-vertexai'
+      - '@langchain/google-vertexai-web'
+      - '@langchain/groq'
+      - '@langchain/mistralai'
+      - '@langchain/ollama'
+      - '@langchain/xai'
+      - '@layerup/layerup-security'
+      - '@libsql/client'
+      - '@mendable/firecrawl-js'
+      - '@mlc-ai/web-llm'
+      - '@mozilla/readability'
+      - '@neondatabase/serverless'
+      - '@notionhq/client'
+      - '@opensearch-project/opensearch'
+      - '@pinecone-database/pinecone'
+      - '@planetscale/database'
+      - '@premai/prem-sdk'
+      - '@qdrant/js-client-rest'
+      - '@raycast/api'
+      - '@rockset/client'
+      - '@smithy/eventstream-codec'
+      - '@smithy/protocol-http'
+      - '@smithy/signature-v4'
+      - '@smithy/util-utf8'
+      - '@spider-cloud/spider-client'
+      - '@supabase/supabase-js'
+      - '@tensorflow-models/universal-sentence-encoder'
+      - '@tensorflow/tfjs-converter'
+      - '@tensorflow/tfjs-core'
+      - '@upstash/ratelimit'
+      - '@upstash/redis'
+      - '@upstash/vector'
+      - '@vercel/kv'
+      - '@vercel/postgres'
+      - '@writerai/writer-sdk'
+      - '@xata.io/client'
+      - '@zilliz/milvus2-sdk-node'
+      - apify-client
+      - arweave
+      - assemblyai
+      - axios
+      - azion
+      - better-sqlite3
+      - bufferutil
+      - cassandra-driver
+      - cborg
+      - cheerio
+      - chromadb
+      - closevector-common
+      - closevector-node
+      - closevector-web
+      - cohere-ai
+      - convex
+      - d3-dsv
+      - discord.js
+      - dria
+      - duck-duck-scrape
+      - encoding
+      - epub2
+      - fast-xml-parser
+      - fastestsmallesttextencoderdecoder
+      - firebase-admin
+      - google-auth-library
+      - googleapis
+      - handlebars
+      - hnswlib-node
+      - html-to-text
+      - ibm-cloud-sdk-core
+      - ignore
+      - interface-datastore
+      - ioredis
+      - it-all
+      - jsdom
+      - jsonwebtoken
+      - llmonitor
+      - lunary
+      - mammoth
+      - mariadb
+      - mem0ai
+      - mongodb
+      - mysql2
+      - neo4j-driver
+      - notion-to-md
+      - officeparser
+      - openai
+      - pdf-parse
+      - peggy
+      - pg
+      - pg-copy-streams
+      - pickleparser
+      - playwright
+      - portkey-ai
+      - puppeteer
+      - pyodide
+      - react
+      - redis
+      - replicate
+      - sonix-speech-recognition
+      - srt-parser-2
+      - supports-color
+      - typeorm
+      - typescript
       - typesense
       - usearch
       - utf-8-validate
