@@ -202,7 +202,7 @@ export class AiService implements OnApplicationBootstrap {
           await walletPlugin.initialize({
             defaultChain: 'bnb',
             providers: [this.bnbProvider, this.birdeyeApi, this.alchemyApi],
-            supportedChains: ['bnb'],
+            supportedChains: ['bnb', 'solana', 'ethereum'],
           }),
           await stakingPlugin.initialize({
             defaultSlippage: 0.5,
