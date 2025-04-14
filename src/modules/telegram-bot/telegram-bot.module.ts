@@ -24,6 +24,7 @@ import { TestController } from "./controllers/test.controller";
 import { HelpHandler } from "./handlers/help.handler";
 import { ReferralHandler } from "./handlers/referral.handler";
 import { ClearHandler } from "./handlers/clear.handler";
+import { HumanReviewHandler } from "./handlers/human-review.handler";
 
 const handlers = [
   StartHandler,
@@ -90,6 +91,7 @@ const services = [HandlerService];
     ConfirmSellHandler,
     ExportKeysHandler,
     ClearHandler,
+    HumanReviewHandler,
   ],
   exports: [TelegramBot],
 })
@@ -97,7 +99,7 @@ export class TelegramBotModule implements OnModuleInit {
   constructor(
     private telegramBot: TelegramBot,
     private handlerService: HandlerService
-  ) {}
+  ) { }
   async onModuleInit() {
     const handlers = this.handlerService.getHandlers();
     this.telegramBot.registerHandlers(handlers);

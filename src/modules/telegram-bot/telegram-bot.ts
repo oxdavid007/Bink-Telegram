@@ -138,7 +138,7 @@ export class TelegramBot implements OnApplicationBootstrap {
       const { data: action } = query;
       const data = parserCallbackMessageTelegram(query);
 
-      callback(action, data);
+      callback(action, { ...data, cmd: action });
     });
   }
 
@@ -219,6 +219,24 @@ export class TelegramBot implements OnApplicationBootstrap {
     }
 
     this.setupMenuCallback((cmd, data) => {
+      console.log("🚀 ~ TelegramBot ~ setupMenuCallback ~ cmd:", cmd);
+      // Handle human review callbacks directly
+      if (cmd === 'human_review_yes' || cmd === 'human_review_no') {
+        const handler = this.handlers[cmd];
+        if (handler) {
+          handler.handler({ ...data, cmd })
+            .then()
+            .catch(e => {
+              this.loggerService.error(e, {
+                file: 'TelegramBot.start',
+                text: `handler command ${cmd} error: `,
+              });
+            });
+        }
+        return;
+      }
+
+      // Handle other callbacks as before
       const { cmd: _cmd, params } = parseCommand(cmd);
       const handler = this.handlers[_cmd];
       if (handler) {
