@@ -20,37 +20,58 @@ import { CustomPercentageHandler } from "../handlers/custom-percentage.handler";
 import { HelpHandler } from "../handlers/help.handler";
 import { ReferralHandler } from "../handlers/referral.handler";
 import { ClearHandler } from "../handlers/clear.handler";
+import { HumanReviewHandler } from "../handlers/human-review.handler";
 
 @Injectable()
 export class HandlerService {
   constructor(
+    @Inject(StartHandler)
     private readonly startHandler: StartHandler,
+    @Inject(OpenMiniAppHandler)
     private readonly openMiniAppHandler: OpenMiniAppHandler,
+    @Inject(UserInputHandler)
     private readonly userInputHandler: UserInputHandler,
+    @Inject(BuyHandler)
     private readonly buyHandler: BuyHandler,
+    @Inject(TokenInfoHandler)
     private readonly tokenInfoHandler: TokenInfoHandler,
+    @Inject(CustomAmountHandler)
     private readonly customAmountHandler: CustomAmountHandler,
+    @Inject(ConfirmBuyHandler)
     private readonly confirmBuyHandler: ConfirmBuyHandler,
+    @Inject(SellHandler)
     private readonly sellHandler: SellHandler,
+    @Inject(SellTokenDetailHandler)
     private readonly sellTokenDetailHandler: SellTokenDetailHandler,
+    @Inject(ConfirmSellHandler)
     private readonly confirmSellHandler: ConfirmSellHandler,
+    @Inject(WalletHandler)
     private readonly walletHandler: WalletHandler,
+    @Inject(ExportKeysHandler)
     private readonly exportKeysHandler: ExportKeysHandler,
+    @Inject(ComingSoonHandler)
     private readonly comingSoonHandler: ComingSoonHandler,
+    @Inject(WithdrawHandler)
     private readonly withdrawHandler: WithdrawHandler,
+    @Inject(CustomPercentageHandler)
     private readonly customPercentageHandler: CustomPercentageHandler,
+    @Inject(HelpHandler)
     private readonly helpHandler: HelpHandler,
+    @Inject(ReferralHandler)
     private readonly referralHandler: ReferralHandler,
+    @Inject(ClearHandler)
     private readonly clearHandler: ClearHandler,
+    @Inject(HumanReviewHandler)
+    private readonly humanReviewHandler: HumanReviewHandler,
   ) { }
 
-  getHandlers(): Record<string, Handler> {
+  getHandlers() {
     return {
       [COMMAND_KEYS.START]: this.startHandler,
       [COMMAND_KEYS.OPEN_MINI_APP]: this.openMiniAppHandler,
       [USER_INPUT]: this.userInputHandler,
       [COMMAND_KEYS.BUY]: this.buyHandler,
-      [COMMAND_KEYS.TOKEN_INFO_CALLBACK]: this.tokenInfoHandler,
+      [COMMAND_KEYS.TOKEN_INFO]: this.tokenInfoHandler,
       [COMMAND_KEYS.CUSTOM_AMOUNT]: this.customAmountHandler,
       [COMMAND_KEYS.CONFIRM_BUY]: this.confirmBuyHandler,
       [COMMAND_KEYS.SELL]: this.sellHandler,
@@ -64,6 +85,8 @@ export class HandlerService {
       [COMMAND_KEYS.HELP]: this.helpHandler,
       [COMMAND_KEYS.REFERRAL]: this.referralHandler,
       [COMMAND_KEYS.CLEAR]: this.clearHandler,
+      [COMMAND_KEYS.HUMAN_REVIEW_YES]: this.humanReviewHandler,
+      [COMMAND_KEYS.HUMAN_REVIEW_NO]: this.humanReviewHandler,
     };
   }
 

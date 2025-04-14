@@ -24,4 +24,6 @@ export const COMMAND_KEYS = {
   // BRIDGE: "bridge",
   // SWAP: "swap",
   // CROSSCHAIN: "crosschain"
+  HUMAN_REVIEW_YES: 'human_review_yes',
+  HUMAN_REVIEW_NO: 'human_review_no',
 } as const;

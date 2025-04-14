@@ -72,8 +72,6 @@ export class UserInputHandler implements Handler {
         imageUrl = filePath;
       }
 
-      console.log("🚀 ~ UserInputHandler ~ imageUrl:", imageUrl)
-
       // handle swap
       await this.aiService.handleSwap(
         data.telegramId,
