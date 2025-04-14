@@ -2,6 +2,7 @@ import { formatSmartNumber } from '@/telegram-bot/utils/format-text';
 import { IHumanReviewCallback, HumanReviewData } from '@binkai/core';
 import { TelegramBot } from '@/telegram-bot/telegram-bot';
 import { ToolName, StakingOperationType } from './tool-execution';
+import { COMMAND_KEYS } from '@/telegram-bot/constants/command-keys';
 
 class ExampleHumanReviewCallback implements IHumanReviewCallback {
   private messageData: (type: string, message: string) => void;
@@ -65,8 +66,8 @@ Please review the following transaction details carefully before proceeding:
     const keyboard = {
       inline_keyboard: [
         [
-          { text: '✅ Yes', callback_data: 'human_review_yes' },
-          { text: '❌ No', callback_data: 'human_review_no' }
+          { text: '✅ Approve', callback_data: COMMAND_KEYS.HUMAN_REVIEW_YES },
+          { text: '❌ Reject', callback_data: COMMAND_KEYS.HUMAN_REVIEW_NO }
         ]
       ]
     };
