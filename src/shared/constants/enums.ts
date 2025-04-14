@@ -29,3 +29,9 @@ export enum EMessageType {
   HUMAN_REVIEW = 'human-review',
   OTHER = 'other',
 }
+
+export enum EHumanReviewAction {
+  APPROVE = 'approve',
+  REJECT = 'reject',
+  UPDATE = 'update',
+}
