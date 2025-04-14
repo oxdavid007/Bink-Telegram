@@ -29,7 +29,7 @@ import { JupiterProvider } from '@binkai/jupiter-provider';
 import { Connection } from '@solana/web3.js';
 import ExampleAskUserCallback from '@/shared/tools/ask-user';
 import ExampleHumanReviewCallback from '@/shared/tools/human-review';
-import { EMessageType } from '@/shared/constants/enums';
+import { EHumanReviewAction, EMessageType } from '@/shared/constants/enums';
 import { OkuProvider } from '@binkai/oku-provider';
 import { KyberProvider } from '@binkai/kyber-provider';
 @Injectable()
@@ -124,6 +124,7 @@ export class AiService implements OnApplicationBootstrap {
   async handleSwap(
     telegramId: string,
     input: string,
+    action?: EHumanReviewAction,
   ) {
     try {
       const keys = await this.userService.getMnemonicByTelegramId(telegramId);
@@ -334,13 +335,21 @@ CRITICAL:
         );
       }
 
+      let executeData;
 
-      const inputResult = await agent.execute({
-        input: `
-        ${input}
-      `,
-        threadId: user.current_thread_id as UUID,
-      });
+      if (action) {
+        executeData = {
+          action,
+          threadId: user.current_thread_id as UUID,
+        };
+      } else {
+        executeData = {
+          input,
+          threadId: user.current_thread_id as UUID,
+        };
+      }
+
+      const inputResult = await agent.execute(executeData);
 
       let result;
       if (inputResult && inputResult.length > 0) {
