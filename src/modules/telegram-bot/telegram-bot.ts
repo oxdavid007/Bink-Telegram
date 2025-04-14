@@ -219,9 +219,8 @@ export class TelegramBot implements OnApplicationBootstrap {
     }
 
     this.setupMenuCallback((cmd, data) => {
-      console.log("🚀 ~ TelegramBot ~ setupMenuCallback ~ cmd:", cmd);
       // Handle human review callbacks directly
-      if (cmd === 'human_review_yes' || cmd === 'human_review_no') {
+      if (cmd === COMMAND_KEYS.HUMAN_REVIEW_YES || cmd === COMMAND_KEYS.HUMAN_REVIEW_NO) {
         const handler = this.handlers[cmd];
         if (handler) {
           handler.handler({ ...data, cmd })

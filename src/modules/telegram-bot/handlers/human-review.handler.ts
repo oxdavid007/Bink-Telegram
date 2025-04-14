@@ -1,9 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { TelegramBot } from "../telegram-bot";
 import { Handler } from "./handler";
-import { EHumanReviewAction, EMessageType } from "@/shared/constants/enums";
+import { EHumanReviewAction } from "@/shared/constants/enums";
 import { AiService } from "@/business/services/ai.service";
-
+import { COMMAND_KEYS } from "../constants/command-keys";
 @Injectable()
 export class HumanReviewHandler implements Handler {
     constructor(
@@ -25,7 +25,7 @@ export class HumanReviewHandler implements Handler {
             await this.bot.answerCallbackQuery(data.queryId);
 
             // Determine the action based on the user's response
-            const action = data.cmd === 'human_review_yes' ? EHumanReviewAction.APPROVE : EHumanReviewAction.REJECT;
+            const action = data.cmd === COMMAND_KEYS.HUMAN_REVIEW_YES ? EHumanReviewAction.APPROVE : EHumanReviewAction.REJECT;
 
             // Send the response with the action
             await this.aiService.handleSwap(data.telegramId, '', action as EHumanReviewAction);
