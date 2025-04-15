@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter } from 'events';
 import { JsonRpcProvider } from 'ethers';
-import { Agent, Wallet, Network, NetworkType, NetworksConfig, UUID, PlanningAgent } from '@binkai/core';
+import { Agent, Wallet, Network, NetworkType, NetworksConfig, UUID, PlanningAgent, NetworkName } from '@binkai/core';
 import { SwapPlugin } from '@binkai/swap-plugin';
 import { PancakeSwapProvider } from '@binkai/pancakeswap-provider';
 import { UserService } from './user.service';
@@ -19,7 +19,7 @@ import { OkxProvider } from '@binkai/okx-provider';
 import { deBridgeProvider } from '@binkai/debridge-provider';
 import { BridgePlugin } from '@binkai/bridge-plugin';
 import { WalletPlugin } from '@binkai/wallet-plugin';
-import { BnbProvider } from '@binkai/rpc-provider';
+import { BnbProvider, SolanaProvider } from '@binkai/rpc-provider';
 import { ExampleToolExecutionCallback } from '@/shared/tools/tool-execution';
 import { TelegramBot } from '@/telegram-bot/telegram-bot';
 import { StakingPlugin } from '@binkai/staking-plugin';
@@ -41,6 +41,7 @@ export class AiService implements OnApplicationBootstrap {
   private postgresAdapter: PostgresDatabaseAdapter;
   private binkProvider: BinkProvider;
   private bnbProvider: BnbProvider;
+  private solanaProvider: SolanaProvider;
 
   @Inject(TelegramBot)
   private bot: TelegramBot;
@@ -117,6 +118,11 @@ export class AiService implements OnApplicationBootstrap {
     this.bnbProvider = new BnbProvider({
       rpcUrl: process.env.BSC_RPC_URL,
     });
+
+    this.solanaProvider = new SolanaProvider({
+      rpcUrl: process.env.RPC_URL,
+    });
+
   }
 
   async onApplicationBootstrap() { }
@@ -202,7 +208,7 @@ export class AiService implements OnApplicationBootstrap {
           }),
           await walletPlugin.initialize({
             defaultChain: 'bnb',
-            providers: [this.bnbProvider, this.birdeyeApi, this.alchemyApi],
+            providers: [this.bnbProvider, this.birdeyeApi, this.alchemyApi, this.solanaProvider],
             supportedChains: ['bnb', 'solana', 'ethereum'],
           }),
           await stakingPlugin.initialize({
@@ -215,7 +221,7 @@ export class AiService implements OnApplicationBootstrap {
 
         agent = new PlanningAgent(
           {
-            model: 'gpt-4o',
+            model: 'gpt-4.1',
             temperature: 0,
             isHumanReview: true,
             systemPrompt: `You are a BINK AI assistant. You can help user to query blockchain data .You are able to perform swaps and get token information on multiple chains. If you do not have the token address, you can use the symbol to get the token information before performing a swap.Additionally, you have the ability to get wallet balances across various networks. If the user doesn't specify a particular network, you can retrieve wallet balances from multiple chains like BNB, Solana, and Ethereum.
@@ -232,6 +238,9 @@ CRITICAL:
 2. DO NOT use markdown. 
 3. Using HTML tags like <b>bold</b>, <i>italic</i>, <code>code</code>, <pre>preformatted</pre>, and <a href="URL">links</a>. \n\nWhen displaying token information or swap details:\n- Use <b>bold</b> for important values and token names\n- Use <code>code</code> for addresses and technical details\n- Use <i>italic</i> for additional information
 4. If has limit order, show list id limit order.
+Wallet BNB: ${await wallet.getAddress(NetworkName.BNB) || 'Not available'}
+Wallet ETH: ${await wallet.getAddress(NetworkName.ETHEREUM) || 'Not available'}
+Wallet SOL: ${await wallet.getAddress(NetworkName.SOLANA) || 'Not available'}
             `,
           },
           wallet,
@@ -252,8 +261,6 @@ CRITICAL:
           this.bot,
           messageThinkingId,
           (type: string, message: string) => {
-            console.log("🚀 ~ AiService ~ tool execution ~ type:", type)
-            console.log("🚀 ~ AiService ~ tool execution ~ message:", message)
             if (type === EMessageType.TOOL_EXECUTION) {
               isTransactionSuccess = true;
               this.bot.editMessageText(message, {
@@ -312,15 +319,12 @@ CRITICAL:
 
         this.mapAgent[telegramId] = agent;
       } else {
-
         this.mapToolExecutionCallback[telegramId].setMessageId(messageThinkingId);
         this.mapToolExecutionCallback[telegramId].setMessagePlanListId(messagePlanListId);
         this.mapAskUserCallback[telegramId].setMessageId(messageThinkingId);
         this.mapHumanReviewCallback[telegramId].setMessageId(messageThinkingId);
         this.mapToolExecutionCallback[telegramId].setMessageData(
           (type: string, message: string) => {
-            console.log("🚀 ~ AiService ~ tool execution ~ type:", type)
-            console.log("🚀 ~ AiService ~ tool execution ~ message:", message)
             if (type === EMessageType.TOOL_EXECUTION) {
               isTransactionSuccess = true;
               try {
@@ -368,6 +372,7 @@ CRITICAL:
             message_id: messageThinkingId,
             parse_mode: 'HTML',
           });
+
         } catch (error) {
           console.error("🚀 ~ AiService ~ edit message text ~ error", error.message)
         }

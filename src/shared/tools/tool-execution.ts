@@ -1,6 +1,7 @@
 import { TelegramBot } from '@/telegram-bot/telegram-bot';
 import { formatSmartNumber } from '@/telegram-bot/utils/format-text';
 import { EMessageType } from '../constants/enums';
+import { getScanUrl, getNetwork } from '../helper';
 
 /**
  * Enum representing the different states of a tool execution
@@ -22,6 +23,7 @@ export enum ToolName {
   SWAP = 'swap',
   BRIDGE = 'bridge',
   STAKE = 'staking',
+  TRANSFER = 'transfer_tokens',
 }
 
 /**
@@ -31,7 +33,8 @@ export enum StakingOperationType {
   STAKE = 'stake',
   SUPPLY = 'supply',
   UNSTAKE = 'unstake',
-  WITHDRAW = 'withdraw'
+  WITHDRAW = 'withdraw',
+  TRANSFER = 'transfer_tokens',
 }
 
 /**
@@ -112,7 +115,6 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
     console.log(`${emoji} [${new Date(data.timestamp).toISOString()}] ${data.message}`);
 
     if (data.state === ToolExecutionState.STARTED && data.toolName === ToolName.CREATE_PLAN) {
-      console.log('🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ data:STARTED', data);
       let message = ``;
 
       // Format plans with title and tasks with radio buttons
@@ -148,12 +150,14 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
           })
           .then(messageId => {
             this.setMessageId(messageId.message_id);
+            // TODO: Delete the message plan list
+            //  this.bot.deleteMessage(this.chatId, this.messageId.toString());
           })
           .catch(error => {
-            console.error('🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error', error);
+            console.error('🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error', error.message);
           });
       } catch (error) {
-        console.log('🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error');
+        console.log('🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error', error.message);
         this.bot.sendMessage(this.chatId, 'Please try again', {
           parse_mode: 'HTML',
         });
@@ -161,7 +165,6 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
     }
 
     if (data.state === ToolExecutionState.IN_PROCESS && data.data) {
-      console.log('🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ data:IN_PROCESS', data);
       if (data.data.progress < 100) {
         this.bot.editMessageText(`${emoji} ${data.message}`, {
           chat_id: this.chatId,
@@ -173,22 +176,13 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
     }
 
     if (data.state === ToolExecutionState.COMPLETED && data.data) {
-      console.log('🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ data:COMPLETED', data);
       if (
         data.data?.status === 'success' &&
         (data.toolName === ToolName.SWAP ||
           data.toolName === ToolName.BRIDGE ||
-          data.toolName === ToolName.STAKE)
+          data.toolName === ToolName.STAKE ||
+          data.toolName === ToolName.TRANSFER)
       ) {
-        const getScanUrl = (network, txHash) => {
-          const scanUrls = {
-            bnb: `https://bscscan.com/tx/${txHash}`,
-            ethereum: `https://etherscan.io/tx/${txHash}`,
-            solana: `https://solscan.io/tx/${txHash}`,
-          };
-          return scanUrls[network] || `${txHash}`;
-        };
-
         let message;
 
         if (data.toolName === ToolName.SWAP) {
@@ -196,14 +190,15 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
           message = `🎉 <b>Congratulations, your transaction has been successful.</b>
 - <b>Swapped:</b> ${formatSmartNumber(data.data.fromAmount)} ${data.data.fromToken?.symbol || ''} 
 - <b>Received:</b> ${formatSmartNumber(data.data.toAmount)} ${data.data.toToken?.symbol || ''}
-- <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
+- <b>Network:</b> ${getNetwork(data.data.network)}
+- <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${getNetwork(data.data.network)} Explorer</a>
 `;
         } else if (data.toolName === ToolName.BRIDGE) {
           const scanUrl = getScanUrl(data.data.fromNetwork, data.data.transactionHash);
           message = `🎉 <b>Congratulations, your transaction has been successful.</b>
-- <b>Swapped:</b> ${formatSmartNumber(data.data.fromAmount)} ${data.data.fromToken?.symbol || ''} (${data.data.fromNetwork})
-- <b>Received:</b> ${formatSmartNumber(data.data.toAmount)} ${data.data.toToken?.symbol || ''} (${data.data.toNetwork})
-- <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.fromNetwork.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
+- <b>Swapped:</b> ${formatSmartNumber(data.data.fromAmount)} ${data.data.fromToken?.symbol || ''} (${getNetwork(data.data.fromNetwork)})
+- <b>Received:</b> ${formatSmartNumber(data.data.toAmount)} ${data.data.toToken?.symbol || ''} (${getNetwork(data.data.toNetwork)})
+- <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${getNetwork(data.data.fromNetwork)} Explorer</a>
 `;
         } else if (data.toolName === ToolName.STAKE) {
           const scanUrl = getScanUrl(data.data.network, data.data.transactionHash);
@@ -211,14 +206,24 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
           if (data.data.type === StakingOperationType.STAKE || data.data.type === StakingOperationType.SUPPLY) {
             message = `🎉 <b>Congratulations, your transaction has been successful.</b>
 - <b>Staked:</b> ${formatSmartNumber(data.data.amountA || 0)} ${data.data.tokenA?.symbol || ''}
-- <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
+- <b>Network:</b> ${getNetwork(data.data.network)}
+- <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${getNetwork(data.data.network)} Explorer</a>
           `;
           } else if (data.data.type === StakingOperationType.UNSTAKE || data.data.type === StakingOperationType.WITHDRAW) {
             message = `🎉 <b>Congratulations, your transaction has been successful.</b>
 - <b>Unstaked:</b> ${formatSmartNumber(data.data.amountA || 0)} ${data.data.tokenA?.symbol || ''}
-- <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
+- <b>Network:</b> ${getNetwork(data.data.network)}
+- <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${getNetwork(data.data.network)} Explorer</a>
           `;
           }
+        } else if (data.toolName === ToolName.TRANSFER) {
+          const scanUrl = getScanUrl(data.data.network, data.data.transactionHash);
+          message = `🎉 <b>Congratulations, your transaction has been successful.</b>
+- <b>To:</b> ${data.data.toAddress}
+- <b>Amount:</b> ${formatSmartNumber(data.data.amount || 0)} ${data.data.token?.symbol || ''}
+- <b>Network:</b> ${getNetwork(data.data.network)}
+- <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${getNetwork(data.data.network)} Explorer</a>
+        `;
         }
         this.messageData(EMessageType.TOOL_EXECUTION, message);
       }

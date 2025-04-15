@@ -49,3 +49,24 @@ export function generateSlug(input: string) {
     new Date().getTime().toString()
   );
 }
+
+export function getScanUrl(network: string, txHash: string): string {
+  const scanUrls = {
+    bnb: `https://bscscan.com/tx/${txHash}`,
+    ethereum: `https://etherscan.io/tx/${txHash}`,
+    solana: `https://solscan.io/tx/${txHash}`,
+  };
+  return scanUrls[network] || `${txHash}`;
+}
+
+export function getNetwork(network: string): string {
+  if (!network) return 'Unknown';
+
+  const networkMap = {
+    bnb: 'BNB Chain',
+    ethereum: 'Ethereum',
+    solana: 'Solana'
+  };
+
+  return networkMap[network] || network.charAt(0).toUpperCase() + network.slice(1);
+}
