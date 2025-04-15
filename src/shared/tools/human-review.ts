@@ -70,7 +70,9 @@ Please review the following transaction details carefully before proceeding:
     } else if (data.toolName === ToolName.TRANSFER) {
       message = `📝 <b>Review Transaction</b>
 Please review the following transaction details carefully before proceeding:
-- <b>Amount:</b> ${formatSmartNumber(data.data.amount || 0)} ${data.data.token?.symbol || ''} 
+- <b>Transferred:</b> ${formatSmartNumber(data.data.amount || 0)} ${data.data.token?.symbol || ''}
+- <b>Token address:</b> ${data.data.token?.address || 'Unknown'}
+- <b>From Address:</b> ${data.data.fromAddress || 'Unknown'}
 - <b>To Address:</b> ${data.data.toAddress || 'Unknown'}
 - <b>Network:</b> ${data.data.network ? data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1) : 'Unknown'}
 

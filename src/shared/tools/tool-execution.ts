@@ -152,7 +152,10 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
             //  this.bot.deleteMessage(this.chatId, this.messageId.toString());
           })
           .catch(error => {
-            console.error('🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error', error.message);
+            console.error(
+              '🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error',
+              error.message,
+            );
           });
       } catch (error) {
         console.log('🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error', error.message);
@@ -178,7 +181,8 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
         data.data?.status === 'success' &&
         (data.toolName === ToolName.SWAP ||
           data.toolName === ToolName.BRIDGE ||
-          data.toolName === ToolName.STAKE)
+          data.toolName === ToolName.STAKE ||
+          data.toolName === ToolName.TRANSFER)
       ) {
         const getScanUrl = (network, txHash) => {
           const scanUrls = {
@@ -226,9 +230,13 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
           `;
           }
         } else if (data.toolName === ToolName.TRANSFER) {
+          console.log('🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ data:TRANSFER', data);
           const scanUrl = getScanUrl(data.data.network, data.data.transactionHash);
           message = `🎉 <b>Congratulations, your transaction has been successful.</b>
-- <b>Transferred:</b> ${formatSmartNumber(data.data.amountA || 0)} ${data.data.tokenA?.symbol || ''}
+- <b>Transferred:</b> ${formatSmartNumber(data.data.amount || 0)} ${data.data.token?.symbol || ''}
+- <b>Token address:</b> ${data.data.token?.address || 'Unknown'}
+- <b>From Address:</b> ${data.data.fromAddress || 'Unknown'}
+- <b>To Address:</b> ${data.data.toAddress || 'Unknown'}
 - <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
           `;
         }
