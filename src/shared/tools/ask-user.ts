@@ -24,10 +24,12 @@ class ExampleAskUserCallback implements IAskUserCallback {
     this.bot.sendMessage(this.chatId, data.question, {
       parse_mode: 'HTML',
     })
-      .then(messageId => {
-        this.setMessageId(messageId.message_id);
+      .then(messageDataId => {
+        this.setMessageId(messageDataId.message_id);
+        // After sending message, delete the previous message
+        return this.bot.deleteMessage(this.chatId, (messageDataId.message_id - 1).toString());
       }).catch(error => {
-        console.error("🚀 ~ ExampleAskUserCallback ~ onAskUser ~ error", error)
+        console.error("🚀 ~ ExampleAskUserCallback ~ onAskUser ~ error", error.message)
 
       });
   }
