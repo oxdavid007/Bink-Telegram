@@ -31,7 +31,10 @@ class ExampleHumanReviewCallback implements IHumanReviewCallback {
     let message = '';
 
     if (data.toolName === ToolName.STAKE) {
-      if (data.data.type === StakingOperationType.STAKE || data.data.type === StakingOperationType.SUPPLY) {
+      if (
+        data.data.type === StakingOperationType.STAKE ||
+        data.data.type === StakingOperationType.SUPPLY
+      ) {
         message = `📝 <b>Review Transaction</b>
 Please review the following staking details carefully before proceeding:
 - <b>Amount:</b> ${formatSmartNumber(data.data.amountA || 0)} ${data.data.tokenA?.symbol || ''} 
@@ -40,7 +43,10 @@ Please review the following staking details carefully before proceeding:
 <i>Please confirm your transaction within <b>60 seconds</b></i>
 <i>Transactions metrics can be modified before the execution. You can edit the metrics by typing in the chatbox (i.e.: change amount 0.01 BNB)</i>
       `;
-      } else if (data.data.type === StakingOperationType.UNSTAKE || data.data.type === StakingOperationType.WITHDRAW) {
+      } else if (
+        data.data.type === StakingOperationType.UNSTAKE ||
+        data.data.type === StakingOperationType.WITHDRAW
+      ) {
         message = `📝 <b>Review Transaction</b>
 Please review the following unstaking details carefully before proceeding:
 - <b>Amount:</b> ${formatSmartNumber(data.data.amountA || 0)} ${data.data.tokenA?.symbol || ''} 
@@ -60,28 +66,40 @@ Please review the following transaction details carefully before proceeding:
 <i>Please confirm your transaction within <b>60 seconds</b></i>
 <i>Transactions metrics can be modified before the execution. You can edit the metrics by typing in the chatbox (i.e.: change amount 0.01 BNB)</i>
       `;
+    } else if (data.toolName === ToolName.TRANSFER) {
+      message = `📝 <b>Review Transaction</b>
+Please review the following transaction details carefully before proceeding:
+- <b>Amount:</b> ${formatSmartNumber(data.data.amount || 0)} ${data.data.token?.symbol || ''} 
+- <b>To Address:</b> ${data.data.toAddress || 'Unknown'}
+- <b>Network:</b> ${data.data.network ? data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1) : 'Unknown'}
+
+<i>Please confirm your transaction within <b>60 seconds</b></i>
+<i>Transactions metrics can be modified before the execution. You can edit the metrics by typing in the chatbox (i.e.: change amount 0.01 BNB)</i>
+      `;
     }
 
     const keyboard = {
       inline_keyboard: [
         [
           { text: '✅ Yes', callback_data: 'human_review_yes' },
-          { text: '❌ No', callback_data: 'human_review_no' }
-        ]
-      ]
+          { text: '❌ No', callback_data: 'human_review_no' },
+        ],
+      ],
     };
 
-    this.bot
-      .sendMessage(this.chatId, message, {
-        parse_mode: 'HTML',
-        reply_markup: keyboard
-      })
-      .then(messageId => {
-        this.setMessageId(messageId.message_id);
-      })
-      .catch(error => {
-        console.error('🚀 ~ ExampleHumanReviewCallback ~ onHumanReview ~ error', error);
-      });
+    if (message) {
+      this.bot
+        .sendMessage(this.chatId, message, {
+          parse_mode: 'HTML',
+          reply_markup: keyboard,
+        })
+        .then(messageId => {
+          this.setMessageId(messageId.message_id);
+        })
+        .catch(error => {
+          console.error('🚀 ~ ExampleHumanReviewCallback ~ onHumanReview ~ error', error);
+        });
+    }
   }
 }
 

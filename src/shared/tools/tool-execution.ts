@@ -22,6 +22,7 @@ export enum ToolName {
   SWAP = 'swap',
   BRIDGE = 'bridge',
   STAKE = 'staking',
+  TRANSFER = 'transfer_tokens',
 }
 
 /**
@@ -31,7 +32,7 @@ export enum StakingOperationType {
   STAKE = 'stake',
   SUPPLY = 'supply',
   UNSTAKE = 'unstake',
-  WITHDRAW = 'withdraw'
+  WITHDRAW = 'withdraw',
 }
 
 /**
@@ -208,17 +209,29 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
         } else if (data.toolName === ToolName.STAKE) {
           const scanUrl = getScanUrl(data.data.network, data.data.transactionHash);
 
-          if (data.data.type === StakingOperationType.STAKE || data.data.type === StakingOperationType.SUPPLY) {
+          if (
+            data.data.type === StakingOperationType.STAKE ||
+            data.data.type === StakingOperationType.SUPPLY
+          ) {
             message = `🎉 <b>Congratulations, your transaction has been successful.</b>
 - <b>Staked:</b> ${formatSmartNumber(data.data.amountA || 0)} ${data.data.tokenA?.symbol || ''}
 - <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
           `;
-          } else if (data.data.type === StakingOperationType.UNSTAKE || data.data.type === StakingOperationType.WITHDRAW) {
+          } else if (
+            data.data.type === StakingOperationType.UNSTAKE ||
+            data.data.type === StakingOperationType.WITHDRAW
+          ) {
             message = `🎉 <b>Congratulations, your transaction has been successful.</b>
 - <b>Unstaked:</b> ${formatSmartNumber(data.data.amountA || 0)} ${data.data.tokenA?.symbol || ''}
 - <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
           `;
           }
+        } else if (data.toolName === ToolName.TRANSFER) {
+          const scanUrl = getScanUrl(data.data.network, data.data.transactionHash);
+          message = `🎉 <b>Congratulations, your transaction has been successful.</b>
+- <b>Transferred:</b> ${formatSmartNumber(data.data.amountA || 0)} ${data.data.tokenA?.symbol || ''}
+- <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
+          `;
         }
         this.messageData(EMessageType.TOOL_EXECUTION, message);
       }

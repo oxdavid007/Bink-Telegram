@@ -3,7 +3,15 @@ import OpenAI from 'openai';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter } from 'events';
 import { JsonRpcProvider } from 'ethers';
-import { Agent, Wallet, Network, NetworkType, NetworksConfig, UUID, PlanningAgent } from '@binkai/core';
+import {
+  Agent,
+  Wallet,
+  Network,
+  NetworkType,
+  NetworksConfig,
+  UUID,
+  PlanningAgent,
+} from '@binkai/core';
 import { SwapPlugin } from '@binkai/swap-plugin';
 import { PancakeSwapProvider } from '@binkai/pancakeswap-provider';
 import { UserService } from './user.service';
@@ -119,13 +127,9 @@ export class AiService implements OnApplicationBootstrap {
     });
   }
 
-  async onApplicationBootstrap() { }
+  async onApplicationBootstrap() {}
 
-  async handleSwap(
-    telegramId: string,
-    input: string,
-    action?: EHumanReviewAction,
-  ) {
+  async handleSwap(telegramId: string, input: string, action?: EHumanReviewAction) {
     try {
       const keys = await this.userService.getMnemonicByTelegramId(telegramId);
       if (!keys) {
@@ -170,7 +174,11 @@ export class AiService implements OnApplicationBootstrap {
         const tokenPlugin = new TokenPlugin();
         const knowledgePlugin = new KnowledgePlugin();
         const bridgePlugin = new BridgePlugin();
-        const debridge = new deBridgeProvider([this.bscProvider, new Connection(process.env.RPC_URL)], 56, 7565164);
+        const debridge = new deBridgeProvider(
+          [this.bscProvider, new Connection(process.env.RPC_URL)],
+          56,
+          7565164,
+        );
         const walletPlugin = new WalletPlugin();
         const stakingPlugin = new StakingPlugin();
         const thena = new ThenaProvider(this.bscProvider, bscChainId);
@@ -202,7 +210,7 @@ export class AiService implements OnApplicationBootstrap {
           }),
           await walletPlugin.initialize({
             defaultChain: 'bnb',
-            providers: [this.bnbProvider, this.birdeyeApi, this.alchemyApi],
+            providers: [this.alchemyApi, this.bnbProvider, this.birdeyeApi],
             supportedChains: ['bnb', 'solana', 'ethereum'],
           }),
           await stakingPlugin.initialize({
@@ -252,8 +260,8 @@ CRITICAL:
           this.bot,
           messageThinkingId,
           (type: string, message: string) => {
-            console.log("🚀 ~ AiService ~ tool execution ~ type:", type)
-            console.log("🚀 ~ AiService ~ tool execution ~ message:", message)
+            console.log('🚀 ~ AiService ~ tool execution ~ type:', type);
+            console.log('🚀 ~ AiService ~ tool execution ~ message:', message);
             if (type === EMessageType.TOOL_EXECUTION) {
               isTransactionSuccess = true;
               this.bot.editMessageText(message, {
@@ -262,7 +270,7 @@ CRITICAL:
                 parse_mode: 'HTML',
               });
             }
-          }
+          },
         );
 
         const askUserCallback = new ExampleAskUserCallback(
@@ -270,8 +278,8 @@ CRITICAL:
           this.bot,
           messageThinkingId,
           (type: string, message: string) => {
-            console.log("🚀 ~ AiService ~ type ask user:", type)
-            console.log("🚀 ~ AiService ~ message ask user:", message)
+            console.log('🚀 ~ AiService ~ type ask user:', type);
+            console.log('🚀 ~ AiService ~ message ask user:', message);
             // if (type === EMessageType.ASK_USER) {
             //   isTransactionSuccess = true;
             //   this.bot.editMessageText(message, {
@@ -280,15 +288,15 @@ CRITICAL:
             //     parse_mode: 'HTML',
             //   });
             // }
-          }
+          },
         );
         const humanReviewCallback = new ExampleHumanReviewCallback(
           telegramId,
           this.bot,
           messageThinkingId,
           (type: string, message: string) => {
-            console.log("🚀 ~ AiService ~ human review ~ type:", type)
-            console.log("🚀 ~ AiService ~ human review ~ message:", message)
+            console.log('🚀 ~ AiService ~ human review ~ type:', type);
+            console.log('🚀 ~ AiService ~ human review ~ message:', message);
 
             // if (type === EMessageType.HUMAN_REVIEW) {
             //   isTransactionSuccess = true;
@@ -298,13 +306,12 @@ CRITICAL:
             //     parse_mode: 'HTML',
             //   });
             // }
-          }
+          },
         );
 
         this.mapToolExecutionCallback[telegramId] = toolExecutionCallback;
         this.mapAskUserCallback[telegramId] = askUserCallback;
         this.mapHumanReviewCallback[telegramId] = humanReviewCallback;
-
 
         agent.registerToolExecutionCallback(toolExecutionCallback as any);
         agent.registerAskUserCallback(askUserCallback as any);
@@ -312,15 +319,14 @@ CRITICAL:
 
         this.mapAgent[telegramId] = agent;
       } else {
-
         this.mapToolExecutionCallback[telegramId].setMessageId(messageThinkingId);
         this.mapToolExecutionCallback[telegramId].setMessagePlanListId(messagePlanListId);
         this.mapAskUserCallback[telegramId].setMessageId(messageThinkingId);
         this.mapHumanReviewCallback[telegramId].setMessageId(messageThinkingId);
         this.mapToolExecutionCallback[telegramId].setMessageData(
           (type: string, message: string) => {
-            console.log("🚀 ~ AiService ~ tool execution ~ type:", type)
-            console.log("🚀 ~ AiService ~ tool execution ~ message:", message)
+            console.log('🚀 ~ AiService ~ tool execution ~ type:', type);
+            console.log('🚀 ~ AiService ~ tool execution ~ message:', message);
             if (type === EMessageType.TOOL_EXECUTION) {
               isTransactionSuccess = true;
               try {
@@ -328,10 +334,10 @@ CRITICAL:
                   parse_mode: 'HTML',
                 });
               } catch (error) {
-                console.error("🚀 ~ AiService ~ edit message text ~ error", error.message)
+                console.error('🚀 ~ AiService ~ edit message text ~ error', error.message);
               }
             }
-          }
+          },
         );
       }
 
@@ -356,11 +362,10 @@ CRITICAL:
         result = inputResult.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') || 'Please try again';
       }
 
-      console.log("🚀 ~ AiService End ~ result:", result)
+      console.log('🚀 ~ AiService End ~ result:', result);
 
       // TODO: handle result
       if (result && !isTransactionSuccess) {
-
         // TODO: Edit message in chat
         try {
           await this.bot.editMessageText(result, {
@@ -369,7 +374,7 @@ CRITICAL:
             parse_mode: 'HTML',
           });
         } catch (error) {
-          console.error("🚀 ~ AiService ~ edit message text ~ error", error.message)
+          console.error('🚀 ~ AiService ~ edit message text ~ error', error.message);
         }
       }
     } catch (error) {
@@ -446,7 +451,7 @@ CRITICAL:
   }
 
   // Helper method to consume stream with async iterator
-  async * generateStreamResponse(
+  async *generateStreamResponse(
     messages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
     options: {
       model?: string;
