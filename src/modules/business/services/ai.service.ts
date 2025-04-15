@@ -19,7 +19,7 @@ import { OkxProvider } from '@binkai/okx-provider';
 import { deBridgeProvider } from '@binkai/debridge-provider';
 import { BridgePlugin } from '@binkai/bridge-plugin';
 import { WalletPlugin } from '@binkai/wallet-plugin';
-import { BnbProvider } from '@binkai/rpc-provider';
+import { BnbProvider, SolanaProvider } from '@binkai/rpc-provider';
 import { ExampleToolExecutionCallback } from '@/shared/tools/tool-execution';
 import { TelegramBot } from '@/telegram-bot/telegram-bot';
 import { StakingPlugin } from '@binkai/staking-plugin';
@@ -41,6 +41,7 @@ export class AiService implements OnApplicationBootstrap {
   private postgresAdapter: PostgresDatabaseAdapter;
   private binkProvider: BinkProvider;
   private bnbProvider: BnbProvider;
+  private solanaProvider: SolanaProvider;
 
   @Inject(TelegramBot)
   private bot: TelegramBot;
@@ -117,6 +118,11 @@ export class AiService implements OnApplicationBootstrap {
     this.bnbProvider = new BnbProvider({
       rpcUrl: process.env.BSC_RPC_URL,
     });
+
+    this.solanaProvider = new SolanaProvider({
+      rpcUrl: process.env.RPC_URL,
+    });
+
   }
 
   async onApplicationBootstrap() { }
@@ -202,7 +208,7 @@ export class AiService implements OnApplicationBootstrap {
           }),
           await walletPlugin.initialize({
             defaultChain: 'bnb',
-            providers: [this.bnbProvider, this.birdeyeApi, this.alchemyApi],
+            providers: [this.bnbProvider, this.birdeyeApi, this.alchemyApi, this.solanaProvider],
             supportedChains: ['bnb', 'solana', 'ethereum'],
           }),
           await stakingPlugin.initialize({

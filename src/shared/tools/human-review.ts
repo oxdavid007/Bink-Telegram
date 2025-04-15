@@ -61,8 +61,14 @@ Please review the following transaction details carefully before proceeding:
 <i>Please confirm your transaction within <b>60 seconds</b></i>
 <i>Transactions metrics can be modified before the execution. You can edit the metrics by typing in the chatbox (i.e.: change amount 0.01 BNB)</i>
       `;
+    } else if (data.toolName === ToolName.TRANSFER) {
+      message = `📝 <b>Review Transaction</b>
+Please review the following transaction details carefully before proceeding:
+- <b>Amount:</b> ${formatSmartNumber(data.data.amount || 0)} ${data.data.token?.symbol || ''}
+- <b>To:</b> ${data.data.toAddress}
+- <b>Network:</b> ${data.data.network ? data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1) : 'Unknown'}
+      `;
     }
-
     const keyboard = {
       inline_keyboard: [
         [
