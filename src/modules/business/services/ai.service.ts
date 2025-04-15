@@ -11,6 +11,7 @@ import {
   NetworksConfig,
   UUID,
   PlanningAgent,
+  NetworkName,
 } from '@binkai/core';
 import { SwapPlugin } from '@binkai/swap-plugin';
 import { PancakeSwapProvider } from '@binkai/pancakeswap-provider';
@@ -194,7 +195,7 @@ export class AiService implements OnApplicationBootstrap {
           tokenPlugin.initialize({
             defaultChain: 'bnb',
             providers: [this.birdeyeApi, fourMeme as any],
-            supportedChains: ['solana', 'bnb'],
+            supportedChains: ['solana', 'bnb', 'ethereum'],
           }),
           await knowledgePlugin.initialize({
             providers: [this.binkProvider],
@@ -240,6 +241,9 @@ CRITICAL:
 2. DO NOT use markdown. 
 3. Using HTML tags like <b>bold</b>, <i>italic</i>, <code>code</code>, <pre>preformatted</pre>, and <a href="URL">links</a>. \n\nWhen displaying token information or swap details:\n- Use <b>bold</b> for important values and token names\n- Use <code>code</code> for addresses and technical details\n- Use <i>italic</i> for additional information
 4. If has limit order, show list id limit order.
+Wallet BNB: ${(await wallet.getAddress(NetworkName.BNB)) || 'Not available'}
+Wallet ETH: ${(await wallet.getAddress(NetworkName.ETHEREUM)) || 'Not available'}
+Wallet SOL: ${(await wallet.getAddress(NetworkName.SOLANA)) || 'Not available'}
             `,
           },
           wallet,
