@@ -22,6 +22,7 @@ export enum ToolName {
   SWAP = 'swap',
   BRIDGE = 'bridge',
   STAKE = 'staking',
+  TRANSFER = 'transfer_tokens',
 }
 
 /**
@@ -31,7 +32,8 @@ export enum StakingOperationType {
   STAKE = 'stake',
   SUPPLY = 'supply',
   UNSTAKE = 'unstake',
-  WITHDRAW = 'withdraw'
+  WITHDRAW = 'withdraw',
+  TRANSFER = 'transfer_tokens',
 }
 
 /**
@@ -177,7 +179,8 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
         data.data?.status === 'success' &&
         (data.toolName === ToolName.SWAP ||
           data.toolName === ToolName.BRIDGE ||
-          data.toolName === ToolName.STAKE)
+          data.toolName === ToolName.STAKE ||
+          data.toolName === ToolName.TRANSFER)
       ) {
         const getScanUrl = (network, txHash) => {
           const scanUrls = {
@@ -218,6 +221,13 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
 - <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
           `;
           }
+        } else if (data.toolName === ToolName.TRANSFER) {
+          const scanUrl = getScanUrl(data.data.network, data.data.transactionHash);
+          message = `🎉 <b>Congratulations, your transaction has been successful.</b>
+- <b>To:</b> ${data.data.toAddress}
+- <b>Amount:</b> ${formatSmartNumber(data.data.amount || 0)} ${data.data.token?.symbol || ''}
+- <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1)} Explorer</a>
+        `;
         }
         this.messageData(EMessageType.TOOL_EXECUTION, message);
       }
