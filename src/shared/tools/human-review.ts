@@ -82,24 +82,33 @@ Please review the following transaction details carefully before proceeding:
     const keyboard = {
       inline_keyboard: [
         [
-          { text: '✅ Approve', callback_data: COMMAND_KEYS.HUMAN_REVIEW_YES },
           { text: '❌ Reject', callback_data: COMMAND_KEYS.HUMAN_REVIEW_NO },
+          { text: '✅ Approve', callback_data: COMMAND_KEYS.HUMAN_REVIEW_YES },
         ],
       ],
     };
 
-    if (message) {
+    try {
+      // Send message first
       this.bot
         .sendMessage(this.chatId, message, {
           parse_mode: 'HTML',
           reply_markup: keyboard,
         })
-        .then(messageId => {
-          this.setMessageId(messageId.message_id);
+        .then(messagePlanListId => {
+          this.setMessageId(messagePlanListId.message_id);
+
+          // After sending message, delete the previous message
+          return this.bot.deleteMessage(this.chatId, (messagePlanListId.message_id - 1).toString());
         })
         .catch(error => {
-          console.error('🚀 ~ ExampleHumanReviewCallback ~ onHumanReview ~ error', error);
+          console.error('🚀 ~ ExampleHumanReviewCallback ~ onHumanReview ~ error', error.message);
         });
+    } catch (error) {
+      console.log('🚀 ~ ExampleHumanReviewCallback ~ onHumanReview ~ error', error.message);
+      this.bot.sendMessage(this.chatId, 'Please try again', {
+        parse_mode: 'HTML',
+      });
     }
   }
 }

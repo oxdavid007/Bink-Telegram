@@ -113,7 +113,6 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
     console.log(`${emoji} [${new Date(data.timestamp).toISOString()}] ${data.message}`);
 
     if (data.state === ToolExecutionState.STARTED && data.toolName === ToolName.CREATE_PLAN) {
-      console.log('🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ data:STARTED', data);
       let message = ``;
 
       // Format plans with title and tasks with radio buttons
@@ -149,12 +148,14 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
           })
           .then(messageId => {
             this.setMessageId(messageId.message_id);
+            // TODO: Delete the message plan list
+            //  this.bot.deleteMessage(this.chatId, this.messageId.toString());
           })
           .catch(error => {
-            console.error('🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error', error);
+            console.error('🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error', error.message);
           });
       } catch (error) {
-        console.log('🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error');
+        console.log('🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error', error.message);
         this.bot.sendMessage(this.chatId, 'Please try again', {
           parse_mode: 'HTML',
         });
@@ -162,7 +163,6 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
     }
 
     if (data.state === ToolExecutionState.IN_PROCESS && data.data) {
-      console.log('🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ data:IN_PROCESS', data);
       if (data.data.progress < 100) {
         this.bot.editMessageText(`${emoji} ${data.message}`, {
           chat_id: this.chatId,
@@ -174,7 +174,6 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
     }
 
     if (data.state === ToolExecutionState.COMPLETED && data.data) {
-      console.log('🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ data:COMPLETED', data);
       if (
         data.data?.status === 'success' &&
         (data.toolName === ToolName.SWAP ||
