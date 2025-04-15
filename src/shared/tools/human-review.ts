@@ -3,6 +3,7 @@ import { IHumanReviewCallback, HumanReviewData } from '@binkai/core';
 import { TelegramBot } from '@/telegram-bot/telegram-bot';
 import { ToolName, StakingOperationType } from './tool-execution';
 import { COMMAND_KEYS } from '@/telegram-bot/constants/command-keys';
+import { getNetwork } from '../helper';
 
 class ExampleHumanReviewCallback implements IHumanReviewCallback {
   private messageData: (type: string, message: string) => void;
@@ -36,7 +37,7 @@ class ExampleHumanReviewCallback implements IHumanReviewCallback {
         message = `📝 <b>Review Transaction</b>
 Please review the following staking details carefully before proceeding:
 - <b>Amount:</b> ${formatSmartNumber(data.data.amountA || 0)} ${data.data.tokenA?.symbol || ''} 
-- <b>Network:</b> ${data.data.network ? data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1) : 'Unknown'}
+- <b>Network:</b> ${getNetwork(data.data.network)}
 
 <i>Please confirm your transaction within <b>60 seconds</b></i>
 <i>Transactions metrics can be modified before the execution. You can edit the metrics by typing in the chatbox (i.e.: change amount 0.01 BNB)</i>
@@ -45,7 +46,7 @@ Please review the following staking details carefully before proceeding:
         message = `📝 <b>Review Transaction</b>
 Please review the following unstaking details carefully before proceeding:
 - <b>Amount:</b> ${formatSmartNumber(data.data.amountA || 0)} ${data.data.tokenA?.symbol || ''} 
-- <b>Network:</b> ${data.data.network ? data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1) : 'Unknown'}
+- <b>Network:</b> ${getNetwork(data.data.network)}
 
 <i>Please confirm your transaction within <b>60 seconds</b></i>
 <i>Transactions metrics can be modified before the execution. You can edit the metrics by typing in the chatbox (i.e.: change amount 0.01 BNB)</i>
@@ -56,7 +57,7 @@ Please review the following unstaking details carefully before proceeding:
 Please review the following transaction details carefully before proceeding:
 - <b>From:</b> ${formatSmartNumber(data.data.fromAmount || 0)} ${data.data.fromToken?.symbol || ''} 
 - <b>To:</b> ${formatSmartNumber(data.data.toAmount || 0)} ${data.data.toToken?.symbol || ''}
-- <b>Network:</b> ${data.data.network ? data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1) : 'Unknown'}
+- <b>Network:</b> ${getNetwork(data.data.network)}
 
 <i>Please confirm your transaction within <b>60 seconds</b></i>
 <i>Transactions metrics can be modified before the execution. You can edit the metrics by typing in the chatbox (i.e.: change amount 0.01 BNB)</i>
@@ -66,7 +67,7 @@ Please review the following transaction details carefully before proceeding:
 Please review the following transaction details carefully before proceeding:
 - <b>Amount:</b> ${formatSmartNumber(data.data.amount || 0)} ${data.data.token?.symbol || ''}
 - <b>To:</b> ${data.data.toAddress}
-- <b>Network:</b> ${data.data.network ? data.data.network.charAt(0).toUpperCase() + data.data.network.slice(1) : 'Unknown'}
+- <b>Network:</b> ${getNetwork(data.data.network)}
       `;
     }
     const keyboard = {

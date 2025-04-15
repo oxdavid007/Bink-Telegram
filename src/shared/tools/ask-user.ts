@@ -1,5 +1,4 @@
 import { IAskUserCallback, AskUserData } from "@binkai/core";
-import { EMessageType } from "../constants/enums";
 import { TelegramBot } from "@/telegram-bot/telegram-bot";
 
 class ExampleAskUserCallback implements IAskUserCallback {
