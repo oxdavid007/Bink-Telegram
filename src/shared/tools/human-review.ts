@@ -73,8 +73,8 @@ Please review the following transaction details carefully before proceeding:
     const keyboard = {
       inline_keyboard: [
         [
-          { text: '❌ Reject', callback_data: COMMAND_KEYS.HUMAN_REVIEW_NO },
-          { text: '✅ Approve', callback_data: COMMAND_KEYS.HUMAN_REVIEW_YES }
+          { text: '✅ Approve', callback_data: COMMAND_KEYS.HUMAN_REVIEW_YES },
+          { text: '❌ Reject', callback_data: COMMAND_KEYS.HUMAN_REVIEW_NO }
 
         ]
       ]

@@ -63,7 +63,7 @@ export function getNetwork(network: string): string {
   if (!network) return 'Unknown';
 
   const networkMap = {
-    bnb: 'Bnb Chain',
+    bnb: 'BNB Chain',
     ethereum: 'Ethereum',
     solana: 'Solana'
   };
