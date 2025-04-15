@@ -255,8 +255,6 @@ Wallet SOL: ${await wallet.getAddress(NetworkName.SOLANA) || 'Not available'}
           this.bot,
           messageThinkingId,
           (type: string, message: string) => {
-            console.log("🚀 ~ AiService ~ tool execution ~ type:", type)
-            console.log("🚀 ~ AiService ~ tool execution ~ message:", message)
             if (type === EMessageType.TOOL_EXECUTION) {
               isTransactionSuccess = true;
               this.bot.editMessageText(message, {
@@ -315,15 +313,12 @@ Wallet SOL: ${await wallet.getAddress(NetworkName.SOLANA) || 'Not available'}
 
         this.mapAgent[telegramId] = agent;
       } else {
-
         this.mapToolExecutionCallback[telegramId].setMessageId(messageThinkingId);
         this.mapToolExecutionCallback[telegramId].setMessagePlanListId(messagePlanListId);
         this.mapAskUserCallback[telegramId].setMessageId(messageThinkingId);
         this.mapHumanReviewCallback[telegramId].setMessageId(messageThinkingId);
         this.mapToolExecutionCallback[telegramId].setMessageData(
           (type: string, message: string) => {
-            console.log("🚀 ~ AiService ~ tool execution ~ type:", type)
-            console.log("🚀 ~ AiService ~ tool execution ~ message:", message)
             if (type === EMessageType.TOOL_EXECUTION) {
               isTransactionSuccess = true;
               try {
@@ -371,6 +366,7 @@ Wallet SOL: ${await wallet.getAddress(NetworkName.SOLANA) || 'Not available'}
             message_id: messageThinkingId,
             parse_mode: 'HTML',
           });
+
         } catch (error) {
           console.error("🚀 ~ AiService ~ edit message text ~ error", error.message)
         }
