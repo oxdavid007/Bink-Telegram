@@ -368,7 +368,14 @@ Wallet SOL: ${(await wallet.getAddress(NetworkName.SOLANA)) || 'Not available'}
 
       let result;
       if (inputResult && inputResult.length > 0) {
-        result = inputResult.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') || 'Please try again';
+        result =
+          inputResult
+            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+            .replace(/<b>(.*?)<\/b>/g, '<b>$1</b>')
+            .replace(/<i>(.*?)<\/i>/g, '<i>$1</i>')
+            .replace(/<ul>(.*?)<\/ul>/g, '$1')
+            .replace(/<li>(.*?)<\/li>/g, '<li>$1</li>') ||
+          '⚠️ System is currently experiencing high load. Our AI models are working overtime! Please try again in a few moments.';
       }
 
       console.log('🚀 ~ AiService End ~ result:', result);
@@ -376,19 +383,25 @@ Wallet SOL: ${(await wallet.getAddress(NetworkName.SOLANA)) || 'Not available'}
       // TODO: handle result
       if (result && !isTransactionSuccess) {
         // TODO: Edit message in chat
-        try {
-          await this.bot.editMessageText(result, {
-            chat_id: telegramId,
-            message_id: messageThinkingId,
-            parse_mode: 'HTML',
-          });
-        } catch (error) {
-          console.error('🚀 ~ AiService ~ edit message text ~ error', error.message);
+        const message = await this.bot.editMessageText(result, {
+          chat_id: telegramId,
+          message_id: messageThinkingId,
+          parse_mode: 'HTML',
+        });
+        if (!message) {
+          await this.bot.editMessageText(
+            '⚠️ System is currently experiencing high load. Our AI models are working overtime! Please try again in a few moments.',
+            {
+              chat_id: telegramId,
+              message_id: messageThinkingId,
+              parse_mode: 'HTML',
+            },
+          );
         }
       }
     } catch (error) {
       console.error('Error in handleSwap:', error.message);
-      return 'Please try again';
+      return '⚠️ System is currently experiencing high load. Our AI models are working overtime! Please try again in a few moments.';
     }
   }
 
