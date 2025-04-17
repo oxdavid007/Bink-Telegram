@@ -3,7 +3,16 @@ import OpenAI from 'openai';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter } from 'events';
 import { JsonRpcProvider } from 'ethers';
-import { Agent, Wallet, Network, NetworkType, NetworksConfig, UUID, PlanningAgent, NetworkName } from '@binkai/core';
+import {
+  Agent,
+  Wallet,
+  Network,
+  NetworkType,
+  NetworksConfig,
+  UUID,
+  PlanningAgent,
+  NetworkName,
+} from '@binkai/core';
 import { SwapPlugin } from '@binkai/swap-plugin';
 import { PancakeSwapProvider } from '@binkai/pancakeswap-provider';
 import { UserService } from './user.service';
@@ -24,6 +33,7 @@ import { ExampleToolExecutionCallback } from '@/shared/tools/tool-execution';
 import { TelegramBot } from '@/telegram-bot/telegram-bot';
 import { StakingPlugin } from '@binkai/staking-plugin';
 import { VenusProvider } from '@binkai/venus-provider';
+import { KernelDaoProvider } from '@binkai/kernel-dao-provider';
 import { ThenaProvider } from '@binkai/thena-provider';
 import { JupiterProvider } from '@binkai/jupiter-provider';
 import { Connection } from '@solana/web3.js';
@@ -122,16 +132,11 @@ export class AiService implements OnApplicationBootstrap {
     this.solanaProvider = new SolanaProvider({
       rpcUrl: process.env.RPC_URL,
     });
-
   }
 
-  async onApplicationBootstrap() { }
+  async onApplicationBootstrap() {}
 
-  async handleSwap(
-    telegramId: string,
-    input: string,
-    action?: EHumanReviewAction,
-  ) {
+  async handleSwap(telegramId: string, input: string, action?: EHumanReviewAction) {
     try {
       const keys = await this.userService.getMnemonicByTelegramId(telegramId);
       if (!keys) {
@@ -168,6 +173,7 @@ export class AiService implements OnApplicationBootstrap {
         // const okx = new OkxProvider(this.bscProvider, bscChainId);
         const fourMeme = new FourMemeProvider(this.bscProvider, bscChainId);
         const venus = new VenusProvider(this.bscProvider, bscChainId);
+        const kernelDao = new KernelDaoProvider(this.bscProvider, bscChainId);
         const oku = new OkuProvider(this.bscProvider, bscChainId);
         const kyber = new KyberProvider(this.bscProvider, bscChainId);
         const jupiter = new JupiterProvider(new Connection(process.env.RPC_URL));
@@ -176,7 +182,11 @@ export class AiService implements OnApplicationBootstrap {
         const tokenPlugin = new TokenPlugin();
         const knowledgePlugin = new KnowledgePlugin();
         const bridgePlugin = new BridgePlugin();
-        const debridge = new deBridgeProvider([this.bscProvider, new Connection(process.env.RPC_URL)], 56, 7565164);
+        const debridge = new deBridgeProvider(
+          [this.bscProvider, new Connection(process.env.RPC_URL)],
+          56,
+          7565164,
+        );
         const walletPlugin = new WalletPlugin();
         const stakingPlugin = new StakingPlugin();
         const thena = new ThenaProvider(this.bscProvider, bscChainId);
@@ -214,7 +224,7 @@ export class AiService implements OnApplicationBootstrap {
           await stakingPlugin.initialize({
             defaultSlippage: 0.5,
             defaultChain: 'bnb',
-            providers: [venus],
+            providers: [venus, kernelDao],
             supportedChains: ['bnb', 'ethereum'], // These will be intersected with agent's networks
           }),
         ]);
@@ -238,9 +248,9 @@ CRITICAL:
 2. DO NOT use markdown. 
 3. Using HTML tags like <b>bold</b>, <i>italic</i>, <code>code</code>, <pre>preformatted</pre>, and <a href="URL">links</a>. \n\nWhen displaying token information or swap details:\n- Use <b>bold</b> for important values and token names\n- Use <code>code</code> for addresses and technical details\n- Use <i>italic</i> for additional information
 4. If has limit order, show list id limit order.
-Wallet BNB: ${await wallet.getAddress(NetworkName.BNB) || 'Not available'}
-Wallet ETH: ${await wallet.getAddress(NetworkName.ETHEREUM) || 'Not available'}
-Wallet SOL: ${await wallet.getAddress(NetworkName.SOLANA) || 'Not available'}
+Wallet BNB: ${(await wallet.getAddress(NetworkName.BNB)) || 'Not available'}
+Wallet ETH: ${(await wallet.getAddress(NetworkName.ETHEREUM)) || 'Not available'}
+Wallet SOL: ${(await wallet.getAddress(NetworkName.SOLANA)) || 'Not available'}
             `,
           },
           wallet,
@@ -260,6 +270,7 @@ Wallet SOL: ${await wallet.getAddress(NetworkName.SOLANA) || 'Not available'}
           telegramId,
           this.bot,
           messageThinkingId,
+          messagePlanListId,
           (type: string, message: string) => {
             if (type === EMessageType.TOOL_EXECUTION) {
               isTransactionSuccess = true;
@@ -269,7 +280,7 @@ Wallet SOL: ${await wallet.getAddress(NetworkName.SOLANA) || 'Not available'}
                 parse_mode: 'HTML',
               });
             }
-          }
+          },
         );
 
         const askUserCallback = new ExampleAskUserCallback(
@@ -277,8 +288,8 @@ Wallet SOL: ${await wallet.getAddress(NetworkName.SOLANA) || 'Not available'}
           this.bot,
           messageThinkingId,
           (type: string, message: string) => {
-            console.log("🚀 ~ AiService ~ type ask user:", type)
-            console.log("🚀 ~ AiService ~ message ask user:", message)
+            console.log('🚀 ~ AiService ~ type ask user:', type);
+            console.log('🚀 ~ AiService ~ message ask user:', message);
             // if (type === EMessageType.ASK_USER) {
             //   isTransactionSuccess = true;
             //   this.bot.editMessageText(message, {
@@ -287,15 +298,15 @@ Wallet SOL: ${await wallet.getAddress(NetworkName.SOLANA) || 'Not available'}
             //     parse_mode: 'HTML',
             //   });
             // }
-          }
+          },
         );
         const humanReviewCallback = new ExampleHumanReviewCallback(
           telegramId,
           this.bot,
           messageThinkingId,
           (type: string, message: string) => {
-            console.log("🚀 ~ AiService ~ human review ~ type:", type)
-            console.log("🚀 ~ AiService ~ human review ~ message:", message)
+            console.log('🚀 ~ AiService ~ human review ~ type:', type);
+            console.log('🚀 ~ AiService ~ human review ~ message:', message);
 
             // if (type === EMessageType.HUMAN_REVIEW) {
             //   isTransactionSuccess = true;
@@ -305,13 +316,12 @@ Wallet SOL: ${await wallet.getAddress(NetworkName.SOLANA) || 'Not available'}
             //     parse_mode: 'HTML',
             //   });
             // }
-          }
+          },
         );
 
         this.mapToolExecutionCallback[telegramId] = toolExecutionCallback;
         this.mapAskUserCallback[telegramId] = askUserCallback;
         this.mapHumanReviewCallback[telegramId] = humanReviewCallback;
-
 
         agent.registerToolExecutionCallback(toolExecutionCallback as any);
         agent.registerAskUserCallback(askUserCallback as any);
@@ -320,7 +330,7 @@ Wallet SOL: ${await wallet.getAddress(NetworkName.SOLANA) || 'Not available'}
         this.mapAgent[telegramId] = agent;
       } else {
         this.mapToolExecutionCallback[telegramId].setMessageId(messageThinkingId);
-        this.mapToolExecutionCallback[telegramId].setMessagePlanListId(messagePlanListId);
+        // this.mapToolExecutionCallback[telegramId].setMessagePlanListId(messagePlanListId);
         this.mapAskUserCallback[telegramId].setMessageId(messageThinkingId);
         this.mapHumanReviewCallback[telegramId].setMessageId(messageThinkingId);
         this.mapToolExecutionCallback[telegramId].setMessageData(
@@ -332,10 +342,10 @@ Wallet SOL: ${await wallet.getAddress(NetworkName.SOLANA) || 'Not available'}
                   parse_mode: 'HTML',
                 });
               } catch (error) {
-                console.error("🚀 ~ AiService ~ edit message text ~ error", error.message)
+                console.error('🚀 ~ AiService ~ edit message text ~ error', error.message);
               }
             }
-          }
+          },
         );
       }
 
@@ -353,33 +363,48 @@ Wallet SOL: ${await wallet.getAddress(NetworkName.SOLANA) || 'Not available'}
         };
       }
 
+      console.log('🚀 ~ AiService ~ executeData:', executeData);
+
       const inputResult = await agent.execute(executeData);
 
       let result;
       if (inputResult && inputResult.length > 0) {
-        result = inputResult.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') || 'Please try again';
+        result =
+          inputResult
+            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+            .replace(/<b>(.*?)<\/b>/g, '<b>$1</b>')
+            .replace(/<i>(.*?)<\/i>/g, '<i>$1</i>')
+            .replace(/<ul>(.*?)<\/ul>/g, '$1')
+            .replace(/<li>(.*?)<\/li>/g, '<li>$1</li>') ||
+          '⚠️ System is currently experiencing high load. Our AI models are working overtime! Please try again in a few moments.';
       }
 
-      console.log("🚀 ~ AiService End ~ result:", result)
+      console.log('🚀 ~ AiService End ~ result:', result);
 
       // TODO: handle result
       if (result && !isTransactionSuccess) {
-
         // TODO: Edit message in chat
-        try {
-          await this.bot.editMessageText(result, {
-            chat_id: telegramId,
-            message_id: messageThinkingId,
-            parse_mode: 'HTML',
-          });
-
-        } catch (error) {
-          console.error("🚀 ~ AiService ~ edit message text ~ error", error.message)
+        const message = await this.bot.editMessageText(result, {
+          chat_id: telegramId,
+          message_id: messageThinkingId,
+          parse_mode: 'HTML',
+        });
+        if (!message) {
+          await this.bot.editMessageText(
+            '⚠️ System is currently experiencing high load. Our AI models are working overtime! Please try again in a few moments.',
+            {
+              chat_id: telegramId,
+              message_id: messageThinkingId,
+              parse_mode: 'HTML',
+            },
+          );
         }
+      } else {
+        await this.bot.deleteMessage(telegramId, messageThinkingId.toString());
       }
     } catch (error) {
       console.error('Error in handleSwap:', error.message);
-      return 'Please try again';
+      return '⚠️ System is currently experiencing high load. Our AI models are working overtime! Please try again in a few moments.';
     }
   }
 
@@ -451,7 +476,7 @@ Wallet SOL: ${await wallet.getAddress(NetworkName.SOLANA) || 'Not available'}
   }
 
   // Helper method to consume stream with async iterator
-  async * generateStreamResponse(
+  async *generateStreamResponse(
     messages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
     options: {
       model?: string;

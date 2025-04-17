@@ -84,9 +84,10 @@ export class TelegramBot implements OnApplicationBootstrap {
 
   async deleteMessage(chatId: ChatId, messageId: string) {
     try {
-      return this.bot.deleteMessage(chatId, parseInt(messageId));
+      return await this.bot.deleteMessage(chatId, parseInt(messageId));
     } catch (error) {
-      console.error("🚀 ~ TelegramBot ~ deleteMessage ~ error")
+      console.error('🚀 ~ TelegramBot ~ deleteMessage ~ error', error.message);
+      return null;
     }
   }
 
@@ -168,7 +169,7 @@ export class TelegramBot implements OnApplicationBootstrap {
         const messageWithPhoto = {
           ...parsedMessage,
           photo: msg.photo,
-          caption: msg.caption
+          caption: msg.caption,
         };
         callback(messageWithPhoto);
         return;
@@ -223,7 +224,8 @@ export class TelegramBot implements OnApplicationBootstrap {
       if (cmd === COMMAND_KEYS.HUMAN_REVIEW_YES || cmd === COMMAND_KEYS.HUMAN_REVIEW_NO) {
         const handler = this.handlers[cmd];
         if (handler) {
-          handler.handler({ ...data, cmd })
+          handler
+            .handler({ ...data, cmd })
             .then()
             .catch(e => {
               this.loggerService.error(e, {
