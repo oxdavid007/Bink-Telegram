@@ -65,8 +65,13 @@ export function getNetwork(network: string): string {
   const networkMap = {
     bnb: 'BNB Chain',
     ethereum: 'Ethereum',
-    solana: 'Solana'
+    solana: 'Solana',
   };
 
   return networkMap[network] || network.charAt(0).toUpperCase() + network.slice(1);
+}
+
+export function getProvider(provider: string): string {
+  if (!provider) return 'Unknown';
+  return provider.charAt(0).toUpperCase() + provider.slice(1);
 }
