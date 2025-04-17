@@ -1,7 +1,7 @@
 import { TelegramBot } from '@/telegram-bot/telegram-bot';
 import { formatSmartNumber } from '@/telegram-bot/utils/format-text';
 import { EMessageType } from '../constants/enums';
-import { getScanUrl, getNetwork } from '../helper';
+import { getScanUrl, getNetwork, getProvider } from '../helper';
 
 /**
  * Enum representing the different states of a tool execution
@@ -80,12 +80,13 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
     chatId: string,
     bot: TelegramBot,
     messageId: number,
+    messagePlanListId: number,
     messageData: (type: string, message: string) => void,
   ) {
     this.chatId = chatId;
     this.bot = bot;
     this.messageId = messageId;
-    this.messagePlanListId = 0;
+    this.messagePlanListId = messagePlanListId;
     this.messageData = messageData;
   }
 
@@ -143,6 +144,7 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
           })
           .then(messagePlanListId => {
             this.setMessagePlanListId(messagePlanListId.message_id);
+
             // After sending plan message, send the executing message
             return this.bot.sendMessage(this.chatId, 'Executing plans...', {
               parse_mode: 'HTML',
@@ -154,7 +156,10 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
             //  this.bot.deleteMessage(this.chatId, this.messageId.toString());
           })
           .catch(error => {
-            console.error('🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error', error.message);
+            console.error(
+              '🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error',
+              error.message,
+            );
           });
       } catch (error) {
         console.log('🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error', error.message);
@@ -191,6 +196,7 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
 - <b>Swapped:</b> ${formatSmartNumber(data.data.fromAmount)} ${data.data.fromToken?.symbol || ''} 
 - <b>Received:</b> ${formatSmartNumber(data.data.toAmount)} ${data.data.toToken?.symbol || ''}
 - <b>Network:</b> ${getNetwork(data.data.network)}
+- <b>Protocol:</b> ${getProvider(data.data.provider)}
 - <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${getNetwork(data.data.network)} Explorer</a>
 `;
         } else if (data.toolName === ToolName.BRIDGE) {
@@ -198,21 +204,30 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
           message = `🎉 <b>Congratulations, your transaction has been successful.</b>
 - <b>Swapped:</b> ${formatSmartNumber(data.data.fromAmount)} ${data.data.fromToken?.symbol || ''} (${getNetwork(data.data.fromNetwork)})
 - <b>Received:</b> ${formatSmartNumber(data.data.toAmount)} ${data.data.toToken?.symbol || ''} (${getNetwork(data.data.toNetwork)})
+- <b>Protocol:</b> ${getProvider(data.data.provider)}
 - <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${getNetwork(data.data.fromNetwork)} Explorer</a>
 `;
         } else if (data.toolName === ToolName.STAKE) {
           const scanUrl = getScanUrl(data.data.network, data.data.transactionHash);
 
-          if (data.data.type === StakingOperationType.STAKE || data.data.type === StakingOperationType.SUPPLY) {
+          if (
+            data.data.type === StakingOperationType.STAKE ||
+            data.data.type === StakingOperationType.SUPPLY
+          ) {
             message = `🎉 <b>Congratulations, your transaction has been successful.</b>
 - <b>Staked:</b> ${formatSmartNumber(data.data.amountA || 0)} ${data.data.tokenA?.symbol || ''}
 - <b>Network:</b> ${getNetwork(data.data.network)}
+- <b>Protocol:</b> ${getProvider(data.data.provider)}
 - <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${getNetwork(data.data.network)} Explorer</a>
           `;
-          } else if (data.data.type === StakingOperationType.UNSTAKE || data.data.type === StakingOperationType.WITHDRAW) {
+          } else if (
+            data.data.type === StakingOperationType.UNSTAKE ||
+            data.data.type === StakingOperationType.WITHDRAW
+          ) {
             message = `🎉 <b>Congratulations, your transaction has been successful.</b>
 - <b>Unstaked:</b> ${formatSmartNumber(data.data.amountA || 0)} ${data.data.tokenA?.symbol || ''}
 - <b>Network:</b> ${getNetwork(data.data.network)}
+- <b>Protocol:</b> ${getProvider(data.data.provider)}
 - <b>Transaction Hash:</b> <a href="${scanUrl}">View on ${getNetwork(data.data.network)} Explorer</a>
           `;
           }
@@ -250,7 +265,10 @@ export class ExampleToolExecutionCallback implements IToolExecutionCallback {
               try {
                 // this.bot.deleteMessage(this.chatId, this.messagePlanListId?.toString());
               } catch (error) {
-                console.error('🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ error');
+                console.error(
+                  '🚀 ~ ExampleToolExecutionCallback ~ onToolExecution ~ deleteMessage',
+                  error.message,
+                );
               }
             }
           }

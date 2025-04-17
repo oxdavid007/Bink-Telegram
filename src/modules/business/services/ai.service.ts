@@ -270,6 +270,7 @@ Wallet SOL: ${(await wallet.getAddress(NetworkName.SOLANA)) || 'Not available'}
           telegramId,
           this.bot,
           messageThinkingId,
+          messagePlanListId,
           (type: string, message: string) => {
             if (type === EMessageType.TOOL_EXECUTION) {
               isTransactionSuccess = true;
@@ -329,7 +330,7 @@ Wallet SOL: ${(await wallet.getAddress(NetworkName.SOLANA)) || 'Not available'}
         this.mapAgent[telegramId] = agent;
       } else {
         this.mapToolExecutionCallback[telegramId].setMessageId(messageThinkingId);
-        this.mapToolExecutionCallback[telegramId].setMessagePlanListId(messagePlanListId);
+        // this.mapToolExecutionCallback[telegramId].setMessagePlanListId(messagePlanListId);
         this.mapAskUserCallback[telegramId].setMessageId(messageThinkingId);
         this.mapHumanReviewCallback[telegramId].setMessageId(messageThinkingId);
         this.mapToolExecutionCallback[telegramId].setMessageData(
@@ -398,6 +399,8 @@ Wallet SOL: ${(await wallet.getAddress(NetworkName.SOLANA)) || 'Not available'}
             },
           );
         }
+      } else {
+        await this.bot.deleteMessage(telegramId, messageThinkingId.toString());
       }
     } catch (error) {
       console.error('Error in handleSwap:', error.message);
