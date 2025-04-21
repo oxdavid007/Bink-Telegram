@@ -42,6 +42,9 @@ import ExampleHumanReviewCallback from '@/shared/tools/human-review';
 import { EHumanReviewAction, EMessageType } from '@/shared/constants/enums';
 import { OkuProvider } from '@binkai/oku-provider';
 import { KyberProvider } from '@binkai/kyber-provider';
+import { ListaProvider } from '@binkai/lista-provider';
+import { ClaimService } from './claim.service';
+
 @Injectable()
 export class AiService implements OnApplicationBootstrap {
   private openai: OpenAI;
@@ -52,7 +55,7 @@ export class AiService implements OnApplicationBootstrap {
   private binkProvider: BinkProvider;
   private bnbProvider: BnbProvider;
   private solanaProvider: SolanaProvider;
-
+  private listaProvider: ListaProvider;
   @Inject(TelegramBot)
   private bot: TelegramBot;
   mapAgent: Record<string, Agent> = {};
@@ -61,7 +64,7 @@ export class AiService implements OnApplicationBootstrap {
   mapHumanReviewCallback: Record<string, ExampleHumanReviewCallback> = {};
   @Inject('BSC_CONNECTION') private bscProvider: JsonRpcProvider;
   @Inject('ETHEREUM_CONNECTION') private ethProvider: JsonRpcProvider;
-
+  @Inject(ClaimService) private claimService: ClaimService;
   constructor(
     private configService: ConfigService,
     private readonly userService: UserService,
@@ -132,6 +135,7 @@ export class AiService implements OnApplicationBootstrap {
     this.solanaProvider = new SolanaProvider({
       rpcUrl: process.env.RPC_URL,
     });
+
   }
 
   async onApplicationBootstrap() {}
@@ -139,6 +143,7 @@ export class AiService implements OnApplicationBootstrap {
   async handleSwap(telegramId: string, input: string, action?: EHumanReviewAction) {
     try {
       const keys = await this.userService.getMnemonicByTelegramId(telegramId);
+      console.log('🚀 ~ AiService ~ handleSwap ~ keys:', keys);
       if (!keys) {
         return 'Please /start first';
       }
@@ -190,6 +195,7 @@ export class AiService implements OnApplicationBootstrap {
         const walletPlugin = new WalletPlugin();
         const stakingPlugin = new StakingPlugin();
         const thena = new ThenaProvider(this.bscProvider, bscChainId);
+        const lista = new ListaProvider(this.bscProvider, bscChainId);
 
         // Initialize the swap plugin with supported chains and providers
         await Promise.all([
@@ -224,7 +230,7 @@ export class AiService implements OnApplicationBootstrap {
           await stakingPlugin.initialize({
             defaultSlippage: 0.5,
             defaultChain: 'bnb',
-            providers: [venus, kernelDao],
+            providers: [venus, kernelDao, lista],
             supportedChains: ['bnb', 'ethereum'], // These will be intersected with agent's networks
           }),
         ]);
@@ -271,7 +277,7 @@ Wallet SOL: ${(await wallet.getAddress(NetworkName.SOLANA)) || 'Not available'}
           this.bot,
           messageThinkingId,
           messagePlanListId,
-          (type: string, message: string) => {
+          async (type: string, message: string) => {
             if (type === EMessageType.TOOL_EXECUTION) {
               isTransactionSuccess = true;
               this.bot.editMessageText(message, {
@@ -280,6 +286,9 @@ Wallet SOL: ${(await wallet.getAddress(NetworkName.SOLANA)) || 'Not available'}
                 parse_mode: 'HTML',
               });
             }
+          },
+          async (telegramId: string, transactionData: any) => {
+            this.handleTransaction(telegramId, transactionData);
           },
         );
 
@@ -334,7 +343,7 @@ Wallet SOL: ${(await wallet.getAddress(NetworkName.SOLANA)) || 'Not available'}
         this.mapAskUserCallback[telegramId].setMessageId(messageThinkingId);
         this.mapHumanReviewCallback[telegramId].setMessageId(messageThinkingId);
         this.mapToolExecutionCallback[telegramId].setMessageData(
-          (type: string, message: string) => {
+          async (type: string, message: string) => {
             if (type === EMessageType.TOOL_EXECUTION) {
               isTransactionSuccess = true;
               try {
@@ -345,6 +354,11 @@ Wallet SOL: ${(await wallet.getAddress(NetworkName.SOLANA)) || 'Not available'}
                 console.error('🚀 ~ AiService ~ edit message text ~ error', error.message);
               }
             }
+          },
+        );
+        this.mapToolExecutionCallback[telegramId].setHandleTransaction(
+          async (telegramId: string, transactionData: any) => {
+            this.handleTransaction(telegramId, transactionData);
           },
         );
       }
@@ -380,6 +394,7 @@ Wallet SOL: ${(await wallet.getAddress(NetworkName.SOLANA)) || 'Not available'}
       }
 
       console.log('🚀 ~ AiService End ~ result:', result);
+      // console.log('🚀 ~ AiService End ~ transactionData:', transactionData);
 
       // TODO: handle result
       if (result && !isTransactionSuccess) {
@@ -406,6 +421,12 @@ Wallet SOL: ${(await wallet.getAddress(NetworkName.SOLANA)) || 'Not available'}
       console.error('Error in handleSwap:', error.message);
       return '⚠️ System is currently experiencing high load. Our AI models are working overtime! Please try again in a few moments.';
     }
+  }
+
+  async handleTransaction(telegramId: string, transactionData: any) {
+    console.log('🚀 ~ AiService ~ handleTransaction ~ transactionData:', transactionData);
+    const timestamp = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
+    await this.claimService.saveClaimTransaction(telegramId, transactionData.amount, transactionData.tokenSymbol, transactionData.network, transactionData.provider, transactionData.transactionHash, timestamp);
   }
 
   async createChatCompletion(
