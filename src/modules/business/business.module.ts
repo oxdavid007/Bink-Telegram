@@ -82,8 +82,8 @@ export class BusinessModule implements OnApplicationBootstrap {
   ) { }
 
   async onApplicationBootstrap() {
-    // await this.claimService.saveClaimTransaction("7597802161", "0.01945407", "USDT", "BSC", "BSC", "0x0000000000000000000000000000000000000000", 1745230006);
-    // const claims = await this.claimService.getClaimsByUserId("7597802161");
+    // await this.claimService.saveClaimTransaction("", "0.01945407", "USDT", "BSC", "BSC", "0x0000000000000000000000000000000000000000", 1745230006);
+    // const claims = await this.claimService.getClaimsByUserId("");
     // console.log(claims);
   }
 }
