@@ -10,7 +10,7 @@ import { ListaProvider } from "@binkai/lista-provider";
 import { EVM_NATIVE_TOKEN_ADDRESS, NetworkName, Network, Wallet } from "@binkai/core";
 import { ethers, JsonRpcProvider, Contract } from "ethers";
 import { ListaPoolABI } from "../abis/Lista";
-import { LessThan , LessThanOrEqual} from "typeorm";
+import { LessThan, LessThanOrEqual } from "typeorm";
 
 
 const CONSTANTS = {
@@ -148,8 +148,10 @@ export class ClaimService {
     async handleClaim() {
         try {
             const claims = await this.getClaimableTransactions();
+            let countClaimsCompleted = 0;
+            let finalReceipt
             this.logger.log(`Found ${claims.length} claimable transactions`);
-            
+
             for (const claim of claims) {
                 try {
                     // Update status to PROCESSING
@@ -157,10 +159,10 @@ export class ClaimService {
                         { id: claim.id },
                         { status: TransactionStatus.PROCESSING }
                     );
-                    
+
                     const user = await this.userService.getUserById(claim.user_id);
                     this.logger.debug(`Processing claim for user: ${user?.telegram_id}`);
-                    
+
                     const walletEvmAddress = user?.wallet_evm_address;
                     if (!walletEvmAddress) {
                         this.logger.warn(`No wallet address found for user ${user?.telegram_id}`);
@@ -170,7 +172,7 @@ export class ClaimService {
                         );
                         continue;
                     }
-                    
+
                     const keys = await this.userService.getMnemonicByTelegramId(user.telegram_id);
                     if (!keys) {
                         this.logger.warn(`No keys found for user ${user.telegram_id}`);
@@ -180,7 +182,7 @@ export class ClaimService {
                         );
                         continue;
                     }
-                    
+
                     const wallet = new Wallet({ seedPhrase: keys, index: 0 }, new Network({
                         networks: {
                             bnb: {
@@ -193,10 +195,10 @@ export class ClaimService {
                             }
                         }
                     }));
-                    
+
                     const claimableBalances = await this.getAllClaimableBalances(walletEvmAddress);
                     this.logger.debug(`Claimable balances for ${walletEvmAddress}: ${JSON.stringify(claimableBalances)}`);
-                    
+
                     if (!claimableBalances.tokens || claimableBalances.tokens.length === 0) {
                         this.logger.warn(`No claimable tokens found for ${walletEvmAddress}`);
                         await this.transactionRepository.update(
@@ -205,34 +207,48 @@ export class ClaimService {
                         );
                         continue;
                     }
-                    
+
                     for (const token of claimableBalances.tokens) {
-                        const tx = await this.buildClaimTransaction(token.uuid);
-                        this.logger.debug(`Built claim transaction: ${JSON.stringify(tx)}`);
-                        
-                        const result = await wallet.signAndSendTransaction(NetworkName.BNB, {
-                            to: tx.to,
-                            data: tx.data,
-                            value: BigInt(tx.value),
-                        });
-                        
-                        const finalReceipt = await result.wait();
-                        this.logger.log(`Claim transaction completed: ${finalReceipt.hash}`);
-                        
+                        try {
+                            const tx = await this.buildClaimTransaction(token.uuid);
+                            this.logger.debug(`Built claim transaction: ${JSON.stringify(tx)}`);
+
+                            const result = await wallet.signAndSendTransaction(NetworkName.BNB, {
+                                to: tx.to,
+                                data: tx.data,
+                                value: BigInt(tx.value),
+                            });
+
+                            finalReceipt = await result.wait();
+                            this.logger.log(`Claim transaction completed: ${finalReceipt.hash}`);
+                            countClaimsCompleted++;
+
+                        } catch (error) {
+                            this.logger.error(`Error processing claim ${claim.id}: ${error.message}`, error.stack);
+                        }
+
+                    }
+                    if (countClaimsCompleted >= 1) {
                         await this.transactionRepository.update(
                             { id: claim.id },
-                            { 
+                            {
                                 status: TransactionStatus.COMPLETED,
                                 tx_hash: finalReceipt.hash
                             }
+                        );
+                    }
+                    else {
+                        await this.transactionRepository.update(
+                            { id: claim.id },
+                            { status: TransactionStatus.FAILED, error: 'No claimable tokens found' }
                         );
                     }
                 } catch (claimError) {
                     this.logger.error(`Error processing claim ${claim.id}: ${claimError.message}`, claimError.stack);
                     await this.transactionRepository.update(
                         { id: claim.id },
-                        { 
-                            status: TransactionStatus.FAILED, 
+                        {
+                            status: TransactionStatus.FAILED,
                             error: `Claim processing error: ${claimError.message}`
                         }
                     );

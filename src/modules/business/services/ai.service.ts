@@ -143,7 +143,6 @@ export class AiService implements OnApplicationBootstrap {
   async handleSwap(telegramId: string, input: string, action?: EHumanReviewAction) {
     try {
       const keys = await this.userService.getMnemonicByTelegramId(telegramId);
-      console.log('🚀 ~ AiService ~ handleSwap ~ keys:', keys);
       if (!keys) {
         return 'Please /start first';
       }
@@ -425,7 +424,7 @@ Wallet SOL: ${(await wallet.getAddress(NetworkName.SOLANA)) || 'Not available'}
 
   async handleTransaction(telegramId: string, transactionData: any) {
     console.log('🚀 ~ AiService ~ handleTransaction ~ transactionData:', transactionData);
-    const timestampClaim   = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
+    const timestampClaim   = Math.floor(Date.now() / 1000) + 9 * 24 * 60 * 60;
     await this.claimService.saveClaimTransaction(telegramId, transactionData.amount, transactionData.tokenSymbol, transactionData.network, transactionData.provider, transactionData.transactionHash, timestampClaim);
   }
 
