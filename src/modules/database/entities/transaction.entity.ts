@@ -12,7 +12,7 @@ export enum TransactionType {
 
 export enum TransactionStatus {
   INIT = "init",
-  PENDING = "pending",
+  PROCESSING = "processing",
   COMPLETED = "completed",
   FAILED = "failed",
 }
@@ -56,6 +56,9 @@ export class TransactionEntity extends BaseEntity {
 
   @Column({ default: TransactionStatus.INIT })
   status: TransactionStatus;
+
+  @Column({ nullable: true })
+  error: string;
 
   @Column()
   @Index()
