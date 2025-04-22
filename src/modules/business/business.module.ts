@@ -85,5 +85,7 @@ export class BusinessModule implements OnApplicationBootstrap {
     // await this.claimService.saveClaimTransaction("", "0.01945407", "USDT", "BSC", "BSC", "0x0000000000000000000000000000000000000000", 1745230006);
     // const claims = await this.claimService.getClaimsByUserId("");
     // console.log(claims);
+    // const claimableBalances = await this.claimService.getAllClaimableBalances("");
+    // console.log(claimableBalances);
   }
 }

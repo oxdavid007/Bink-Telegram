@@ -88,7 +88,6 @@ export class ClaimService {
     ) {
         try {
             const claimableBalances = await this.factory.getUserWithdrawalRequests(walletAddress);
-
             // Convert the result to an array of objects with natural numbers
             const formattedBalances = claimableBalances.map((item: any) => {
                 //uuid
@@ -96,20 +95,14 @@ export class ClaimService {
 
                 const amount = ethers.formatEther(item[1]);
 
-                // Convert timestamp to days (seconds since epoch to days since request)
-                const currentTimeSeconds = Math.floor(Date.now() / 1000);
+                const currentTimeSeconds = item[2]?.toString();
 
-                // Convert currentTimeSeconds to normal date
-                const currentDate = new Date(currentTimeSeconds * 1000);
-
-                // Set estimated time to current date + 8 days
-                const estimatedDate = new Date(currentDate);
-                estimatedDate.setDate(currentDate.getDate() + 8);
+                const estimatedTime = Number(currentTimeSeconds) + 9 * 24 * 60 * 60;
 
                 return {
                     uuid: uuid,
                     claimableAmount: amount,
-                    estimatedTime: estimatedDate,
+                    estimatedTime: estimatedTime,
                 };
             });
 
