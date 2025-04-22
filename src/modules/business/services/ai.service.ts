@@ -425,8 +425,8 @@ Wallet SOL: ${(await wallet.getAddress(NetworkName.SOLANA)) || 'Not available'}
 
   async handleTransaction(telegramId: string, transactionData: any) {
     console.log('🚀 ~ AiService ~ handleTransaction ~ transactionData:', transactionData);
-    const timestamp = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
-    await this.claimService.saveClaimTransaction(telegramId, transactionData.amount, transactionData.tokenSymbol, transactionData.network, transactionData.provider, transactionData.transactionHash, timestamp);
+    const timestampClaim   = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
+    await this.claimService.saveClaimTransaction(telegramId, transactionData.amount, transactionData.tokenSymbol, transactionData.network, transactionData.provider, transactionData.transactionHash, timestampClaim);
   }
 
   async createChatCompletion(
