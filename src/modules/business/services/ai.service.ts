@@ -388,7 +388,7 @@ Wallet SOL: ${(await wallet.getAddress(NetworkName.SOLANA)) || 'Not available'}
           a: ['href']
         }
       });
-      console.log('🚀 ~ AiService ~ result:', result);
+      
       result = result
       // Step 2: Process ul/li tags - remove ALL whitespace before adding our own formatting
       .replace(/<ul>[\s\S]*?<\/ul>/g, function(match) {
