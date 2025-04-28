@@ -393,6 +393,7 @@ Wallet SOL: ${(await wallet.getAddress(NetworkName.SOLANA)) || 'Not available'}
                 .replace(/<li>/g, '• ')
                 .replace(/<\/li>/g, '');
             })
+            .replace(/<a href="(.*?)">(.*?)<\/a>/g, '<i>$2 ($1)</i>')
             .replace(/<li>(.*?)<\/li>/g, '<li>$1</li>') ||
           '⚠️ System is currently experiencing high load. Our AI models are working overtime! Please try again in a few moments.';
       }
